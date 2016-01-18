@@ -12,6 +12,12 @@ Vagrant.configure(2) do |config|
                     curl -sL https://git.io/vuHfs | tar -xz -C .files --strip-components=1
                     VAGRANT=true .files/install 2>&1 &> /dev/null
                 fi
+                sudo apt-get -qqy update
+                sudo apt-get -qqy dist-upgrade
+                sudo apt-get -qqy install \
+                    htop \
+                    openjdk-8-jdk \
+                    # END PACKAGE LIST
             )
             config.vm.provider "virtualbox" do |virtualbox|
                 virtualbox.linked_clone = true
