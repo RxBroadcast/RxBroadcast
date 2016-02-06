@@ -1,0 +1,9 @@
+apply plugin: 'java'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'io.reactivex:rxjava:1.1.0'
+}
