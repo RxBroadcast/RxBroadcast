@@ -25,7 +25,7 @@ public class UdpBroadcastTest {
         subscriber.assertValueCount(1);
         subscriber.assertReceivedOnNext(Collections.singletonList(new TestValue(42)));
 
-        broadcast1.close();
-        broadcast2.close();
+        sa.close();
+        sb.close();
     }
 }
