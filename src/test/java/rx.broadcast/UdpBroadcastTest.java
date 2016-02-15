@@ -10,7 +10,7 @@ import java.util.Collections;
 public class UdpBroadcastTest {
     @Test
     public final void valuesOfTypeDoesReceiveBroadcastValue() throws Exception {
-        final TestSubscriber subscriber = new TestSubscriber();
+        final TestSubscriber<Object> subscriber = new TestSubscriber<>();
         final DatagramSocket sa = new DatagramSocket();
         final DatagramSocket sb = new DatagramSocket();
         final Broadcast broadcast1 = new UdpBroadcast(sa, InetAddress.getLoopbackAddress(), sb.getLocalPort());
