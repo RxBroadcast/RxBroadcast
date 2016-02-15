@@ -9,3 +9,11 @@ dependencies {
     compile 'io.reactivex:rxjava:1.1.0'
     testCompile 'junit:junit:4.12'
 }
+
+test {
+    testLogging {
+        exceptionFormat = 'full'
+        showStandardStreams = true
+        events 'passed', 'skipped', 'failed'
+    }
+}
