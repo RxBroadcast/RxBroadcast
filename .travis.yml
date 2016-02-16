@@ -2,6 +2,10 @@ sudo: false
 language: java
 jdk:
     - oraclejdk8
+before_install:
+    - ( cd $HOME && curl -LO "https://services.gradle.org/distributions/gradle-2.11-bin.zip" )
+    - ( cd $HOME && unzip -q gradle-2.11-bin.zip && rm gradle-2.11-bin.zip )
+    - export PATH=$HOME/gradle-2.11/bin:$PATH && hash -r && gradle --version
 script:
     - gradle build
 notifications:

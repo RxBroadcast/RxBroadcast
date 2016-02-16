@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class UdpBroadcast implements Broadcast {
+    private static final int MAX_UDP_PACKET_SIZE = 65535;
+
     private final DatagramSocket socket;
 
     private final Observable<Object> values;
@@ -58,7 +60,7 @@ public final class UdpBroadcast implements Broadcast {
                 break;
             }
 
-            final byte[] buffer = new byte[65535];
+            final byte[] buffer = new byte[MAX_UDP_PACKET_SIZE];
             final DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
             try {
                 socket.receive(packet);

@@ -8,6 +8,7 @@ import java.net.InetAddress;
 import java.util.Collections;
 
 public class UdpBroadcastTest {
+    @SuppressWarnings({"checkstyle:magicnumber"})
     @Test
     public final void valuesOfTypeDoesReceiveBroadcastValue() throws Exception {
         final TestSubscriber<Object> subscriber = new TestSubscriber<>();
