@@ -37,14 +37,18 @@ public final class UdpBroadcast implements Broadcast {
     }
 
     @Override
-    public void send(final Object value) {
-        final byte[] data = serializer.serialize(value);
-        final DatagramPacket packet = new DatagramPacket(data, data.length, destinationAddress, destinationPort);
-        try {
-            socket.send(packet);
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
-        }
+    public Observable<Void> send(final Object value) {
+        return Observable.defer(() -> {
+            try {
+                final byte[] data = serializer.serialize(value);
+                final DatagramPacket packet = new DatagramPacket(
+                    data, data.length, destinationAddress, destinationPort);
+                socket.send(packet);
+                return Observable.empty();
+            } catch (final Throwable e) {
+                return Observable.error(e);
+            }
+        });
     }
 
     @Override

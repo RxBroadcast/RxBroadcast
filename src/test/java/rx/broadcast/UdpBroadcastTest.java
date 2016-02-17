@@ -18,7 +18,7 @@ public class UdpBroadcastTest {
         final Broadcast broadcast2 = new UdpBroadcast(sb, InetAddress.getLoopbackAddress(), sa.getLocalPort());
 
         broadcast2.valuesOfType(TestValue.class).first().subscribe(subscriber);
-        broadcast1.send(new TestValue(42));
+        broadcast1.send(new TestValue(42)).toBlocking().subscribe();
 
         subscriber.awaitTerminalEvent();
 
