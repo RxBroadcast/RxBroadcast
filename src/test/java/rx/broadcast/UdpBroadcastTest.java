@@ -5,12 +5,13 @@ import rx.observers.TestSubscriber;
 
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.util.Collections;
 
 public class UdpBroadcastTest {
     @SuppressWarnings({"checkstyle:magicnumber"})
     @Test
-    public final void valuesOfTypeDoesReceiveBroadcastValue() throws Exception {
+    public final void valuesOfTypeDoesReceiveBroadcastValue() throws SocketException {
         final TestSubscriber<Object> subscriber = new TestSubscriber<>();
         final DatagramSocket sa = new DatagramSocket();
         final DatagramSocket sb = new DatagramSocket();
