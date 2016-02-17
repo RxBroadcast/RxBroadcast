@@ -83,4 +83,19 @@ public class UdpBroadcastTest {
         subscriber.assertReceivedOnNext(Arrays.asList(
             new TestValue(42), new TestValue(42), new TestValue(42), new TestValue(42)));
     }
+
+    @SuppressWarnings({"checkstyle:magicnumber"})
+    @Test
+    public final void errorSendingBroadcastIsReceivedInOnError() {
+        final TestSubscriber<Void> subscriber = new TestSubscriber<>();
+        final DatagramSocket sa = datagramSocketSupplier.get();
+        final DatagramSocket sb = datagramSocketSupplier.get();
+        final Broadcast broadcast1 = new UdpBroadcast(sa, InetAddress.getLoopbackAddress(), sb.getLocalPort());
+
+        sa.close();
+        broadcast1.send(new TestValue(42)).toBlocking().subscribe(subscriber);
+
+        subscriber.awaitTerminalEvent();
+        subscriber.assertError(SocketException.class);
+    }
 }
