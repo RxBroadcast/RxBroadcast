@@ -5,7 +5,7 @@ import com.esotericsoftware.kryo.io.FastInput;
 import com.esotericsoftware.kryo.io.FastOutput;
 import com.esotericsoftware.kryo.io.Output;
 
-public class KryoSerializer {
+public final class KryoSerializer {
     private final ThreadLocal<Kryo> threadLocalKryo = new ThreadLocal<Kryo>() {
         @Override
         protected Kryo initialValue() {
