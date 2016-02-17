@@ -44,10 +44,10 @@ public class UdpBroadcastTest {
     @Test
     public final void valuesOfTypeDoesReceiveBroadcastValue() {
         final TestSubscriber<Object> subscriber = new TestSubscriber<>();
-        final DatagramSocket sa = datagramSocketSupplier.get();
-        final DatagramSocket sb = datagramSocketSupplier.get();
-        final Broadcast broadcast1 = new UdpBroadcast(sa, InetAddress.getLoopbackAddress(), sb.getLocalPort());
-        final Broadcast broadcast2 = new UdpBroadcast(sb, InetAddress.getLoopbackAddress(), sa.getLocalPort());
+        final DatagramSocket s1 = datagramSocketSupplier.get();
+        final DatagramSocket s2 = datagramSocketSupplier.get();
+        final Broadcast broadcast1 = new UdpBroadcast(s1, InetAddress.getLoopbackAddress(), s2.getLocalPort());
+        final Broadcast broadcast2 = new UdpBroadcast(s2, InetAddress.getLoopbackAddress(), s1.getLocalPort());
 
         broadcast2.valuesOfType(TestValue.class).first().subscribe(subscriber);
         broadcast1.send(new TestValue(42)).toBlocking().subscribe();
@@ -63,10 +63,10 @@ public class UdpBroadcastTest {
     @Test
     public final void eachSubscriptionDoesSendTheBroadcast() {
         final TestSubscriber<Object> subscriber = new TestSubscriber<>();
-        final DatagramSocket sa = datagramSocketSupplier.get();
-        final DatagramSocket sb = datagramSocketSupplier.get();
-        final Broadcast broadcast1 = new UdpBroadcast(sa, InetAddress.getLoopbackAddress(), sb.getLocalPort());
-        final Broadcast broadcast2 = new UdpBroadcast(sb, InetAddress.getLoopbackAddress(), sa.getLocalPort());
+        final DatagramSocket s1 = datagramSocketSupplier.get();
+        final DatagramSocket s2 = datagramSocketSupplier.get();
+        final Broadcast broadcast1 = new UdpBroadcast(s1, InetAddress.getLoopbackAddress(), s2.getLocalPort());
+        final Broadcast broadcast2 = new UdpBroadcast(s2, InetAddress.getLoopbackAddress(), s1.getLocalPort());
 
         broadcast2.valuesOfType(TestValue.class).take(4).subscribe(subscriber);
 
@@ -88,11 +88,11 @@ public class UdpBroadcastTest {
     @Test
     public final void errorSendingBroadcastIsReceivedInOnError() {
         final TestSubscriber<Void> subscriber = new TestSubscriber<>();
-        final DatagramSocket sa = datagramSocketSupplier.get();
-        final DatagramSocket sb = datagramSocketSupplier.get();
-        final Broadcast broadcast1 = new UdpBroadcast(sa, InetAddress.getLoopbackAddress(), sb.getLocalPort());
+        final DatagramSocket s1 = datagramSocketSupplier.get();
+        final DatagramSocket s2 = datagramSocketSupplier.get();
+        final Broadcast broadcast1 = new UdpBroadcast(s1, InetAddress.getLoopbackAddress(), s2.getLocalPort());
 
-        sa.close();
+        s1.close();
         broadcast1.send(new TestValue(42)).toBlocking().subscribe(subscriber);
 
         subscriber.awaitTerminalEvent();
