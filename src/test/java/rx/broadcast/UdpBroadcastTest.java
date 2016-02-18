@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 public class UdpBroadcastTest {
@@ -52,7 +53,7 @@ public class UdpBroadcastTest {
         broadcast2.valuesOfType(TestValue.class).first().subscribe(subscriber);
         broadcast1.send(new TestValue(42)).toBlocking().subscribe();
 
-        subscriber.awaitTerminalEvent();
+        subscriber.awaitTerminalEvent(10, TimeUnit.SECONDS);
 
         subscriber.assertNoErrors();
         subscriber.assertValueCount(1);
@@ -76,7 +77,7 @@ public class UdpBroadcastTest {
         testValue.toBlocking().subscribe();
         testValue.toBlocking().subscribe();
 
-        subscriber.awaitTerminalEvent();
+        subscriber.awaitTerminalEvent(10, TimeUnit.SECONDS);
 
         subscriber.assertNoErrors();
         subscriber.assertValueCount(4);
@@ -95,7 +96,7 @@ public class UdpBroadcastTest {
         s1.close();
         broadcast1.send(new TestValue(42)).toBlocking().subscribe(subscriber);
 
-        subscriber.awaitTerminalEvent();
+        subscriber.awaitTerminalEvent(10, TimeUnit.SECONDS);
         subscriber.assertError(SocketException.class);
     }
 }
