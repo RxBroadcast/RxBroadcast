@@ -54,8 +54,7 @@ public final class UdpBroadcast implements Broadcast {
     @Override
     @SuppressWarnings("unchecked")
     public <T> Observable<T> valuesOfType(final Class<T> clazz) {
-        streams.computeIfAbsent(clazz, k -> values.filter(k::isInstance).cast(k).share());
-        return (Observable<T>) streams.get(clazz);
+        return (Observable<T>) streams.computeIfAbsent(clazz, k -> values.filter(k::isInstance).cast(k).share());
     }
 
     private void receive(final Subscriber<Object> subscriber) {
