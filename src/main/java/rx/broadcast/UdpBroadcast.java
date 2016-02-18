@@ -2,6 +2,8 @@ package rx.broadcast;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.broadcast.time.Clock;
+import rx.broadcast.time.LamportClock;
 import rx.schedulers.Schedulers;
 
 import java.io.IOException;
@@ -9,10 +11,14 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 public final class UdpBroadcast implements Broadcast {
     private static final int MAX_UDP_PACKET_SIZE = 65535;
+
+    private final Clock clock = new LamportClock();
 
     private final DatagramSocket socket;
 
@@ -26,9 +32,17 @@ public final class UdpBroadcast implements Broadcast {
 
     private final int destinationPort;
 
+    private final BroadcastOrder<Object> order;
+
     @SuppressWarnings("RedundantTypeArguments")
-    public UdpBroadcast(final DatagramSocket socket, final InetAddress destinationAddress, final int destinationPort) {
+    public UdpBroadcast(
+        final DatagramSocket socket,
+        final InetAddress destinationAddress,
+        final int destinationPort,
+        final BroadcastOrder<Object> order
+    ) {
         this.socket = socket;
+        this.order = order;
         this.values = Observable.<Object>create(this::receive).subscribeOn(Schedulers.io()).share();
         this.serializer = new KryoSerializer();
         this.streams = new ConcurrentHashMap<>();
@@ -38,17 +52,18 @@ public final class UdpBroadcast implements Broadcast {
 
     @Override
     public Observable<Void> send(final Object value) {
-        return Observable.defer(() -> {
-            try {
-                final byte[] data = serializer.serialize(value);
-                final DatagramPacket packet = new DatagramPacket(
-                    data, data.length, destinationAddress, destinationPort);
-                socket.send(packet);
-                return Observable.empty();
-            } catch (final Throwable e) {
-                return Observable.error(e);
-            }
-        });
+        return Observable.defer(() ->
+            clock.tick(time -> {
+                try {
+                    final byte[] data = serializer.serialize(new Timestamped<>(time, value));
+                    final DatagramPacket packet = new DatagramPacket(
+                        data, data.length, destinationAddress, destinationPort);
+                    socket.send(packet);
+                    return Observable.empty();
+                } catch (final Throwable e) {
+                    return Observable.error(e);
+                }
+            }));
     }
 
     @Override
@@ -57,7 +72,9 @@ public final class UdpBroadcast implements Broadcast {
         return (Observable<T>) streams.computeIfAbsent(clazz, k -> values.filter(k::isInstance).cast(k).share());
     }
 
+    @SuppressWarnings("unchecked")
     private void receive(final Subscriber<Object> subscriber) {
+        final Consumer<Object> consumer = subscriber::onNext;
         while (true) {
             if (subscriber.isUnsubscribed()) {
                 break;
@@ -72,8 +89,9 @@ public final class UdpBroadcast implements Broadcast {
                 break;
             }
 
+            final int sender = Objects.hash(packet.getAddress(), packet.getPort());
             final byte[] data = Arrays.copyOf(buffer, packet.getLength());
-            subscriber.onNext(serializer.deserialize(data));
+            order.receive(sender, consumer, (Timestamped<Object>) serializer.deserialize(data));
         }
     }
 }
