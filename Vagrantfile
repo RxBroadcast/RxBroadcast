@@ -1,5 +1,5 @@
 Vagrant.configure(2) do |config|
-    config.vm.box = "ubuntu/vivid64"
+    config.vm.box = "ubuntu/trusty64"
     config.vm.synced_folder ".", "/vagrant", disabled: true
     config.vm.synced_folder ".", "/home/vagrant/workspace"
     (1..4).each do |i|
