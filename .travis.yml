@@ -16,3 +16,9 @@ script:
     - gradle build
 notifications:
     email: false
+
+# Workaround for Travis CI issue #1532
+# See <https://github.com/travis-ci/travis-ci/issues/1532>
+branches:
+    except:
+        - /^\d/
