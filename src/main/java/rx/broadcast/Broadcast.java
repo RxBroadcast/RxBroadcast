@@ -3,7 +3,7 @@ package rx.broadcast;
 import rx.Observable;
 
 public interface Broadcast {
-    Observable<Void> send(final Object value);
+    Observable<Void> send(Object value);
 
-    <T> Observable<T> valuesOfType(final Class<T> clazz);
+    <T> Observable<T> valuesOfType(Class<T> clazz);
 }
