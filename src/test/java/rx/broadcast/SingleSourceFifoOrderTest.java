@@ -6,7 +6,7 @@ import rx.observers.TestSubscriber;
 import java.util.Arrays;
 
 public class SingleSourceFifoOrderTest {
-    @SuppressWarnings({"Checkstyle:MagicNumber"})
+    @SuppressWarnings({"checkstyle:magicnumber"})
     @Test
     public final void receiveMessagesInOrder() {
         final TestSubscriber<TestValue> consumer = new TestSubscriber<>();
