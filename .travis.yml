@@ -1,4 +1,10 @@
 sudo: false
+dist: trusty
+addons:
+    apt:
+        packages:
+            - oracle-java8-installer
+
 language: java
 jdk:
     - oraclejdk8
