@@ -24,6 +24,7 @@ publishing {
                     root.appendNode('name', project.name)
                     root.appendNode('description', 'A small distributed event library for the JVM')
                     root.appendNode('url', 'http://rxbroadcast.website')
+                    root.appendNode('packaging', 'jar')
 
                     def licenses = root.appendNode('licenses')
                     def license = licenses.appendNode('license')
