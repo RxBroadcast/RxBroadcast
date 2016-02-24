@@ -1,47 +1,24 @@
 RxBroadcast
 ===========
 
-RxBroadcast is a distributed event library for Java, built on top of [observable sequences](http://reactivex.io/intro.html) (via [RxJava](https://github.com/ReactiveX/RxJava)).
+RxBroadcast is a small distributed event library for Java and the JVM.
 
-API
----
-
-By example:
-
-```java
-class Bar {
-    public int value;
-
-    public Bar(final int value) {
-        this.value = value;
-    }
-}
-
-class Foo {
-    public int value;
-
-    public Foo(final int value) {
-        this.value = value;
-    }
-}
-
-class Main {
-    public static void main(String[] args) {
-        final Broadcast broadcast = new UdpBroadcast("192.168.0.255", 8000);
-        broadcast.valuesOfType(Foo.class).subscribe(System.out::println);
-
-        broadcast.send(new Foo(42));
-
-        broadcast.await();
-    }
-}
-```
+See [rxbroadcast.website](http://rxbroadcast.website) for more information.
 
 Quick start
 -----------
 
-For Gradle, add the following to your dependencies:
+Gradle dependency:
 
+```groovy
+compile 'rxbroadcast:rxbroadcast:1.0.0'
 ```
-compile 'com.whymarrh:rxbroadcast:1.0.0'
-```
+
+Project status
+--------------
+
+This library is still under development.
+
+Known issues:
+
+- Broadcast implementations are not fault-tolerant
