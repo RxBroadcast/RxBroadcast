@@ -1,5 +1,14 @@
+plugins {
+     id 'com.jfrog.bintray' version '1.6'
+}
+apply plugin: 'maven-publish'
 apply plugin: 'java'
 apply plugin: 'checkstyle'
+
+apply from: 'gradle/deploy.gradle'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
     jcenter()
