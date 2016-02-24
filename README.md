@@ -17,7 +17,7 @@ compile 'rxbroadcast:rxbroadcast:1.0.0'
 Project status
 --------------
 
-This library is still under development.
+This library is under development.
 
 Known issues:
 
