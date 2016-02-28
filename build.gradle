@@ -25,6 +25,7 @@ checkstyle {
 }
 
 test {
+    exclude 'rx/broadcast/integration/**'
     testLogging {
         exceptionFormat = 'full'
         showStandardStreams = true
