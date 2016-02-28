@@ -35,7 +35,7 @@ test {
 
 task testJar(type: Jar) {
     from sourceSets.test.output
-    from(configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }) {
+    from(configurations.testCompile.collect { it.isDirectory() ? it : zipTree(it) }) {
         exclude 'META-INF/**'
     }
 
