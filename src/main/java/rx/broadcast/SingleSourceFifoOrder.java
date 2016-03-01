@@ -48,11 +48,13 @@ public final class SingleSourceFifoOrder<T> implements BroadcastOrder<T> {
         final Iterator<Timestamped<T>> iterator = queue.iterator();
         while (iterator.hasNext()) {
             final Timestamped<T> tv = iterator.next();
-            if (tv.timestamp <= expectedTimestamp) {
-                consumer.accept(tv.value);
-                expectedTimestamp = tv.timestamp + 1;
-                iterator.remove();
+            if (tv.timestamp > expectedTimestamp) {
+                break;
             }
+
+            consumer.accept(tv.value);
+            expectedTimestamp = tv.timestamp + 1;
+            iterator.remove();
         }
     }
 }
