@@ -1,7 +1,7 @@
 package rx.broadcast.time;
 
-import java.util.function.Function;
+import java.util.function.LongFunction;
 
 public interface Clock {
-    <T> T tick(Function<Long, T> ticker);
+    <T> T tick(LongFunction<T> ticker);
 }

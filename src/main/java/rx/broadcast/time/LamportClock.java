@@ -2,7 +2,7 @@ package rx.broadcast.time;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Function;
+import java.util.function.LongFunction;
 
 public final class LamportClock implements Clock {
     private final Lock lock;
@@ -18,7 +18,7 @@ public final class LamportClock implements Clock {
     }
 
     @Override
-    public <T> T tick(final Function<Long, T> ticker) {
+    public <T> T tick(final LongFunction<T> ticker) {
         lock.lock();
         try {
             time = time + 1;
