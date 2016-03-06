@@ -2,9 +2,9 @@
 
 set -eo pipefail
 
-dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly DIR=$(cd "${BASH_SOURCE[0]%/*}" && pwd)
 
 container=$1
 ifindex=$(sudo nsenter --net="$(docker inspect --format='{{.NetworkSettings.SandboxKey}}' "$container")" ethtool -S eth0 | \
-    awk -f "$dir/nicstats.awk")
-ip link list | awk -v ifindex="$ifindex" -f "$dir/ip.awk"
+    awk -f "$DIR/nicstats.awk")
+ip link list | awk -v ifindex="$ifindex" -f "$DIR/ip.awk"
