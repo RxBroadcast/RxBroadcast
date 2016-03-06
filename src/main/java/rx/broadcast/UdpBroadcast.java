@@ -18,6 +18,8 @@ import java.util.function.Consumer;
 public final class UdpBroadcast implements Broadcast {
     private static final int MAX_UDP_PACKET_SIZE = 65535;
 
+    private static final int BYTES_LONG = 8;
+
     private final Clock clock = new LamportClock();
 
     private final DatagramSocket socket;
@@ -91,7 +93,7 @@ public final class UdpBroadcast implements Broadcast {
 
             final InetAddress address = packet.getAddress();
             final int port = packet.getPort();
-            final long sender = ByteBuffer.allocate(8).put(address.getAddress()).putInt(port).getLong(0);
+            final long sender = ByteBuffer.allocate(BYTES_LONG).put(address.getAddress()).putInt(port).getLong(0);
             final byte[] data = Arrays.copyOf(buffer, packet.getLength());
             order.receive(sender, consumer, (Timestamped<Object>) serializer.deserialize(data));
         }
