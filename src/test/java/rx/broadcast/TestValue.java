@@ -2,7 +2,7 @@ package rx.broadcast;
 
 import java.util.Objects;
 
-class TestValue {
+public class TestValue {
     public int value;
 
     public TestValue(final int value) {
@@ -15,7 +15,7 @@ class TestValue {
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public final boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -27,7 +27,7 @@ class TestValue {
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return Objects.hash(value);
     }
 }
