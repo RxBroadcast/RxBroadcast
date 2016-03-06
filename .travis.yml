@@ -1,9 +1,7 @@
-sudo: false
+sudo: required
 dist: trusty
-addons:
-    apt:
-        packages:
-            - oracle-java8-installer
+services:
+    - docker
 
 env:
     global:
@@ -18,6 +16,9 @@ before_install:
     - export PATH=$HOME/gradle-2.11/bin:$PATH && hash -r && gradle --version
 script:
     - gradle build
+    - gradle testJar
+    - docker build -t rxb .
+    - scripts/test
 deploy:
     provider: script
     script: scripts/deploy
