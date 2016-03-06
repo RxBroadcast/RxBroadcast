@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 public final class SingleSourceFifoOrder<T> implements BroadcastOrder<T> {
     public static final boolean DROP_LATE = true;
 
-    private final Map<Integer, SortedSet<Timestamped<T>>> pendingQueues;
+    private final Map<Long, SortedSet<Timestamped<T>>> pendingQueues;
 
     private long expectedTimestamp;
 
@@ -26,7 +26,7 @@ public final class SingleSourceFifoOrder<T> implements BroadcastOrder<T> {
     }
 
     @Override
-    public void receive(final int sender, final Consumer<T> consumer, final Timestamped<T> value) {
+    public void receive(final long sender, final Consumer<T> consumer, final Timestamped<T> value) {
         if (dropLateMessages) {
             if (Long.compareUnsigned(value.timestamp, expectedTimestamp) >= 0) {
                 consumer.accept(value.value);
