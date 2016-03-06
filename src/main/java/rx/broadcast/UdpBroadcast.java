@@ -10,8 +10,8 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
@@ -89,7 +89,9 @@ public final class UdpBroadcast implements Broadcast {
                 break;
             }
 
-            final int sender = Objects.hash(packet.getAddress(), packet.getPort());
+            final InetAddress address = packet.getAddress();
+            final int port = packet.getPort();
+            final long sender = ByteBuffer.allocate(8).put(address.getAddress()).putInt(port).getLong(0);
             final byte[] data = Arrays.copyOf(buffer, packet.getLength());
             order.receive(sender, consumer, (Timestamped<Object>) serializer.deserialize(data));
         }
