@@ -55,7 +55,7 @@ public final class UdpBroadcast implements Broadcast {
     @Override
     public Observable<Void> send(final Object value) {
         return Observable.defer(() ->
-            clock.tick(time -> {
+            clock.<Observable<Void>>tick(time -> {
                 try {
                     final byte[] data = serializer.serialize(new Timestamped<>(time, value));
                     final DatagramPacket packet = new DatagramPacket(
