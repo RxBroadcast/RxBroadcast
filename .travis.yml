@@ -20,7 +20,7 @@ script:
     - gradle build
 deploy:
     provider: script
-    script: gradle bintrayUpload
+    script: scripts/deploy
     on:
         tags: true
 notifications:
