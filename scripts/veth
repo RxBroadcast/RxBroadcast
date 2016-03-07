@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+readonly DIR=$(cd "${BASH_SOURCE[0]%/*}" && pwd)
+
+container=$1
+ifindex=$(( $(docker exec "$container" ip link list | awk -f "$DIR/eth0.awk") + 1 ))
+ip link list | awk -v ifindex="$ifindex" -f "$DIR/ip.awk"

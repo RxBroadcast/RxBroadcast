@@ -25,9 +25,21 @@ checkstyle {
 }
 
 test {
+    exclude 'rx/broadcast/integration/**'
     testLogging {
         exceptionFormat = 'full'
         showStandardStreams = true
         events 'passed', 'skipped', 'failed'
     }
+}
+
+task testJar(type: Jar) {
+    from sourceSets.test.output + sourceSets.main.output
+    from(configurations.testCompile.collect { it.isDirectory() ? it : zipTree(it) }) {
+        exclude 'META-INF/**'
+    }
+
+    classifier 'tests'
+    description 'Assembles a jar archive containing the test classes.'
+    group 'verification'
 }
