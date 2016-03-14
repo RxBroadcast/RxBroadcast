@@ -10,7 +10,7 @@ docker_run() {
 
 test_class() {
     local class=$1
-    local network_command=$2
+    local network_command=${2:-:}
 
     containers=()
     for _ in {1..5}
@@ -33,4 +33,4 @@ test_class() {
     fi
 }
 
-test_class rx.broadcast.integration.BasicOrderUdpBroadcastTest ':'
+test_class rx.broadcast.integration.BasicOrderUdpBroadcastTest
