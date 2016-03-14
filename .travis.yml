@@ -18,7 +18,7 @@ script:
     - gradle build
     - gradle testJar
     - docker build -t rxb .
-    - scripts/test
+    - scripts/test rx.broadcast.integration.BasicOrderUdpBroadcastTest
 deploy:
     provider: script
     script: scripts/deploy
