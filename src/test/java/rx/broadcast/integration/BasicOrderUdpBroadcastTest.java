@@ -27,7 +27,7 @@ public final class BasicOrderUdpBroadcastTest {
         final TestSubscriber<TestValue> subscriber = new TestSubscriber<>();
         final DatagramSocket socket = new DatagramSocket(port);
         final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
-        final Broadcast broadcast = new UdpBroadcast(socket, destination, port, new BasicOrder<>());
+        final Broadcast broadcast = new UdpBroadcast<>(socket, destination, port, new BasicOrder<>());
 
         broadcast.valuesOfType(TestValue.class).subscribe(subscriber);
 
@@ -40,7 +40,7 @@ public final class BasicOrderUdpBroadcastTest {
         final int port = Integer.valueOf(System.getProperty("port"));
         final DatagramSocket socket = new DatagramSocket(port);
         final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
-        final Broadcast broadcast = new UdpBroadcast(socket, destination, port, new BasicOrder<>());
+        final Broadcast broadcast = new UdpBroadcast<>(socket, destination, port, new BasicOrder<>());
 
         Observable.range(1, MESSAGE_COUNT).map(TestValue::new).flatMap(broadcast::send)
             .toBlocking()

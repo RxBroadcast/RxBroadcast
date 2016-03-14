@@ -2,9 +2,14 @@ package rx.broadcast;
 
 import java.util.function.Consumer;
 
-public final class BasicOrder<T> implements BroadcastOrder<T> {
+public final class BasicOrder<T> implements BroadcastOrder<T, T> {
     @Override
-    public void receive(final long sender, final Consumer<T> consumer, final Timestamped<T> message) {
-        consumer.accept(message.value);
+    public T prepare(final T value) {
+        return value;
+    }
+
+    @Override
+    public void receive(final long sender, final Consumer<T> consumer, final T message) {
+        consumer.accept(message);
     }
 }
