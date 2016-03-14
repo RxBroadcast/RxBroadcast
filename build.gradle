@@ -20,6 +20,14 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
+allprojects {
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << '-Xlint:unchecked' << '-Xdiags:verbose'
+        }
+    }
+}
+
 checkstyle {
     toolVersion = '6.15'
 }
