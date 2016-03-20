@@ -30,4 +30,9 @@ public class TestValue {
     public final int hashCode() {
         return Objects.hash(value);
     }
+
+    @Override
+    public final String toString() {
+        return String.format("TestValue{%d}", value);
+    }
 }
