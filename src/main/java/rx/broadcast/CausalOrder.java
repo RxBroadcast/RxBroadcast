@@ -2,9 +2,10 @@ package rx.broadcast;
 
 import rx.broadcast.time.LamportClock;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -52,11 +53,17 @@ public final class CausalOrder<T> implements BroadcastOrder<VectorTimestamped<T>
             deliver(sender, consumer, message);
 
             for (final Map.Entry<Long, List<VectorTimestamped<T>>> pendingEntry : pending.entrySet()) {
-                final long senderId = pendingEntry.getKey();
-                final List<VectorTimestamped<T>> pendingMessages = pendingEntry.getValue();
+                final long id = pendingEntry.getKey();
+                final Iterator<VectorTimestamped<T>> iterator = pendingEntry.getValue().iterator();
+                while (iterator.hasNext()) {
+                    final VectorTimestamped<T> timestamped = iterator.next();
+                    if (!shouldBeDelivered(id, timestamped)) {
+                        continue;
+                    }
 
-                pendingMessages.stream().filter(m -> shouldBeDelivered(senderId, m)).forEach(
-                    pendingMessage -> deliver(senderId, consumer, pendingMessage));
+                    deliver(id, consumer, timestamped);
+                    iterator.remove();
+                }
             }
         } else {
             queueMessage(sender, message);
@@ -77,7 +84,7 @@ public final class CausalOrder<T> implements BroadcastOrder<VectorTimestamped<T>
     private void queueMessage(final long sender, final VectorTimestamped<T> message) {
         pending.compute(sender, (id, queue) -> {
             if (queue == null) {
-                return new ArrayList<>(Collections.singletonList(message));
+                return new LinkedList<>(Collections.singletonList(message));
             } else {
                 queue.add(message);
                 return queue;
