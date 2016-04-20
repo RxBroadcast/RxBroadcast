@@ -1,7 +1,7 @@
 // groupId, artifactId, version
 group = 'rxbroadcast'
 archivesBaseName = 'rxbroadcast'
-version = '0.0.1'
+version = '0.0.2'
 
 task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
