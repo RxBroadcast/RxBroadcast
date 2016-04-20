@@ -1,5 +1,6 @@
 package rx.broadcast;
 
+import org.junit.Assert;
 import org.junit.Test;
 import rx.observers.TestSubscriber;
 
@@ -34,6 +35,7 @@ public class CausalOrderTest {
         causalOrder.receive(0, consumer::onNext, value2);
 
         consumer.assertReceivedOnNext(Arrays.asList(value0.value, value1.value, value2.value));
+        Assert.assertEquals(0, causalOrder.queueSize());
     }
 
     /**
@@ -61,5 +63,6 @@ public class CausalOrderTest {
         causalOrder.receive(2, consumer::onNext, value0);
 
         consumer.assertReceivedOnNext(Arrays.asList(value0.value, value1.value));
+        Assert.assertEquals(0, causalOrder.queueSize());
     }
 }

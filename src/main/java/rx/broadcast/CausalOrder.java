@@ -63,6 +63,10 @@ public final class CausalOrder<T> implements BroadcastOrder<VectorTimestamped<T>
         }
     }
 
+    int queueSize() {
+        return pending.values().stream().mapToInt(List::size).sum();
+    }
+
     private void deliver(final long sender, final Consumer<T> consumer, final VectorTimestamped<T> message) {
         consumer.accept(message.value);
         vectorClock.get(sender).tick();
