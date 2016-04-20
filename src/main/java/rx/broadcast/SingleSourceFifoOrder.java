@@ -1,5 +1,8 @@
 package rx.broadcast;
 
+import rx.broadcast.time.Clock;
+import rx.broadcast.time.LamportClock;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -7,8 +10,10 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Consumer;
 
-public final class SingleSourceFifoOrder<T> implements BroadcastOrder<T> {
+public final class SingleSourceFifoOrder<T> implements BroadcastOrder<Timestamped<T>, T> {
     public static final boolean DROP_LATE = true;
+
+    private final Clock clock = new LamportClock();
 
     private final Map<Long, SortedSet<Timestamped<T>>> pendingQueues;
 
@@ -23,6 +28,11 @@ public final class SingleSourceFifoOrder<T> implements BroadcastOrder<T> {
     public SingleSourceFifoOrder(final boolean dropLateMessages) {
         this.pendingQueues = new HashMap<>();
         this.dropLateMessages = dropLateMessages;
+    }
+
+    @Override
+    public Timestamped<T> prepare(final T value) {
+        return clock.tick(time -> new Timestamped<>(time, value));
     }
 
     @Override
