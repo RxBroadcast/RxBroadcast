@@ -31,7 +31,7 @@ public final class SingleSourceFifoOrderUdpBroadcastTest {
         final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
         final Broadcast broadcast = new UdpBroadcast<>(socket, destination, port, new SingleSourceFifoOrder<>());
 
-        broadcast.valuesOfType(TestValue.class).subscribe(subscriber);
+        broadcast.valuesOfType(TestValue.class).take(MESSAGE_COUNT).subscribe(subscriber);
 
         subscriber.awaitTerminalEventAndUnsubscribeOnTimeout(TIMEOUT, TIMEOUT_UNIT);
         subscriber.assertNoErrors();
