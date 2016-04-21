@@ -1,6 +1,6 @@
 package rx.broadcast;
 
-class VectorTimestampEntry {
+final class VectorTimestampEntry {
     final long id;
 
     final long timestamp;
