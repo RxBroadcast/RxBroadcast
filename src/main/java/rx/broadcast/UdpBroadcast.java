@@ -32,7 +32,6 @@ public final class UdpBroadcast<A> implements Broadcast {
 
     private final BroadcastOrder<A, Object> order;
 
-    @SuppressWarnings("RedundantTypeArguments")
     public UdpBroadcast(
         final DatagramSocket socket,
         final InetAddress destinationAddress,
