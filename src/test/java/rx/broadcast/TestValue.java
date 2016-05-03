@@ -3,6 +3,7 @@ package rx.broadcast;
 import java.util.Objects;
 
 public class TestValue {
+    @SuppressWarnings("WeakerAccess")
     public int value;
 
     public TestValue(final int value) {

@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+@SuppressWarnings("WeakerAccess")
 public final class CausalOrder<T> implements BroadcastOrder<VectorTimestamped<T>, T> {
     private final Map<Long, LamportClock> vectorClock = new HashMap<>();
 

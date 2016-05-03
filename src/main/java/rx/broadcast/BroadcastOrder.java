@@ -11,6 +11,7 @@ import java.util.function.Consumer;
  * @param <M> the type of the message in transit
  * @param <T> the type of the message as delivered
  */
+@SuppressWarnings("WeakerAccess")
 public interface BroadcastOrder<M, T> {
     /**
      * Prepare the message for sending.

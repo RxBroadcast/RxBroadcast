@@ -1,6 +1,7 @@
 package rx.broadcast;
 
 final class Timestamped<T> implements Comparable<Timestamped<T>> {
+    @SuppressWarnings("WeakerAccess")
     public long timestamp;
 
     public T value;
@@ -10,7 +11,7 @@ final class Timestamped<T> implements Comparable<Timestamped<T>> {
 
     }
 
-    public Timestamped(final long timestamp, final T value) {
+    Timestamped(final long timestamp, final T value) {
         this.timestamp = timestamp;
         this.value = value;
     }
