@@ -10,11 +10,7 @@ public final class LamportClock implements Clock {
     private long time = -1L;
 
     public LamportClock() {
-        this(new ReentrantLock());
-    }
-
-    public LamportClock(final Lock lock) {
-        this.lock = lock;
+        this.lock = new ReentrantLock();
     }
 
     public long time() {
