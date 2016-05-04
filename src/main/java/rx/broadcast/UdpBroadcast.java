@@ -89,7 +89,11 @@ public final class UdpBroadcast<A> implements Broadcast {
             final int port = packet.getPort();
             final long sender = ByteBuffer.allocate(BYTES_LONG).put(address.getAddress()).putInt(port).getLong(0);
             final byte[] data = Arrays.copyOf(buffer, packet.getLength());
-            order.receive(sender, consumer, (A) serializer.deserialize(data));
+            try {
+                order.receive(sender, consumer, (A) serializer.deserialize(data));
+            } catch (final RuntimeException e) {
+                continue;
+            }
         }
     }
 }
