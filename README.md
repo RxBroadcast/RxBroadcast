@@ -22,3 +22,5 @@ This library is under development.
 Known issues:
 
 - Broadcast implementations are not fault-tolerant
+- Broadcast ordering uses unbounded pending queues
+- Causal order queues duplicate messages in perpetuity
