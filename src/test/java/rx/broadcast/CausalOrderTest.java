@@ -14,7 +14,7 @@ public class CausalOrderTest {
      * @param clocks the times for the timestamp
      * @return a new {@link VectorTimestamped<TestValue>}
      */
-    private static VectorTimestamped<TestValue> makeTimestampedValue(
+    private static VectorTimestamped<TestValue> timestampedValue(
         final int value,
         final long[] identifiers,
         final long[] clocks
@@ -24,9 +24,9 @@ public class CausalOrderTest {
 
     @Test
     public final void receiveMessagesFromSingleSourceInOrder() {
-        final VectorTimestamped<TestValue> value0 = makeTimestampedValue(42, new long[]{0}, new long[]{0});
-        final VectorTimestamped<TestValue> value1 = makeTimestampedValue(43, new long[]{0}, new long[]{1});
-        final VectorTimestamped<TestValue> value2 = makeTimestampedValue(44, new long[]{0}, new long[]{2});
+        final VectorTimestamped<TestValue> value0 = timestampedValue(42, new long[]{0}, new long[]{0});
+        final VectorTimestamped<TestValue> value1 = timestampedValue(43, new long[]{0}, new long[]{1});
+        final VectorTimestamped<TestValue> value2 = timestampedValue(44, new long[]{0}, new long[]{2});
         final CausalOrder<TestValue> causalOrder = new CausalOrder<>();
         final TestSubscriber<TestValue> consumer = new TestSubscriber<>();
 
@@ -54,8 +54,8 @@ public class CausalOrderTest {
      */
     @Test
     public final void receiveMessagesInCausalOrder() {
-        final VectorTimestamped<TestValue> value0 = makeTimestampedValue(42, new long[]{2}, new long[]{0});
-        final VectorTimestamped<TestValue> value1 = makeTimestampedValue(43, new long[]{1, 2}, new long[]{0, 0});
+        final VectorTimestamped<TestValue> value0 = timestampedValue(42, new long[]{2}, new long[]{0});
+        final VectorTimestamped<TestValue> value1 = timestampedValue(43, new long[]{1, 2}, new long[]{0, 0});
         final CausalOrder<TestValue> causalOrder = new CausalOrder<>();
         final TestSubscriber<TestValue> consumer = new TestSubscriber<>();
 
