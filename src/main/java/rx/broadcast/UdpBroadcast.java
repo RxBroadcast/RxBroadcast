@@ -68,7 +68,7 @@ public final class UdpBroadcast<A> implements Broadcast {
         return (Observable<T>) streams.computeIfAbsent(clazz, k -> values.filter(k::isInstance).cast(k).share());
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "UnnecessaryContinue"})
     private void receive(final Subscriber<Object> subscriber) {
         final Consumer<Object> consumer = subscriber::onNext;
         while (true) {
