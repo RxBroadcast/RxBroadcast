@@ -69,4 +69,22 @@ public class CausalOrderTest {
         consumer.assertReceivedOnNext(Arrays.asList(value0.value, value1.value));
         Assert.assertEquals(0, causalOrder.queueSize());
     }
+
+    /**
+     * See {@see CausalOrderTest#receiveMessagesInCausalOrder()} for drawing.
+     */
+    @Test
+    public final void receiveDuplicateMessagesInCausalOrder() {
+        final VectorTimestamped<TestValue> value0 = timestampedValue(42, new long[]{2}, new long[]{0});
+        final VectorTimestamped<TestValue> value1 = timestampedValue(43, new long[]{1, 2}, new long[]{0, 0});
+        final CausalOrder<TestValue> causalOrder = new CausalOrder<>();
+        final TestSubscriber<TestValue> consumer = new TestSubscriber<>();
+
+        causalOrder.receive(1, consumer::onNext, value1);
+        causalOrder.receive(1, consumer::onNext, value1);
+        causalOrder.receive(2, consumer::onNext, value0);
+        causalOrder.receive(2, consumer::onNext, value0);
+
+        consumer.assertReceivedOnNext(Arrays.asList(value0.value, value1.value));
+    }
 }
