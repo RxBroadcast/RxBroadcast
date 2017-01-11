@@ -48,6 +48,10 @@ sourceSets {
     }
 }
 
+javadoc {
+    options.optionFiles << file('config/javadoc.opts')
+}
+
 test {
     exclude 'rx/broadcast/integration/**'
     testLogging {
