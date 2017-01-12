@@ -8,7 +8,7 @@ public final class InMemoryBroadcast implements Broadcast {
     private final Subject<Object, Object> values;
 
     public InMemoryBroadcast() {
-        values = PublishSubject.create();
+        values = PublishSubject.create().toSerialized();
     }
 
     @Override
