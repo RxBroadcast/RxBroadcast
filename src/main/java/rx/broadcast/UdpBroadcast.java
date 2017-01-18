@@ -65,7 +65,7 @@ public final class UdpBroadcast<A> implements Broadcast {
     @Override
     @SuppressWarnings("unchecked")
     public <T> Observable<T> valuesOfType(final Class<T> clazz) {
-        return (Observable<T>) streams.computeIfAbsent(clazz, k -> values.filter(k::isInstance).cast(k).share());
+        return (Observable<T>) streams.computeIfAbsent(clazz, k -> values.ofType(k).share());
     }
 
     @SuppressWarnings({"unchecked", "UnnecessaryContinue"})

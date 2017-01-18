@@ -22,6 +22,6 @@ public final class InMemoryBroadcast implements Broadcast {
     @Override
     @SuppressWarnings("unchecked")
     public <T> Observable<T> valuesOfType(final Class<T> clazz) {
-        return values.filter(clazz::isInstance).cast(clazz);
+        return values.ofType(clazz);
     }
 }
