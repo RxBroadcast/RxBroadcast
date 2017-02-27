@@ -4,6 +4,7 @@ import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
+@SuppressWarnings("WeakerAccess")
 public final class InMemoryBroadcast implements Broadcast {
     private final Subject<Object, Object> values;
 
