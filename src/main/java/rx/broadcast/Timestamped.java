@@ -20,4 +20,9 @@ final class Timestamped<T> implements Comparable<Timestamped<T>> {
     public int compareTo(final Timestamped<T> other) {
         return Long.compareUnsigned(timestamp, other.timestamp);
     }
+
+    @Override
+    public String toString() {
+        return String.format("Timestamped{timestamp=%d, value=%s}", timestamp, value);
+    }
 }
