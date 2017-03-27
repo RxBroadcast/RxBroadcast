@@ -8,6 +8,11 @@ final class VectorTimestamp {
 
     private long[] timestamps;
 
+    @SuppressWarnings("unused")
+    VectorTimestamp() {
+
+    }
+
     VectorTimestamp(final long[] ids, final long[] timestamps) {
         if (ids.length != timestamps.length) {
             throw new IllegalArgumentException("IDs and timestamps must contain the same number of elements");
