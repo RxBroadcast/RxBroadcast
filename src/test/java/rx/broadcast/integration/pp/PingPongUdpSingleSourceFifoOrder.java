@@ -13,6 +13,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
+@SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:LineLength", "checkstyle:AvoidInlineConditionals"})
 public class PingPongUdpSingleSourceFifoOrder {
     private static final int MESSAGE_COUNT = 100;
 
@@ -25,11 +26,17 @@ public class PingPongUdpSingleSourceFifoOrder {
      */
     @Test
     public final void recv() throws SocketException, UnknownHostException {
-        final int port = Integer.valueOf(System.getProperty("port"));
+        final int port = System.getProperty("port") != null
+            ? Integer.valueOf(System.getProperty("port"))
+            : 54321;
+        final int destinationPort = System.getProperty("destinationPort") != null
+            ? Integer.valueOf(System.getProperty("destinationPort"))
+            : 12345;
         final DatagramSocket socket = new DatagramSocket(port);
-        final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
-        final Broadcast broadcast = new UdpBroadcast<>(socket, destination, port, new SingleSourceFifoOrder<>());
-
+        final InetAddress destination = System.getProperty("destination") != null
+            ? InetAddress.getByName(System.getProperty("destination"))
+            : InetAddress.getByName("localhost");
+        final Broadcast broadcast = new UdpBroadcast<>(socket, destination, destinationPort, new SingleSourceFifoOrder<>());
         final TestSubscriber<Ping> subscriber = new TestSubscriber<>();
 
         broadcast.valuesOfType(Ping.class)
@@ -57,10 +64,17 @@ public class PingPongUdpSingleSourceFifoOrder {
      * @throws UnknownHostException if no IP address for the host machine could be found.
      */
     public static void main(final String[] args) throws InterruptedException, SocketException, UnknownHostException {
-        final int port = Integer.valueOf(System.getProperty("port"));
+        final int port = System.getProperty("port") != null
+            ? Integer.valueOf(System.getProperty("port"))
+            : 54321;
+        final int destinationPort = System.getProperty("destinationPort") != null
+            ? Integer.valueOf(System.getProperty("destinationPort"))
+            : 12345;
         final DatagramSocket socket = new DatagramSocket(port);
-        final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
-        final Broadcast broadcast = new UdpBroadcast<>(socket, destination, port, new SingleSourceFifoOrder<>());
+        final InetAddress destination = System.getProperty("destination") != null
+            ? InetAddress.getByName(System.getProperty("destination"))
+            : InetAddress.getByName("localhost");
+        final Broadcast broadcast = new UdpBroadcast<>(socket, destination, destinationPort, new SingleSourceFifoOrder<>());
 
         Observable.range(1, MESSAGE_COUNT)
             .map(Ping::new)
