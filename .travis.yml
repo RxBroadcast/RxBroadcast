@@ -19,6 +19,7 @@ script:
     - gradle build
     - gradle testJar
     - docker build -t rxb .
+    - scripts/test rx.broadcast.integration.SingleSourceFifoOrderUdpBroadcastTest 'sudo tc qdisc add dev "${DOCKER_IFACE%%@if+([0-9])}" root netem delay 100ms 75ms'
     - scripts/test rx.broadcast.integration.BasicOrderUdpBroadcastTest
 deploy:
     provider: script

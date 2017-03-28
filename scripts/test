@@ -15,7 +15,7 @@ containers=()
 for _ in {1..5}
 do
     container=$(docker_run 'org.junit.runner.JUnitCore' "$class")
-    DOCKER_IFACE=$("$DIR/veth" "$container") bash -xc "$network_command"
+    DOCKER_IFACE=$("$DIR/veth" "$container") bash -xc "shopt -s extglob; $network_command"
     containers+=($container)
 done
 

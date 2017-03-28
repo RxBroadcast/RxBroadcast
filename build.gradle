@@ -32,22 +32,6 @@ checkstyle {
     toolVersion = '6.15'
 }
 
-sourceSets {
-    main {
-        java {
-            exclude 'rx/broadcast/CausalOrder**'
-            exclude 'rx/broadcast/SingleSourceFifoOrder**'
-        }
-    }
-    test {
-        java {
-            exclude 'rx/broadcast/CausalOrder**'
-            exclude 'rx/broadcast/SingleSourceFifoOrder**'
-            exclude 'rx/broadcast/integration/SingleSourceFifoOrder**'
-        }
-    }
-}
-
 javadoc {
     options.optionFiles << file('config/javadoc.opts')
 }

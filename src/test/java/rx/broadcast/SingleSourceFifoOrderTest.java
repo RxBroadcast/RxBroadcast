@@ -5,6 +5,7 @@ import rx.observers.TestSubscriber;
 
 import java.util.Arrays;
 
+@SuppressWarnings("Duplicates")
 public class SingleSourceFifoOrderTest {
     @SuppressWarnings({"checkstyle:magicnumber"})
     @Test
