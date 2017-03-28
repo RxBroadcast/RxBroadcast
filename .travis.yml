@@ -23,6 +23,7 @@ script:
     - scripts/test rx.broadcast.integration.BasicOrderUdpBroadcastTest
     - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpBasicOrder
     - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpSingleSourceFifoOrder
+    - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpCausalOrder
 deploy:
     provider: script
     script: scripts/deploy
