@@ -23,7 +23,7 @@ public final class SingleSourceFifoOrder<T> implements BroadcastOrder<Timestampe
     private final boolean dropLateMessages;
 
     public SingleSourceFifoOrder() {
-        this(false);
+        this(!DROP_LATE);
     }
 
     @SuppressWarnings("WeakerAccess")
