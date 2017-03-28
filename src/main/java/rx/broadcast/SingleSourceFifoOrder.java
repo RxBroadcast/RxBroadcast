@@ -18,7 +18,7 @@ public final class SingleSourceFifoOrder<T> implements BroadcastOrder<Timestampe
 
     private final Map<Long, SortedSet<Timestamped<T>>> pendingQueues;
 
-    private long expectedTimestamp;
+    private final Map<Long, Long> expectedTimestamps;
 
     private final boolean dropLateMessages;
 
@@ -29,6 +29,7 @@ public final class SingleSourceFifoOrder<T> implements BroadcastOrder<Timestampe
     @SuppressWarnings("WeakerAccess")
     public SingleSourceFifoOrder(final boolean dropLateMessages) {
         this.pendingQueues = new HashMap<>();
+        this.expectedTimestamps = new HashMap<>();
         this.dropLateMessages = dropLateMessages;
     }
 
@@ -39,10 +40,12 @@ public final class SingleSourceFifoOrder<T> implements BroadcastOrder<Timestampe
 
     @Override
     public void receive(final long sender, final Consumer<T> consumer, final Timestamped<T> value) {
+        expectedTimestamps.computeIfAbsent(sender, k -> 0L);
+
         if (dropLateMessages) {
-            if (Long.compareUnsigned(value.timestamp, expectedTimestamp) >= 0) {
+            if (Long.compareUnsigned(value.timestamp, expectedTimestamps.get(sender)) >= 0) {
                 consumer.accept(value.value);
-                expectedTimestamp = value.timestamp + 1;
+                expectedTimestamps.compute(sender, (k, v) -> value.timestamp + 1);
             }
 
             return;
@@ -50,9 +53,9 @@ public final class SingleSourceFifoOrder<T> implements BroadcastOrder<Timestampe
 
         final SortedSet<Timestamped<T>> queue = pendingQueues.computeIfAbsent(sender, k -> new TreeSet<>());
 
-        if (value.timestamp == expectedTimestamp) {
+        if (value.timestamp == expectedTimestamps.get(sender)) {
             consumer.accept(value.value);
-            expectedTimestamp = value.timestamp + 1;
+            expectedTimestamps.compute(sender, (k, v) -> value.timestamp + 1);
         } else {
             queue.add(value);
         }
@@ -60,16 +63,16 @@ public final class SingleSourceFifoOrder<T> implements BroadcastOrder<Timestampe
         final Iterator<Timestamped<T>> iterator = queue.iterator();
         while (iterator.hasNext()) {
             final Timestamped<T> tv = iterator.next();
-            if (tv.timestamp < expectedTimestamp) {
+            if (tv.timestamp < expectedTimestamps.get(sender)) {
                 iterator.remove();
                 continue;
             }
-            if (tv.timestamp > expectedTimestamp) {
+            if (tv.timestamp > expectedTimestamps.get(sender)) {
                 break;
             }
 
             consumer.accept(tv.value);
-            expectedTimestamp = tv.timestamp + 1;
+            expectedTimestamps.compute(sender, (k, v) -> tv.timestamp + 1);
             iterator.remove();
         }
     }
