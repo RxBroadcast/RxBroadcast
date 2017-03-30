@@ -11,6 +11,7 @@ env:
 language: java
 jdk:
     - oraclejdk8
+    - openjdk8
 before_install:
     - ( cd $HOME && curl -LO "https://services.gradle.org/distributions/gradle-$GRADLE_VERSION-bin.zip" )
     - ( cd $HOME && unzip -q gradle-$GRADLE_VERSION-bin.zip && rm gradle-$GRADLE_VERSION-bin.zip )
@@ -28,6 +29,7 @@ deploy:
     provider: script
     script: scripts/deploy
     on:
+        jdk: openjdk8
         tags: true
 notifications:
     email: false
