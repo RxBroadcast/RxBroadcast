@@ -23,7 +23,6 @@ public final class CausalOrder<T> implements BroadcastOrder<VectorTimestamped<T>
         final long[] ids = new long[size];
         final long[] timestamps = new long[size];
 
-        // How can I clean this up???
         int index = 0;
         for (final Map.Entry<Long, LamportClock> entry : vectorClock.entrySet()) {
             ids[index] = entry.getKey();
