@@ -1,13 +1,13 @@
 package rx.broadcast;
 
+import org.junit.Assert;
 import org.junit.Test;
 import rx.observers.TestSubscriber;
 
 import java.util.Arrays;
 
-@SuppressWarnings("Duplicates")
+@SuppressWarnings({"Duplicates", "checkstyle:MagicNumber"})
 public class SingleSourceFifoOrderTest {
-    @SuppressWarnings({"checkstyle:magicnumber"})
     @Test
     public final void receiveMessagesInOrder() {
         final TestSubscriber<TestValue> consumer = new TestSubscriber<>();
@@ -217,5 +217,14 @@ public class SingleSourceFifoOrderTest {
         ssf.receive(sender2, consumer::onNext, value0);
 
         consumer.assertReceivedOnNext(Arrays.asList(value0.value, value2.value, value0.value, value2.value));
+    }
+
+    @Test
+    public final void prepareValueShouldReturnTimestampedValueWithIncreasingTimestamps() {
+        final SingleSourceFifoOrder<TestValue> ssf = new SingleSourceFifoOrder<>();
+
+        Assert.assertEquals(new Timestamped<>(0, new TestValue(42)), ssf.prepare(new TestValue(42)));
+        Assert.assertEquals(new Timestamped<>(1, new TestValue(42)), ssf.prepare(new TestValue(42)));
+        Assert.assertEquals(new Timestamped<>(2, new TestValue(42)), ssf.prepare(new TestValue(42)));
     }
 }

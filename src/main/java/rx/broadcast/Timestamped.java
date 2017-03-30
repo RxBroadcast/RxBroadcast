@@ -1,5 +1,7 @@
 package rx.broadcast;
 
+import java.util.Objects;
+
 final class Timestamped<T> implements Comparable<Timestamped<T>> {
     @SuppressWarnings("WeakerAccess")
     public long timestamp;
@@ -24,5 +26,23 @@ final class Timestamped<T> implements Comparable<Timestamped<T>> {
     @Override
     public String toString() {
         return String.format("Timestamped{timestamp=%d, value=%s}", timestamp, value);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        final Timestamped<?> timestamped = (Timestamped<?>) o;
+        return timestamp == timestamped.timestamp && Objects.equals(value, timestamped.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(timestamp, value);
     }
 }
