@@ -23,7 +23,7 @@ public final class UdpBroadcast<A> implements Broadcast {
 
     private final Observable<Object> values;
 
-    private final ConcurrentHashMap<Class, Observable> streams;
+    private final ConcurrentHashMap<Class<?>, Observable<?>> streams;
 
     private final KryoSerializer serializer;
 
