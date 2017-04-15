@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 public final class UdpBroadcast<A> implements Broadcast {
@@ -22,7 +23,7 @@ public final class UdpBroadcast<A> implements Broadcast {
 
     private final Observable<Object> values;
 
-    private final ConcurrentHashMap<Class, Observable> streams;
+    private final ConcurrentHashMap<Class<?>, Observable<?>> streams;
 
     private final KryoSerializer serializer;
 
@@ -40,7 +41,9 @@ public final class UdpBroadcast<A> implements Broadcast {
     ) {
         this.socket = socket;
         this.order = order;
-        this.values = Observable.<Object>create(this::receive).subscribeOn(Schedulers.io()).share();
+        this.values = Observable.<Object>unsafeCreate(this::receive)
+            .subscribeOn(Schedulers.from(Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory())))
+            .share();
         this.serializer = new KryoSerializer();
         this.streams = new ConcurrentHashMap<>();
         this.destinationAddress = destinationAddress;
@@ -68,7 +71,7 @@ public final class UdpBroadcast<A> implements Broadcast {
         return (Observable<T>) streams.computeIfAbsent(clazz, k -> values.ofType(k).share());
     }
 
-    @SuppressWarnings({"unchecked", "UnnecessaryContinue"})
+    @SuppressWarnings({"unchecked"})
     private void receive(final Subscriber<Object> subscriber) {
         final Consumer<Object> consumer = subscriber::onNext;
         while (true) {
@@ -92,7 +95,7 @@ public final class UdpBroadcast<A> implements Broadcast {
             try {
                 order.receive(sender, consumer, (A) serializer.deserialize(data));
             } catch (final RuntimeException e) {
-                continue;
+                /* This is bad and I feel bad about it. See issue #47 for plans to fix this. */
             }
         }
     }
