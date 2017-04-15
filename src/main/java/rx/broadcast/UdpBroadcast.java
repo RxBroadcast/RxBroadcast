@@ -71,7 +71,7 @@ public final class UdpBroadcast<A> implements Broadcast {
         return (Observable<T>) streams.computeIfAbsent(clazz, k -> values.ofType(k).share());
     }
 
-    @SuppressWarnings({"unchecked", "UnnecessaryContinue"})
+    @SuppressWarnings({"unchecked"})
     private void receive(final Subscriber<Object> subscriber) {
         final Consumer<Object> consumer = subscriber::onNext;
         while (true) {
@@ -95,7 +95,7 @@ public final class UdpBroadcast<A> implements Broadcast {
             try {
                 order.receive(sender, consumer, (A) serializer.deserialize(data));
             } catch (final RuntimeException e) {
-                continue;
+                /* This is bad and I feel bad about it. See issue #47 for plans to fix this. */
             }
         }
     }
