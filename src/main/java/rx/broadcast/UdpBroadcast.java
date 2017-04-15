@@ -23,7 +23,7 @@ public final class UdpBroadcast<A> implements Broadcast {
 
     private final Observable<Object> values;
 
-    private final ConcurrentHashMap<Class, Observable> streams;
+    private final ConcurrentHashMap<Class<?>, Observable<?>> streams;
 
     private final KryoSerializer serializer;
 
@@ -41,7 +41,7 @@ public final class UdpBroadcast<A> implements Broadcast {
     ) {
         this.socket = socket;
         this.order = order;
-        this.values = Observable.<Object>create(this::receive)
+        this.values = Observable.<Object>unsafeCreate(this::receive)
             .subscribeOn(Schedulers.from(Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory())))
             .share();
         this.serializer = new KryoSerializer();
