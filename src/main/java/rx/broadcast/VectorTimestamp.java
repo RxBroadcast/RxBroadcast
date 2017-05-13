@@ -25,5 +25,4 @@ final class VectorTimestamp {
     Stream<VectorTimestampEntry> stream() {
         return IntStream.range(0, ids.length).mapToObj(idx -> new VectorTimestampEntry(ids[idx], timestamps[idx]));
     }
-
 }
