@@ -1,6 +1,8 @@
 RxBroadcast
 ===========
 
+[![Download from jcenter](https://api.bintray.com/packages/whymarrh/maven/RxBroadcast/images/download.svg)](https://bintray.com/whymarrh/maven/RxBroadcast/_latestVersion)
+
 RxBroadcast is a small distributed event library for Java and the JVM.
 
 See [rxbroadcast.website](http://rxbroadcast.website) for more information.
