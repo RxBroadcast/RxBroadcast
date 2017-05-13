@@ -25,7 +25,7 @@ public final class UdpBroadcast<A> implements Broadcast {
 
     private final ConcurrentHashMap<Class<?>, Observable<?>> streams;
 
-    private final KryoSerializer serializer;
+    private final Serializer<A> serializer;
 
     private final InetAddress destinationAddress;
 
@@ -54,7 +54,7 @@ public final class UdpBroadcast<A> implements Broadcast {
     public Observable<Void> send(final Object value) {
         return Observable.defer(() -> {
             try {
-                final byte[] data = serializer.serialize(order.prepare(value));
+                final byte[] data = serializer.encode(order.prepare(value));
                 final DatagramPacket packet = new DatagramPacket(
                     data, data.length, destinationAddress, destinationPort);
                 socket.send(packet);
@@ -93,7 +93,7 @@ public final class UdpBroadcast<A> implements Broadcast {
             final long sender = ByteBuffer.allocate(BYTES_LONG).put(address.getAddress()).putInt(port).getLong(0);
             final byte[] data = Arrays.copyOf(buffer, packet.getLength());
             try {
-                order.receive(sender, consumer, (A) serializer.deserialize(data));
+                order.receive(sender, consumer, (A) serializer.decode(data));
             } catch (final RuntimeException e) {
                 /* This is bad and I feel bad about it. See issue #47 for plans to fix this. */
             }
