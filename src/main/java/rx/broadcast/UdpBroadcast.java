@@ -37,17 +37,28 @@ public final class UdpBroadcast<A> implements Broadcast {
         final DatagramSocket socket,
         final InetAddress destinationAddress,
         final int destinationPort,
-        final BroadcastOrder<A, Object> order
+        final BroadcastOrder<A, Object> order,
+        final Serializer<A> serializer
     ) {
         this.socket = socket;
         this.order = order;
         this.values = Observable.<Object>unsafeCreate(this::receive)
             .subscribeOn(Schedulers.from(Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory())))
             .share();
-        this.serializer = new KryoSerializer();
+        this.serializer = serializer;
         this.streams = new ConcurrentHashMap<>();
         this.destinationAddress = destinationAddress;
         this.destinationPort = destinationPort;
+    }
+
+    @SuppressWarnings("unchecked")
+    public UdpBroadcast(
+        final DatagramSocket socket,
+        final InetAddress destinationAddress,
+        final int destinationPort,
+        final BroadcastOrder<A, Object> order
+    ) {
+        this(socket, destinationAddress, destinationPort, order, (Serializer<A>) new KryoSerializer());
     }
 
     @Override
