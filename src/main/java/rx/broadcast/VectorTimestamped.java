@@ -11,7 +11,7 @@ final class VectorTimestamped<T> {
     public T value;
 
     @SuppressWarnings("unused")
-    public VectorTimestamped() {
+    VectorTimestamped() {
 
     }
 

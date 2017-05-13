@@ -9,7 +9,7 @@ final class Timestamped<T> implements Comparable<Timestamped<T>> {
     public T value;
 
     @SuppressWarnings("unused")
-    public Timestamped() {
+    Timestamped() {
 
     }
 
