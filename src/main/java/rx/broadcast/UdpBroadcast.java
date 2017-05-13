@@ -83,7 +83,6 @@ public final class UdpBroadcast<A> implements Broadcast {
         return (Observable<T>) streams.computeIfAbsent(clazz, k -> values.ofType(k).share());
     }
 
-    @SuppressWarnings({"unchecked"})
     private void receive(final Subscriber<Object> subscriber) {
         final Consumer<Object> consumer = subscriber::onNext;
         while (true) {
@@ -105,7 +104,7 @@ public final class UdpBroadcast<A> implements Broadcast {
             final long sender = ByteBuffer.allocate(BYTES_LONG).put(address.getAddress()).putInt(port).getLong(0);
             final byte[] data = Arrays.copyOf(buffer, packet.getLength());
             try {
-                order.receive(sender, consumer, (A) serializer.decode(data));
+                order.receive(sender, consumer, serializer.decode(data));
             } catch (final RuntimeException e) {
                 /* This is bad and I feel bad about it. See issue #47 for plans to fix this. */
             }
