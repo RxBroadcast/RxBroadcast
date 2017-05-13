@@ -33,6 +33,7 @@ public final class UdpBroadcast<A> implements Broadcast {
 
     private final BroadcastOrder<A, Object> order;
 
+    @SuppressWarnings("WeakerAccess")
     public UdpBroadcast(
         final DatagramSocket socket,
         final InetAddress destinationAddress,
