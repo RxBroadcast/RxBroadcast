@@ -38,8 +38,8 @@ public final class UdpBroadcast<A> implements Broadcast {
         final DatagramSocket socket,
         final InetAddress destinationAddress,
         final int destinationPort,
-        final BroadcastOrder<A, Object> order,
-        final Serializer<A> serializer
+        final Serializer<A> serializer,
+        final BroadcastOrder<A, Object> order
     ) {
         this.socket = socket;
         this.order = order;
@@ -59,7 +59,7 @@ public final class UdpBroadcast<A> implements Broadcast {
         final int destinationPort,
         final BroadcastOrder<A, Object> order
     ) {
-        this(socket, destinationAddress, destinationPort, order, (Serializer<A>) new KryoSerializer());
+        this(socket, destinationAddress, destinationPort, (Serializer<A>) new KryoSerializer(), order);
     }
 
     @Override
