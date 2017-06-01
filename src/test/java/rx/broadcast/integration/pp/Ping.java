@@ -6,7 +6,7 @@ public final class Ping {
     @SuppressWarnings("WeakerAccess")
     public int value;
 
-    public Ping(final int value) {
+    Ping(final int value) {
         this.value = value;
     }
 

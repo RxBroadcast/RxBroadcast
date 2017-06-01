@@ -6,7 +6,7 @@ public final class Pong {
     @SuppressWarnings("WeakerAccess")
     public int value;
 
-    public Pong(final int value) {
+    Pong(final int value) {
         this.value = value;
     }
 
