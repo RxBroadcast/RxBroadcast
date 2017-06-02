@@ -6,7 +6,7 @@ import com.esotericsoftware.kryo.io.FastOutput;
 import com.esotericsoftware.kryo.io.Output;
 
 @SuppressWarnings("WeakerAccess")
-public final class KryoSerializer implements Serializer<Object> {
+public final class KryoSerializer<T> implements Serializer<T> {
     private final ThreadLocal<Kryo> threadLocalKryo = ThreadLocal.withInitial(Kryo::new);
 
     public final byte[] serialize(final Object value) {
@@ -22,12 +22,13 @@ public final class KryoSerializer implements Serializer<Object> {
     }
 
     @Override
-    public final Object decode(final byte[] data) {
-        return deserialize(data);
+    @SuppressWarnings("unchecked")
+    public final T decode(final byte[] data) {
+        return (T) deserialize(data);
     }
 
     @Override
-    public final byte[] encode(final Object data) {
+    public final byte[] encode(final T data) {
         return serialize(data);
     }
 }

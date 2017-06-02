@@ -59,7 +59,7 @@ public final class UdpBroadcast<A> implements Broadcast {
         final int destinationPort,
         final BroadcastOrder<A, Object> order
     ) {
-        this(socket, destinationAddress, destinationPort, (Serializer<A>) new KryoSerializer(), order);
+        this(socket, destinationAddress, destinationPort, new KryoSerializer<>(), order);
     }
 
     @Override
