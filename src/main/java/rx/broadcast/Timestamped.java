@@ -1,8 +1,11 @@
 package rx.broadcast;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-final class Timestamped<T> implements Comparable<Timestamped<T>> {
+final class Timestamped<T> implements Comparable<Timestamped<T>>, Serializable {
+    private static final long serialVersionUID = 114L;
+
     @SuppressWarnings("WeakerAccess")
     public long timestamp;
 
