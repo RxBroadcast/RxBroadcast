@@ -1,9 +1,12 @@
 package rx.broadcast;
 
+import java.io.Serializable;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-final class VectorTimestamp {
+final class VectorTimestamp implements Serializable {
+    private static final long serialVersionUID = 114L;
+
     private long[] ids;
 
     private long[] timestamps;

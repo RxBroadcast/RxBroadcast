@@ -1,8 +1,11 @@
 package rx.broadcast.integration.pp;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public final class Ping {
+public final class Ping implements Serializable {
+    private static final long serialVersionUID = 114L;
+
     @SuppressWarnings("WeakerAccess")
     public int value;
 

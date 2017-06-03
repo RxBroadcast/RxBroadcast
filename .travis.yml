@@ -24,10 +24,13 @@ script:
     - scripts/test rx.broadcast.integration.BasicOrderUdpBroadcastTest
     - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpBasicOrder
     - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpBasicOrderKryoSerializer
+    - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpBasicOrderObjectSerializer
     - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpSingleSourceFifoOrder
     - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpSingleSourceFifoOrderKryoSerializer
+    - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpSingleSourceFifoOrderObjectSerializer
     - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpCausalOrder
     - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpCausalOrderKryoSerializer
+    - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpCausalOrderObjectSerializer
 deploy:
     provider: script
     script: scripts/deploy
