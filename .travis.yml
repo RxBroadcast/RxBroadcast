@@ -28,6 +28,7 @@ script:
     - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpSingleSourceFifoOrder
     - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpSingleSourceFifoOrderKryoSerializer
     - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpSingleSourceFifoOrderObjectSerializer
+    - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpSingleSourceFifoOrderProtobufSerializer
     - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpCausalOrder
     - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpCausalOrderKryoSerializer
     - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpCausalOrderObjectSerializer
