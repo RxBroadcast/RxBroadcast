@@ -32,6 +32,7 @@ script:
     - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpCausalOrder
     - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpCausalOrderKryoSerializer
     - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpCausalOrderObjectSerializer
+    - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpCausalOrderProtobufSerializer
 deploy:
     provider: script
     script: scripts/deploy
