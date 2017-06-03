@@ -1,12 +1,15 @@
 package rx.broadcast.integration.pp;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public final class Pong {
+public final class Pong implements Serializable {
+    private static final long serialVersionUID = 114L;
+
     @SuppressWarnings("WeakerAccess")
     public int value;
 
-    public Pong(final int value) {
+    Pong(final int value) {
         this.value = value;
     }
 

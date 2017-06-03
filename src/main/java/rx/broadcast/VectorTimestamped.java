@@ -1,17 +1,21 @@
 package rx.broadcast;
 
+import java.io.Serializable;
+
 /**
  * Represents a value of type {@code T} that has been timestamped with a {@code VectorTimestamp}.
  * @param <T> the type of the timestamped value.
  */
 @SuppressWarnings("WeakerAccess")
-final class VectorTimestamped<T> {
+final class VectorTimestamped<T> implements Serializable {
+    private static final long serialVersionUID = 114L;
+
     public VectorTimestamp timestamp;
 
     public T value;
 
     @SuppressWarnings("unused")
-    public VectorTimestamped() {
+    VectorTimestamped() {
 
     }
 
