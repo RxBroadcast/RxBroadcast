@@ -13,18 +13,18 @@ import java.util.stream.Stream;
 
 @SuppressWarnings("WeakerAccess")
 public final class CausalOrder<T> implements BroadcastOrder<VectorTimestamped<T>, T> {
-    private final Map<Long, LamportClock> vectorClock = new HashMap<>();
+    private final Map<Sender, LamportClock> vectorClock = new HashMap<>();
 
-    private final Map<Long, List<VectorTimestamped<T>>> pending = new HashMap<>();
+    private final Map<Sender, List<VectorTimestamped<T>>> pending = new HashMap<>();
 
     @Override
     public VectorTimestamped<T> prepare(final T value) {
         final int size = vectorClock.size();
-        final long[] ids = new long[size];
+        final Sender[] ids = new Sender[size];
         final long[] timestamps = new long[size];
 
         int index = 0;
-        for (final Map.Entry<Long, LamportClock> entry : vectorClock.entrySet()) {
+        for (final Map.Entry<Sender, LamportClock> entry : vectorClock.entrySet()) {
             ids[index] = entry.getKey();
             timestamps[index] = entry.getValue().time();
             index = index + 1;
@@ -46,14 +46,14 @@ public final class CausalOrder<T> implements BroadcastOrder<VectorTimestamped<T>
      * @param message the message sent by the sender
      */
     @Override
-    public void receive(final long sender, final Consumer<T> consumer, final VectorTimestamped<T> message) {
+    public void receive(final Sender sender, final Consumer<T> consumer, final VectorTimestamped<T> message) {
         message.timestamp.stream().forEach(entry -> vectorClock.computeIfAbsent(entry.id, key -> new LamportClock()));
 
         if (shouldBeDelivered(sender, message)) {
             deliver(sender, consumer, message);
 
-            for (final Map.Entry<Long, List<VectorTimestamped<T>>> pendingEntry : pending.entrySet()) {
-                final long id = pendingEntry.getKey();
+            for (final Map.Entry<Sender, List<VectorTimestamped<T>>> pendingEntry : pending.entrySet()) {
+                final Sender id = pendingEntry.getKey();
                 final Iterator<VectorTimestamped<T>> iterator = pendingEntry.getValue().iterator();
                 while (iterator.hasNext()) {
                     final VectorTimestamped<T> timestamped = iterator.next();
@@ -74,14 +74,14 @@ public final class CausalOrder<T> implements BroadcastOrder<VectorTimestamped<T>
         return pending.values().stream().mapToInt(List::size).sum();
     }
 
-    private void deliver(final long sender, final Consumer<T> consumer, final VectorTimestamped<T> message) {
+    private void deliver(final Sender sender, final Consumer<T> consumer, final VectorTimestamped<T> message) {
         consumer.accept(message.value);
         vectorClock.get(sender).tick();
-        message.timestamp.stream().filter(entry -> entry.id != sender).forEach(
+        message.timestamp.stream().filter(entry -> entry.id.equals(sender)).forEach(
             entry -> vectorClock.get(entry.id).set(entry.timestamp));
     }
 
-    private void queueMessage(final long sender, final VectorTimestamped<T> message) {
+    private void queueMessage(final Sender sender, final VectorTimestamped<T> message) {
         pending.compute(sender, (id, queue) -> {
             if (queue == null) {
                 return new LinkedList<>(Collections.singletonList(message));
@@ -92,18 +92,18 @@ public final class CausalOrder<T> implements BroadcastOrder<VectorTimestamped<T>
         });
     }
 
-    private boolean shouldBeDelivered(final long sender, final VectorTimestamped<T> message) {
+    private boolean shouldBeDelivered(final Sender sender, final VectorTimestamped<T> message) {
         return isNewestMessage(sender, message.timestamp.stream())
             && isInCausalOrder(sender, message.timestamp.stream());
     }
 
-    private boolean isInCausalOrder(final long sender, final Stream<VectorTimestampEntry> timestampEntries) {
-        return timestampEntries.filter(entry -> entry.id != sender).allMatch(
+    private boolean isInCausalOrder(final Sender sender, final Stream<VectorTimestampEntry> timestampEntries) {
+        return timestampEntries.filter(entry -> !entry.id.equals(sender)).allMatch(
             entry -> vectorClock.get(entry.id).time() >= entry.timestamp);
     }
 
-    private boolean isNewestMessage(final long sender, final Stream<VectorTimestampEntry> timestampEntries) {
-        return timestampEntries.filter(entry -> entry.id == sender).allMatch(
+    private boolean isNewestMessage(final Sender sender, final Stream<VectorTimestampEntry> timestampEntries) {
+        return timestampEntries.filter(entry -> entry.id.equals(sender)).allMatch(
             entry -> vectorClock.get(entry.id).time() == (entry.timestamp - 1));
     }
 }

@@ -16,9 +16,9 @@ public final class SingleSourceFifoOrder<T> implements BroadcastOrder<Timestampe
 
     private final Clock clock = new LamportClock();
 
-    private final Map<Long, SortedSet<Timestamped<T>>> pendingQueues;
+    private final Map<Sender, SortedSet<Timestamped<T>>> pendingQueues;
 
-    private final Map<Long, Long> expectedTimestamps;
+    private final Map<Sender, Long> expectedTimestamps;
 
     private final boolean dropLateMessages;
 
@@ -39,7 +39,7 @@ public final class SingleSourceFifoOrder<T> implements BroadcastOrder<Timestampe
     }
 
     @Override
-    public void receive(final long sender, final Consumer<T> consumer, final Timestamped<T> value) {
+    public void receive(final Sender sender, final Consumer<T> consumer, final Timestamped<T> value) {
         expectedTimestamps.computeIfAbsent(sender, k -> 0L);
 
         if (dropLateMessages) {

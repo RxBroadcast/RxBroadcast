@@ -4,7 +4,7 @@ option java_package = "rx.broadcast";
 option java_outer_classname = "ProtobufVectorTimestamped";
 
 message VectorTimestamped {
-    repeated uint64 ids = 1 [packed=true];
+    repeated bytes ids = 1;
     repeated uint64 timestamps = 2 [packed=true];
     required bytes value = 3;
 }
