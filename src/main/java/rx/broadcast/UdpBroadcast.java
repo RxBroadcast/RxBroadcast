@@ -15,9 +15,11 @@ import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 public final class UdpBroadcast<A> implements Broadcast {
-    private static final int MAX_UDP_PACKET_SIZE = 65535;
+    private static final int BYTES_INT_PORT = 4;
 
-    private static final int BYTES_LONG = 8;
+    private static final int BYTES_IPV6_ADDRESS = 16;
+
+    private static final int MAX_UDP_PACKET_SIZE = 65535;
 
     private final DatagramSocket socket;
 
@@ -99,9 +101,10 @@ public final class UdpBroadcast<A> implements Broadcast {
                 break;
             }
 
-            final InetAddress address = packet.getAddress();
-            final int port = packet.getPort();
-            final long sender = ByteBuffer.allocate(BYTES_LONG).put(address.getAddress()).putInt(port).getLong(0);
+            final Sender sender = new Sender(ByteBuffer.allocate(BYTES_IPV6_ADDRESS + BYTES_INT_PORT)
+                .put(packet.getAddress().getAddress())
+                .putInt(packet.getPort())
+                .array());
             final byte[] data = Arrays.copyOf(buffer, packet.getLength());
             try {
                 order.receive(sender, consumer, serializer.decode(data));

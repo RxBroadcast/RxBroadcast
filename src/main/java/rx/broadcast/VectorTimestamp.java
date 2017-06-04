@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 final class VectorTimestamp implements Serializable {
     private static final long serialVersionUID = 114L;
 
-    private long[] ids;
+    private Sender[] ids;
 
     private long[] timestamps;
 
@@ -16,7 +16,7 @@ final class VectorTimestamp implements Serializable {
 
     }
 
-    VectorTimestamp(final long[] ids, final long[] timestamps) {
+    VectorTimestamp(final Sender[] ids, final long[] timestamps) {
         if (ids.length != timestamps.length) {
             throw new IllegalArgumentException("IDs and timestamps must contain the same number of elements");
         }

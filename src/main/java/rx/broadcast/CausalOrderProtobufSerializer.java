@@ -54,9 +54,7 @@ public class CausalOrderProtobufSerializer<T> implements Serializer<VectorTimest
                                 .setLabel(FieldDescriptorProto.Label.LABEL_REPEATED)
                                 .setName(IDS_FIELD_NAME)
                                 .setNumber(IDS_FIELD_NUMBER)
-                                .setOptions(FieldOptions.newBuilder()
-                                    .setPacked(true))
-                                .setType(FieldDescriptorProto.Type.TYPE_UINT64))
+                                .setType(FieldDescriptorProto.Type.TYPE_BYTES))
                         .addField(
                             FieldDescriptorProto.newBuilder()
                                 .setLabel(FieldDescriptorProto.Label.LABEL_REPEATED)
@@ -92,11 +90,11 @@ public class CausalOrderProtobufSerializer<T> implements Serializer<VectorTimest
             final T value = objectSerializer.decode(bytes);
             final int idsCount = message.getRepeatedFieldCount(this.ids);
             final int timestampsCount = message.getRepeatedFieldCount(this.timestamps);
-            final long[] ids = new long[idsCount];
+            final Sender[] ids = new Sender[idsCount];
             final long[] timestamps = new long[timestampsCount];
 
             for (int i = 0; i < idsCount; i++) {
-                ids[i] = (long) message.getRepeatedField(this.ids, i);
+                ids[i] = new Sender(((ByteString) message.getRepeatedField(this.ids, i)).toByteArray());
             }
             for (int i = 0; i < timestampsCount; i++) {
                 timestamps[i] = (long) message.getRepeatedField(this.timestamps, i);
