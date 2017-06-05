@@ -132,4 +132,64 @@ public class UdpBroadcastTest {
         subscriber.assertReceivedOnNext(Arrays.asList(
             new TestValue(42), new TestValue(42), new TestValue(42), new TestValue(42)));
     }
+
+    @SuppressWarnings({"checkstyle:magicnumber"})
+    @Test
+    public final void twoWayBasicOrderMessages() {
+        final TestSubscriber<Object> subscriber1 = new TestSubscriber<>();
+        final TestSubscriber<Object> subscriber2 = new TestSubscriber<>();
+        final DatagramSocket s1 = datagramSocketSupplier.get();
+        final DatagramSocket s2 = datagramSocketSupplier.get();
+        final Broadcast broadcast1 = new UdpBroadcast<>(
+            s1, InetAddress.getLoopbackAddress(), s2.getLocalPort(), new BasicOrder<>());
+        final Broadcast broadcast2 = new UdpBroadcast<>(
+            s2, InetAddress.getLoopbackAddress(), s1.getLocalPort(), new BasicOrder<>());
+
+        broadcast1.valuesOfType(TestValue.class).first().subscribe(subscriber1);
+        broadcast2.valuesOfType(TestValue.class).first().subscribe(subscriber2);
+
+        broadcast1.send(new TestValue(42)).toBlocking().subscribe();
+        broadcast2.send(new TestValue(41)).toBlocking().subscribe();
+
+        subscriber1.awaitTerminalEvent(10, TimeUnit.SECONDS);
+        subscriber2.awaitTerminalEvent(10, TimeUnit.SECONDS);
+
+        subscriber1.assertNoErrors();
+        subscriber1.assertValueCount(1);
+        subscriber1.assertReceivedOnNext(Collections.singletonList(new TestValue(41)));
+
+        subscriber2.assertNoErrors();
+        subscriber2.assertValueCount(1);
+        subscriber2.assertReceivedOnNext(Collections.singletonList(new TestValue(42)));
+    }
+
+    @SuppressWarnings({"checkstyle:magicnumber"})
+    @Test
+    public final void twoWaySingleSourceFifoOrderMessages() {
+        final TestSubscriber<Object> subscriber1 = new TestSubscriber<>();
+        final TestSubscriber<Object> subscriber2 = new TestSubscriber<>();
+        final DatagramSocket s1 = datagramSocketSupplier.get();
+        final DatagramSocket s2 = datagramSocketSupplier.get();
+        final Broadcast broadcast1 = new UdpBroadcast<>(
+            s1, InetAddress.getLoopbackAddress(), s2.getLocalPort(), new SingleSourceFifoOrder<>());
+        final Broadcast broadcast2 = new UdpBroadcast<>(
+            s2, InetAddress.getLoopbackAddress(), s1.getLocalPort(), new SingleSourceFifoOrder<>());
+
+        broadcast1.valuesOfType(TestValue.class).first().subscribe(subscriber1);
+        broadcast2.valuesOfType(TestValue.class).first().subscribe(subscriber2);
+
+        broadcast1.send(new TestValue(42)).toBlocking().subscribe();
+        broadcast2.send(new TestValue(41)).toBlocking().subscribe();
+
+        subscriber1.awaitTerminalEvent(10, TimeUnit.SECONDS);
+        subscriber2.awaitTerminalEvent(10, TimeUnit.SECONDS);
+
+        subscriber1.assertNoErrors();
+        subscriber1.assertValueCount(1);
+        subscriber1.assertReceivedOnNext(Collections.singletonList(new TestValue(41)));
+
+        subscriber2.assertNoErrors();
+        subscriber2.assertValueCount(1);
+        subscriber2.assertReceivedOnNext(Collections.singletonList(new TestValue(42)));
+    }
 }
