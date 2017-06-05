@@ -1,5 +1,6 @@
 package rx.broadcast;
 
+import org.jetbrains.annotations.Contract;
 import rx.Observable;
 
 /**
@@ -11,6 +12,7 @@ public interface Broadcast {
      * @param value the value to broadcast
      * @return an Observable stream representing the message sent status
      */
+    @Contract(pure = true)
     Observable<Void> send(Object value);
 
     /**
@@ -19,5 +21,6 @@ public interface Broadcast {
      * @param <T> the output stream type
      * @return an Observable stream of broadcasted values
      */
+    @Contract(pure = true)
     <T> Observable<T> valuesOfType(Class<T> clazz);
 }
