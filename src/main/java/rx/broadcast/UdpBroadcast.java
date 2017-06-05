@@ -1,5 +1,6 @@
 package rx.broadcast;
 
+import org.jetbrains.annotations.NotNull;
 import rx.Observable;
 import rx.Subscriber;
 import rx.schedulers.Schedulers;
@@ -65,7 +66,7 @@ public final class UdpBroadcast<A> implements Broadcast {
     }
 
     @Override
-    public Observable<Void> send(final Object value) {
+    public Observable<Void> send(@NotNull final Object value) {
         return Observable.defer(() -> {
             try {
                 final byte[] data = serializer.encode(order.prepare(value));
@@ -81,7 +82,7 @@ public final class UdpBroadcast<A> implements Broadcast {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> Observable<T> valuesOfType(final Class<T> clazz) {
+    public <T> Observable<@NotNull T> valuesOfType(@NotNull final Class<T> clazz) {
         return (Observable<T>) streams.computeIfAbsent(clazz, k -> values.ofType(k).share());
     }
 

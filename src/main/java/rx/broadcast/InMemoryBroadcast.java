@@ -1,5 +1,6 @@
 package rx.broadcast;
 
+import org.jetbrains.annotations.NotNull;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
@@ -22,7 +23,7 @@ public final class InMemoryBroadcast implements Broadcast {
      * {@inheritDoc}
      */
     @Override
-    public Observable<Void> send(final Object value) {
+    public Observable<Void> send(@NotNull final Object value) {
         return Observable.defer(() -> {
             values.onNext(value);
             return Observable.empty();
@@ -34,7 +35,7 @@ public final class InMemoryBroadcast implements Broadcast {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public <T> Observable<T> valuesOfType(final Class<T> clazz) {
+    public <T> Observable<@NotNull T> valuesOfType(@NotNull final Class<T> clazz) {
         return values.ofType(clazz);
     }
 }
