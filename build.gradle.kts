@@ -30,7 +30,7 @@ project.setProperty(archivesBaseNameProperty, project.name.toLowerCase())
 val archivesBaseName = { "${project.property(archivesBaseNameProperty)}" }
 
 group = project.name.toLowerCase()
-version = "1.1.3"
+version = "1.2.0"
 description = "A small distributed event library for the JVM"
 
 tasks.withType<JavaCompile> {
