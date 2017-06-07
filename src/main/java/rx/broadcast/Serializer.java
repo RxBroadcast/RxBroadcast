@@ -1,7 +1,11 @@
 package rx.broadcast;
 
-public interface Serializer<T> {
-    T decode(byte[] data);
+import org.jetbrains.annotations.NotNull;
 
-    byte[] encode(T data);
+public interface Serializer<T> {
+    @NotNull
+    T decode(@NotNull byte[] data);
+
+    @NotNull
+    byte[] encode(@NotNull T data);
 }

@@ -11,6 +11,7 @@ import com.google.protobuf.Descriptors.FileDescriptor;
 import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Parser;
+import org.jetbrains.annotations.NotNull;
 
 public final class SingleSourceFifoOrderProtobufSerializer<T> implements Serializer<Timestamped<T>> {
     private static final String MESSAGE_NAME = "Timestamped";
@@ -33,7 +34,7 @@ public final class SingleSourceFifoOrderProtobufSerializer<T> implements Seriali
 
     private final Serializer<T> objectSerializer;
 
-    public SingleSourceFifoOrderProtobufSerializer(final Serializer<T> objectSerializer) {
+    public SingleSourceFifoOrderProtobufSerializer(@NotNull final Serializer<T> objectSerializer) {
         this.objectSerializer = objectSerializer;
         try {
             final FileDescriptorProto timestampedMessageFile = FileDescriptorProto.newBuilder()
@@ -63,8 +64,9 @@ public final class SingleSourceFifoOrderProtobufSerializer<T> implements Seriali
         }
     }
 
+    @NotNull
     @Override
-    public final Timestamped<T> decode(final byte[] data) {
+    public final Timestamped<T> decode(@NotNull final byte[] data) {
         try {
             final DynamicMessage message = messageParser.parseFrom(data);
             final long timestamp = (long) message.getField(timestampedMessageField);
@@ -76,8 +78,9 @@ public final class SingleSourceFifoOrderProtobufSerializer<T> implements Seriali
         }
     }
 
+    @NotNull
     @Override
-    public final byte[] encode(final Timestamped<T> data) {
+    public final byte[] encode(@NotNull final Timestamped<T> data) {
         return messageBuilder
             .setField(timestampedMessageField, data.timestamp)
             .setField(valueMessageField, objectSerializer.encode(data.value))

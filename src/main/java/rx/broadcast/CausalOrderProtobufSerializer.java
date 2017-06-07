@@ -12,6 +12,7 @@ import com.google.protobuf.Descriptors.FileDescriptor;
 import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Parser;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -42,7 +43,7 @@ public class CausalOrderProtobufSerializer<T> implements Serializer<VectorTimest
 
     private final Serializer<T> objectSerializer;
 
-    public CausalOrderProtobufSerializer(final Serializer<T> objectSerializer) {
+    public CausalOrderProtobufSerializer(@NotNull final Serializer<T> objectSerializer) {
         this.objectSerializer = objectSerializer;
         try {
             final FileDescriptorProto timestampedMessageFile = FileDescriptorProto.newBuilder()
@@ -82,8 +83,9 @@ public class CausalOrderProtobufSerializer<T> implements Serializer<VectorTimest
         }
     }
 
+    @NotNull
     @Override
-    public final VectorTimestamped<T> decode(final byte[] data) {
+    public final VectorTimestamped<T> decode(@NotNull final byte[] data) {
         try {
             final DynamicMessage message = messageParser.parseFrom(data);
             final byte[] bytes = ((ByteString) message.getField(this.value)).toByteArray();
@@ -106,8 +108,9 @@ public class CausalOrderProtobufSerializer<T> implements Serializer<VectorTimest
         }
     }
 
+    @NotNull
     @Override
-    public final byte[] encode(final VectorTimestamped<T> data) {
+    public final byte[] encode(@NotNull final VectorTimestamped<T> data) {
         final DynamicMessage.Builder builder = messageBuilder
             .setField(this.value, objectSerializer.encode(data.value));
 

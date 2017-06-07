@@ -4,6 +4,7 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.FastInput;
 import com.esotericsoftware.kryo.io.FastOutput;
 import com.esotericsoftware.kryo.io.Output;
+import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("WeakerAccess")
 public final class KryoSerializer<T> implements Serializer<T> {
@@ -21,14 +22,16 @@ public final class KryoSerializer<T> implements Serializer<T> {
         return kryo.readClassAndObject(new FastInput(bytes));
     }
 
+    @NotNull
     @Override
     @SuppressWarnings("unchecked")
-    public final T decode(final byte[] data) {
+    public final T decode(@NotNull final byte[] data) {
         return (T) deserialize(data);
     }
 
+    @NotNull
     @Override
-    public final byte[] encode(final T data) {
+    public final byte[] encode(@NotNull final T data) {
         return serialize(data);
     }
 }
