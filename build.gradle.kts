@@ -16,7 +16,7 @@ repositories {
 }
 
 dependencies {
-    compile("com.esotericsoftware:kryo:3.0.3")
+    compile("com.esotericsoftware:kryo:4.0.0")
     compile("com.google.protobuf:protobuf-java:3.3.0")
     compile("io.reactivex:rxjava:1.3.0")
     compile("org.jetbrains:annotations:15.0")
