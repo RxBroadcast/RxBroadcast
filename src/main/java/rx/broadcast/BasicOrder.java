@@ -20,7 +20,7 @@ public final class BasicOrder<T> implements BroadcastOrder<T, T> {
      * {@inheritDoc}
      */
     @Override
-    public void receive(final long sender, final Consumer<T> consumer, final T message) {
+    public void receive(final Sender sender, final Consumer<T> consumer, final T message) {
         consumer.accept(message);
     }
 }

@@ -1,5 +1,6 @@
 package rx.broadcast;
 
+import org.jetbrains.annotations.NotNull;
 import rx.Observable;
 import rx.Subscriber;
 import rx.schedulers.Schedulers;
@@ -15,9 +16,11 @@ import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 public final class UdpBroadcast<A> implements Broadcast {
-    private static final int MAX_UDP_PACKET_SIZE = 65535;
+    private static final int BYTES_INT_PORT = 4;
 
-    private static final int BYTES_LONG = 8;
+    private static final int BYTES_IPV6_ADDRESS = 16;
+
+    private static final int MAX_UDP_PACKET_SIZE = 65535;
 
     private final DatagramSocket socket;
 
@@ -25,7 +28,7 @@ public final class UdpBroadcast<A> implements Broadcast {
 
     private final ConcurrentHashMap<Class<?>, Observable<?>> streams;
 
-    private final KryoSerializer serializer;
+    private final Serializer<A> serializer;
 
     private final InetAddress destinationAddress;
 
@@ -33,10 +36,12 @@ public final class UdpBroadcast<A> implements Broadcast {
 
     private final BroadcastOrder<A, Object> order;
 
+    @SuppressWarnings("WeakerAccess")
     public UdpBroadcast(
         final DatagramSocket socket,
         final InetAddress destinationAddress,
         final int destinationPort,
+        final Serializer<A> serializer,
         final BroadcastOrder<A, Object> order
     ) {
         this.socket = socket;
@@ -44,17 +49,27 @@ public final class UdpBroadcast<A> implements Broadcast {
         this.values = Observable.<Object>unsafeCreate(this::receive)
             .subscribeOn(Schedulers.from(Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory())))
             .share();
-        this.serializer = new KryoSerializer();
+        this.serializer = serializer;
         this.streams = new ConcurrentHashMap<>();
         this.destinationAddress = destinationAddress;
         this.destinationPort = destinationPort;
     }
 
+    @SuppressWarnings("unchecked")
+    public UdpBroadcast(
+        final DatagramSocket socket,
+        final InetAddress destinationAddress,
+        final int destinationPort,
+        final BroadcastOrder<A, Object> order
+    ) {
+        this(socket, destinationAddress, destinationPort, new KryoSerializer<>(), order);
+    }
+
     @Override
-    public Observable<Void> send(final Object value) {
+    public Observable<Void> send(@NotNull final Object value) {
         return Observable.defer(() -> {
             try {
-                final byte[] data = serializer.serialize(order.prepare(value));
+                final byte[] data = serializer.encode(order.prepare(value));
                 final DatagramPacket packet = new DatagramPacket(
                     data, data.length, destinationAddress, destinationPort);
                 socket.send(packet);
@@ -67,11 +82,10 @@ public final class UdpBroadcast<A> implements Broadcast {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> Observable<T> valuesOfType(final Class<T> clazz) {
+    public <T> Observable<@NotNull T> valuesOfType(@NotNull final Class<T> clazz) {
         return (Observable<T>) streams.computeIfAbsent(clazz, k -> values.ofType(k).share());
     }
 
-    @SuppressWarnings({"unchecked"})
     private void receive(final Subscriber<Object> subscriber) {
         final Consumer<Object> consumer = subscriber::onNext;
         while (true) {
@@ -88,12 +102,13 @@ public final class UdpBroadcast<A> implements Broadcast {
                 break;
             }
 
-            final InetAddress address = packet.getAddress();
-            final int port = packet.getPort();
-            final long sender = ByteBuffer.allocate(BYTES_LONG).put(address.getAddress()).putInt(port).getLong(0);
+            final Sender sender = new Sender(ByteBuffer.allocate(BYTES_IPV6_ADDRESS + BYTES_INT_PORT)
+                .put(packet.getAddress().getAddress())
+                .putInt(packet.getPort())
+                .array());
             final byte[] data = Arrays.copyOf(buffer, packet.getLength());
             try {
-                order.receive(sender, consumer, (A) serializer.deserialize(data));
+                order.receive(sender, consumer, serializer.decode(data));
             } catch (final RuntimeException e) {
                 /* This is bad and I feel bad about it. See issue #47 for plans to fix this. */
             }

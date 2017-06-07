@@ -1,0 +1,9 @@
+syntax = "proto2";
+
+option java_package = "rx.broadcast";
+option java_outer_classname = "ProtobufTimestamped";
+
+message Timestamped {
+    required uint64 timestamp = 1;
+    required bytes value = 2;
+}

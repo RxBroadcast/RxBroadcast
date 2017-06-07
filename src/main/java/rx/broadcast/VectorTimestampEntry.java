@@ -5,7 +5,7 @@ package rx.broadcast;
  * a process or machine in some literature).
  */
 final class VectorTimestampEntry {
-    final long id;
+    final Sender id;
 
     final long timestamp;
 
@@ -14,7 +14,7 @@ final class VectorTimestampEntry {
      * @param id an ID
      * @param timestamp the timestamp value
      */
-    VectorTimestampEntry(final long id, final long timestamp) {
+    VectorTimestampEntry(final Sender id, final long timestamp) {
         this.id = id;
         this.timestamp = timestamp;
     }
@@ -25,6 +25,6 @@ final class VectorTimestampEntry {
      */
     @Override
     public String toString() {
-        return String.format("(%d, %d)", id, timestamp);
+        return String.format("(%s, %d)", id, timestamp);
     }
 }

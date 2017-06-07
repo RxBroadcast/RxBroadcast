@@ -1,10 +1,13 @@
 package rx.broadcast;
 
+import java.io.Serializable;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-final class VectorTimestamp {
-    private long[] ids;
+final class VectorTimestamp implements Serializable {
+    private static final long serialVersionUID = 114L;
+
+    private Sender[] ids;
 
     private long[] timestamps;
 
@@ -13,7 +16,7 @@ final class VectorTimestamp {
 
     }
 
-    VectorTimestamp(final long[] ids, final long[] timestamps) {
+    VectorTimestamp(final Sender[] ids, final long[] timestamps) {
         if (ids.length != timestamps.length) {
             throw new IllegalArgumentException("IDs and timestamps must contain the same number of elements");
         }

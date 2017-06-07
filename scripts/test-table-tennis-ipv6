@@ -6,19 +6,14 @@ set -o pipefail
 readonly DIR=$(cd "${BASH_SOURCE[0]%/*}" && pwd)
 
 docker_run() {
-    docker run --detach rxb '-Ddestination=255.255.255.255' '-Dport=8888' "$@"
+    docker run --net=host --detach rxb '-Dport=8888' '-Ddestination=ff02::1' '-DdestinationPort=8888' "$@"
 }
 
 class=$1
-network_command=${2:-:}
 
 containers=()
-for _ in {1..5}
-do
-    container=$(docker_run 'org.junit.runner.JUnitCore' "$class")
-    DOCKER_IFACE=$("$DIR/veth" "$container") bash -xc "shopt -s extglob; $network_command"
-    containers+=($container)
-done
+container=$(docker_run 'org.junit.runner.JUnitCore' "$class")
+containers+=($container)
 
 containers+=($(docker_run "$class"))
 

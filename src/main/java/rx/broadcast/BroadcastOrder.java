@@ -29,5 +29,5 @@ public interface BroadcastOrder<M, T> {
      * @param consumer the intended consumer of the message
      * @param message the message sent by the sender
      */
-    void receive(long sender, Consumer<T> consumer, M message);
+    void receive(Sender sender, Consumer<T> consumer, M message);
 }

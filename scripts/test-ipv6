@@ -6,7 +6,7 @@ set -o pipefail
 readonly DIR=$(cd "${BASH_SOURCE[0]%/*}" && pwd)
 
 docker_run() {
-    docker run --detach rxb '-Ddestination=255.255.255.255' '-Dport=8888' "$@"
+    docker run --net=host --detach rxb '-Ddestination=ff02::1' '-Dport=8888' "$@"
 }
 
 class=$1
