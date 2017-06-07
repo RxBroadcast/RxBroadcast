@@ -105,7 +105,7 @@ configure<PublishingExtension> {
                     asNode().apply {
                         appendNode("name", project.name)
                         appendNode("description", project.description)
-                        appendNode("url", "https://${project.name.toLowerCase()}.website")
+                        appendNode("url", "http://${project.name.toLowerCase()}.website")
                         appendNode("packaging", "jar")
 
                         appendNode("licenses").appendNode("license").apply {
