@@ -1,5 +1,7 @@
 package rx.broadcast;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.nio.ByteBuffer;
 
 public final class Sender implements Comparable<Sender> {
@@ -21,7 +23,7 @@ public final class Sender implements Comparable<Sender> {
     }
 
     @Override
-    public int compareTo(final Sender o) {
+    public int compareTo(@NotNull final Sender o) {
         return bytes.compareTo(o.bytes);
     }
 
