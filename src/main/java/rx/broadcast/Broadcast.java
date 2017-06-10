@@ -14,7 +14,7 @@ public interface Broadcast {
      * @return an Observable stream representing the message sent status
      */
     @Contract(pure = true)
-    Observable<Void> send(@NotNull Object value);
+    Observable<@NotNull Void> send(@NotNull Object value);
 
     /**
      * Returns a (hot) {@code Observable} stream of broadcasted values.
