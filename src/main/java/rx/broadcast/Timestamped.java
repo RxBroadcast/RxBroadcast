@@ -1,5 +1,7 @@
 package rx.broadcast;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -22,7 +24,7 @@ final class Timestamped<T> implements Comparable<Timestamped<T>>, Serializable {
     }
 
     @Override
-    public int compareTo(final Timestamped<T> other) {
+    public int compareTo(@NotNull final Timestamped<T> other) {
         return Long.compareUnsigned(timestamp, other.timestamp);
     }
 
