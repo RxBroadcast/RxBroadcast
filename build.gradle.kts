@@ -16,7 +16,7 @@ repositories {
 }
 
 dependencies {
-    compile("com.esotericsoftware:kryo:3.0.3")
+    compile("com.esotericsoftware:kryo:4.0.0")
     compile("com.google.protobuf:protobuf-java:3.3.0")
     compile("io.reactivex:rxjava:1.3.0")
     compile("org.jetbrains:annotations:15.0")
@@ -105,7 +105,7 @@ configure<PublishingExtension> {
                     asNode().apply {
                         appendNode("name", project.name)
                         appendNode("description", project.description)
-                        appendNode("url", "https://${project.name.toLowerCase()}.website")
+                        appendNode("url", "http://${project.name.toLowerCase()}.website")
                         appendNode("packaging", "jar")
 
                         appendNode("licenses").appendNode("license").apply {
