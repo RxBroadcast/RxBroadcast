@@ -1,7 +1,7 @@
 RxBroadcast
 ===========
 
-RxBroadcast is a small distributed event library for Java and the JVM.
+RxBroadcast is a small distributed event library for the JVM.
 
 | JCenter |
 | ------- |
