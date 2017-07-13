@@ -2,8 +2,8 @@ package rx.broadcast.integration.pp;
 
 import org.junit.Test;
 import rx.Observable;
-import rx.broadcast.BasicOrder;
 import rx.broadcast.Broadcast;
+import rx.broadcast.NoOrder;
 import rx.broadcast.UdpBroadcast;
 import rx.observers.TestSubscriber;
 
@@ -13,7 +13,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
-public class PingPongUdpBasicOrder {
+public class PingPongUdpNoOrder {
     private static final int MESSAGE_COUNT = 100;
 
     private static final long TIMEOUT = 30;
@@ -28,7 +28,7 @@ public class PingPongUdpBasicOrder {
         final int port = Integer.valueOf(System.getProperty("port"));
         final DatagramSocket socket = new DatagramSocket(port);
         final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
-        final Broadcast broadcast = new UdpBroadcast<>(socket, destination, port, new BasicOrder<>());
+        final Broadcast broadcast = new UdpBroadcast<>(socket, destination, port, new NoOrder<>());
 
         final TestSubscriber<Ping> subscriber = new TestSubscriber<>();
 
@@ -60,7 +60,7 @@ public class PingPongUdpBasicOrder {
         final int port = Integer.valueOf(System.getProperty("port"));
         final DatagramSocket socket = new DatagramSocket(port);
         final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
-        final Broadcast broadcast = new UdpBroadcast<>(socket, destination, port, new BasicOrder<>());
+        final Broadcast broadcast = new UdpBroadcast<>(socket, destination, port, new NoOrder<>());
 
         Observable.range(1, MESSAGE_COUNT)
             .map(Ping::new)
