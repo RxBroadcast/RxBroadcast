@@ -2,6 +2,32 @@ sudo: required
 dist: trusty
 services:
     - docker
+addons:
+    apt:
+        sources:
+            - avsm
+        packages:
+            - aspcud
+            - autoconf
+            - automake
+            - gcc
+            - g++
+            - git
+            - groff-base
+            - libc6-dev
+            - libgmp-dev
+            - libmpc-dev
+            - libmpfr-dev
+            - m4
+            - make
+            - ncurses-dev
+            - ocaml
+            - opam
+            - pkg-config
+            - python2.7
+            - rsync
+            - unzip
+            - zlib1g-dev
 
 env:
     global:
@@ -33,6 +59,20 @@ script:
     - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpCausalOrderKryoSerializer
     - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpCausalOrderObjectSerializer
     - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpCausalOrderProtobufSerializer
+jobs:
+    include:
+        - stage: "Static analysis"
+          env:
+              - INFER_VERSION='0.12.0'
+          jdk: oraclejdk8
+          script: |
+              pushd /opt
+              curl -sL "https://github.com/facebook/infer/releases/download/v${INFER_VERSION}/infer-linux64-v${INFER_VERSION}.tar.xz" | tar xJ
+              cd "infer-linux64-v${INFER_VERSION}/"
+              ./build-infer.sh --yes java
+              export PATH="${PWD}/infer/bin:${PATH}"
+              popd
+              infer -- gradle build
 deploy:
     provider: script
     script: scripts/deploy
