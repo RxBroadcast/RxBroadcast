@@ -26,28 +26,29 @@ public class PingPongUdpNoOrder {
     @Test
     public final void recv() throws SocketException, UnknownHostException {
         final int port = Integer.valueOf(System.getProperty("port"));
-        final DatagramSocket socket = new DatagramSocket(port);
         final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
-        final Broadcast broadcast = new UdpBroadcast<>(socket, destination, port, new NoOrder<>());
+        try (final DatagramSocket socket = new DatagramSocket(port)) {
+            final Broadcast broadcast = new UdpBroadcast<>(socket, destination, port, new NoOrder<>());
 
-        final TestSubscriber<Ping> subscriber = new TestSubscriber<>();
+            final TestSubscriber<Ping> subscriber = new TestSubscriber<>();
 
-        broadcast.valuesOfType(Ping.class)
-            .doOnNext(System.out::println)
-            .concatMap(ping ->
-                broadcast.send(new Pong(ping.value))
-                    // Once we've sent the response, we can emit the PING value to the subscriber.
-                    // The cast here is a hack to allow us to concatenate a PING onto the stream.
-                    // Where this is an `Observable<Void>` we know we won't get anything that needs to be casted.
-                    .cast(Ping.class)
-                    .concatWith(Observable.just(ping))
-                    .doOnCompleted(() -> System.out.println("Sent PONG")))
-            .take(MESSAGE_COUNT)
-            .subscribe(subscriber);
+            broadcast.valuesOfType(Ping.class)
+                .doOnNext(System.out::println)
+                .concatMap(ping ->
+                    broadcast.send(new Pong(ping.value))
+                        // Once we've sent the response, we can emit the PING value to the subscriber.
+                        // The cast here is a hack to allow us to concatenate a PING onto the stream.
+                        // Where this is an `Observable<Void>` we know we won't get anything that needs to be casted.
+                        .cast(Ping.class)
+                        .concatWith(Observable.just(ping))
+                        .doOnCompleted(() -> System.out.println("Sent PONG")))
+                .take(MESSAGE_COUNT)
+                .subscribe(subscriber);
 
-        subscriber.awaitTerminalEventAndUnsubscribeOnTimeout(TIMEOUT, TimeUnit.SECONDS);
-        subscriber.assertNoErrors();
-        subscriber.assertValueCount(MESSAGE_COUNT);
+            subscriber.awaitTerminalEventAndUnsubscribeOnTimeout(TIMEOUT, TimeUnit.SECONDS);
+            subscriber.assertNoErrors();
+            subscriber.assertValueCount(MESSAGE_COUNT);
+        }
     }
 
     /**
@@ -58,21 +59,22 @@ public class PingPongUdpNoOrder {
      */
     public static void main(final String[] args) throws InterruptedException, SocketException, UnknownHostException {
         final int port = Integer.valueOf(System.getProperty("port"));
-        final DatagramSocket socket = new DatagramSocket(port);
         final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
-        final Broadcast broadcast = new UdpBroadcast<>(socket, destination, port, new NoOrder<>());
+        try (final DatagramSocket socket = new DatagramSocket(port)) {
+            final Broadcast broadcast = new UdpBroadcast<>(socket, destination, port, new NoOrder<>());
 
-        Observable.range(1, MESSAGE_COUNT)
-            .map(Ping::new)
-            .doOnNext(System.out::println)
-            .concatMap(value ->
-                broadcast.send(value)
-                    .doOnCompleted(() -> System.out.printf("Sent %s%n", value))
-                    .cast(Pong.class)
-                    .concatWith(broadcast.valuesOfType(Pong.class).first()))
-            .timeout(TIMEOUT, TimeUnit.SECONDS)
-            .toBlocking()
-            .subscribe(pong ->
-                System.out.printf("Received %s%n", pong));
+            Observable.range(1, MESSAGE_COUNT)
+                .map(Ping::new)
+                .doOnNext(System.out::println)
+                .concatMap(value ->
+                    broadcast.send(value)
+                        .doOnCompleted(() -> System.out.printf("Sent %s%n", value))
+                        .cast(Pong.class)
+                        .concatWith(broadcast.valuesOfType(Pong.class).first()))
+                .timeout(TIMEOUT, TimeUnit.SECONDS)
+                .toBlocking()
+                .subscribe(pong ->
+                    System.out.printf("Received %s%n", pong));
+        }
     }
 }

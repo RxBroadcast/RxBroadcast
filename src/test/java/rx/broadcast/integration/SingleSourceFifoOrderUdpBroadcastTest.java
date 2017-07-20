@@ -26,25 +26,27 @@ public final class SingleSourceFifoOrderUdpBroadcastTest {
     @Test
     public final void receive() throws SocketException, UnknownHostException {
         final int port = Integer.valueOf(System.getProperty("port"));
-        final TestSubscriber<TestValue> subscriber = new TestSubscriber<>();
-        final DatagramSocket socket = new DatagramSocket(port);
-        final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
-        final Broadcast broadcast = new UdpBroadcast<>(socket, destination, port, new SingleSourceFifoOrder<>());
+        try (final DatagramSocket socket = new DatagramSocket(port)) {
+            final TestSubscriber<TestValue> subscriber = new TestSubscriber<>();
+            final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
+            final Broadcast broadcast = new UdpBroadcast<>(socket, destination, port, new SingleSourceFifoOrder<>());
 
-        broadcast.valuesOfType(TestValue.class).take(MESSAGE_COUNT).subscribe(subscriber);
+            broadcast.valuesOfType(TestValue.class).take(MESSAGE_COUNT).subscribe(subscriber);
 
-        subscriber.awaitTerminalEventAndUnsubscribeOnTimeout(TIMEOUT, TIMEOUT_UNIT);
-        subscriber.assertNoErrors();
-        subscriber.assertValueCount(MESSAGE_COUNT);
-        subscriber.assertReceivedOnNext(MESSAGES.toList().toBlocking().single());
+            subscriber.awaitTerminalEventAndUnsubscribeOnTimeout(TIMEOUT, TIMEOUT_UNIT);
+            subscriber.assertNoErrors();
+            subscriber.assertValueCount(MESSAGE_COUNT);
+            subscriber.assertReceivedOnNext(MESSAGES.toList().toBlocking().single());
+        }
     }
 
     public static void main(final String[] args) throws SocketException, UnknownHostException {
         final int port = Integer.valueOf(System.getProperty("port"));
-        final DatagramSocket socket = new DatagramSocket(port);
-        final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
-        final Broadcast broadcast = new UdpBroadcast<>(socket, destination, port, new SingleSourceFifoOrder<>());
+        try (final DatagramSocket socket = new DatagramSocket(port)) {
+            final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
+            final Broadcast broadcast = new UdpBroadcast<>(socket, destination, port, new SingleSourceFifoOrder<>());
 
-        MESSAGES.flatMap(broadcast::send).toBlocking().subscribe(null, System.err::println);
+            MESSAGES.flatMap(broadcast::send).toBlocking().subscribe(null, System.err::println);
+        }
     }
 }
