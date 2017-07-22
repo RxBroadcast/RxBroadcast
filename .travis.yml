@@ -70,6 +70,7 @@ jobs:
               directories:
                   - "$INFER_DIRECTORY"
           script: scripts/infer
+        - script: gradle findBugs{Main,Test}
 deploy:
     provider: script
     script: scripts/deploy
