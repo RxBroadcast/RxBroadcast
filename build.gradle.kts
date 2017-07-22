@@ -8,6 +8,7 @@ plugins {
     java
     jacoco
     checkstyle
+    findbugs
     id("com.jfrog.bintray") version "1.6"
 }
 
@@ -50,6 +51,13 @@ tasks.withType<Test> {
         events = setOf(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
         showStandardStreams = true
     })
+}
+
+tasks.withType<FindBugs> {
+    reports {
+        xml.isEnabled = false
+        html.isEnabled = true
+    }
 }
 
 task<Jar>("testJar") {
