@@ -33,6 +33,43 @@ script:
     - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpCausalOrderKryoSerializer
     - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpCausalOrderObjectSerializer
     - scripts/test-table-tennis rx.broadcast.integration.pp.PingPongUdpCausalOrderProtobufSerializer
+jobs:
+    include:
+        - stage: "Static analysis"
+          jdk: oraclejdk8
+          addons:
+              apt:
+                  sources:
+                      - avsm
+                  packages:
+                      - aspcud
+                      - autoconf
+                      - automake
+                      - gcc
+                      - g++
+                      - git
+                      - groff-base
+                      - libc6-dev
+                      - libgmp-dev
+                      - libmpc-dev
+                      - libmpfr-dev
+                      - m4
+                      - make
+                      - ncurses-dev
+                      - ocaml
+                      - opam
+                      - pkg-config
+                      - python2.7
+                      - rsync
+                      - unzip
+                      - zlib1g-dev
+          env:
+              - INFER_VERSION='0.12.0'
+              - INFER_DIRECTORY='/opt/infer'
+          cache:
+              directories:
+                  - "$INFER_DIRECTORY"
+          script: scripts/infer
 deploy:
     provider: script
     script: scripts/deploy

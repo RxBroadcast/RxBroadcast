@@ -24,26 +24,28 @@ public final class NoOrderUdpBroadcastTest {
     @Test
     public final void receive() throws SocketException, UnknownHostException {
         final int port = Integer.valueOf(System.getProperty("port"));
-        final TestSubscriber<TestValue> subscriber = new TestSubscriber<>();
-        final DatagramSocket socket = new DatagramSocket(port);
-        final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
-        final Broadcast broadcast = new UdpBroadcast<>(socket, destination, port, new NoOrder<>());
+        try (final DatagramSocket socket = new DatagramSocket(port)) {
+            final TestSubscriber<TestValue> subscriber = new TestSubscriber<>();
+            final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
+            final Broadcast broadcast = new UdpBroadcast<>(socket, destination, port, new NoOrder<>());
 
-        broadcast.valuesOfType(TestValue.class).take(MESSAGE_COUNT).subscribe(subscriber);
+            broadcast.valuesOfType(TestValue.class).take(MESSAGE_COUNT).subscribe(subscriber);
 
-        subscriber.awaitTerminalEventAndUnsubscribeOnTimeout(TIMEOUT, TIMEOUT_UNIT);
-        subscriber.assertNoErrors();
-        subscriber.assertValueCount(MESSAGE_COUNT);
+            subscriber.awaitTerminalEventAndUnsubscribeOnTimeout(TIMEOUT, TIMEOUT_UNIT);
+            subscriber.assertNoErrors();
+            subscriber.assertValueCount(MESSAGE_COUNT);
+        }
     }
 
     public static void main(final String[] args) throws SocketException, UnknownHostException {
         final int port = Integer.valueOf(System.getProperty("port"));
-        final DatagramSocket socket = new DatagramSocket(port);
-        final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
-        final Broadcast broadcast = new UdpBroadcast<>(socket, destination, port, new NoOrder<>());
+        try (final DatagramSocket socket = new DatagramSocket(port)) {
+            final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
+            final Broadcast broadcast = new UdpBroadcast<>(socket, destination, port, new NoOrder<>());
 
-        Observable.range(1, MESSAGE_COUNT).map(TestValue::new).flatMap(broadcast::send)
-            .toBlocking()
-            .subscribe(null, System.err::println);
+            Observable.range(1, MESSAGE_COUNT).map(TestValue::new).flatMap(broadcast::send)
+                .toBlocking()
+                .subscribe(null, System.err::println);
+        }
     }
 }
