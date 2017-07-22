@@ -14,7 +14,6 @@ public final class Sender implements Comparable<Sender> {
     @Override
     public final boolean equals(final Object o) {
         return this == o || !(o == null || getClass() != o.getClass()) && bytes.equals(((Sender) o).bytes);
-
     }
 
     @Override
