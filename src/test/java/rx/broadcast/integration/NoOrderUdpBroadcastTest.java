@@ -23,7 +23,7 @@ public final class NoOrderUdpBroadcastTest {
 
     @Test
     public final void receive() throws SocketException, UnknownHostException {
-        final int port = Integer.valueOf(System.getProperty("port"));
+        final int port = Integer.parseInt(System.getProperty("port"));
         try (final DatagramSocket socket = new DatagramSocket(port)) {
             final TestSubscriber<TestValue> subscriber = new TestSubscriber<>();
             final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
@@ -38,7 +38,7 @@ public final class NoOrderUdpBroadcastTest {
     }
 
     public static void main(final String[] args) throws SocketException, UnknownHostException {
-        final int port = Integer.valueOf(System.getProperty("port"));
+        final int port = Integer.parseInt(System.getProperty("port"));
         try (final DatagramSocket socket = new DatagramSocket(port)) {
             final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
             final Broadcast broadcast = new UdpBroadcast<>(socket, destination, port, new NoOrder<>());

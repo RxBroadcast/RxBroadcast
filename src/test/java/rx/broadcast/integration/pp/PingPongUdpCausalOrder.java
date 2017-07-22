@@ -27,10 +27,10 @@ public class PingPongUdpCausalOrder {
     @Test
     public final void recv() throws SocketException, UnknownHostException {
         final int port = System.getProperty("port") != null
-            ? Integer.valueOf(System.getProperty("port"))
+            ? Integer.parseInt(System.getProperty("port"))
             : 54321;
         final int destinationPort = System.getProperty("destinationPort") != null
-            ? Integer.valueOf(System.getProperty("destinationPort"))
+            ? Integer.parseInt(System.getProperty("destinationPort"))
             : 12345;
 
         try (final DatagramSocket socket = new DatagramSocket(port)) {
@@ -67,10 +67,10 @@ public class PingPongUdpCausalOrder {
      */
     public static void main(final String[] args) throws InterruptedException, SocketException, UnknownHostException {
         final int port = System.getProperty("port") != null
-            ? Integer.valueOf(System.getProperty("port"))
+            ? Integer.parseInt(System.getProperty("port"))
             : 54321;
         final int destinationPort = System.getProperty("destinationPort") != null
-            ? Integer.valueOf(System.getProperty("destinationPort"))
+            ? Integer.parseInt(System.getProperty("destinationPort"))
             : 12345;
         final InetAddress destination = System.getProperty("destination") != null
             ? InetAddress.getByName(System.getProperty("destination"))

@@ -25,7 +25,7 @@ public class PingPongUdpNoOrder {
      */
     @Test
     public final void recv() throws SocketException, UnknownHostException {
-        final int port = Integer.valueOf(System.getProperty("port"));
+        final int port = Integer.parseInt(System.getProperty("port"));
         final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
         try (final DatagramSocket socket = new DatagramSocket(port)) {
             final Broadcast broadcast = new UdpBroadcast<>(socket, destination, port, new NoOrder<>());
@@ -58,7 +58,7 @@ public class PingPongUdpNoOrder {
      * @throws UnknownHostException if no IP address for the host machine could be found.
      */
     public static void main(final String[] args) throws InterruptedException, SocketException, UnknownHostException {
-        final int port = Integer.valueOf(System.getProperty("port"));
+        final int port = Integer.parseInt(System.getProperty("port"));
         final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
         try (final DatagramSocket socket = new DatagramSocket(port)) {
             final Broadcast broadcast = new UdpBroadcast<>(socket, destination, port, new NoOrder<>());
