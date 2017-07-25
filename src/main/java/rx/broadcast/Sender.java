@@ -2,6 +2,8 @@ package rx.broadcast;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -9,9 +11,12 @@ import java.util.Arrays;
 public final class Sender implements Serializable, Comparable<Sender> {
     private static final long serialVersionUID = 114L;
 
-    private ByteBuffer bytes;
+    private final byte[] byteBuffer;
+
+    private transient ByteBuffer bytes;
 
     Sender(final byte[] bytes) {
+        this.byteBuffer = bytes;
         this.bytes = ByteBuffer.wrap(bytes);
     }
 
@@ -33,5 +38,10 @@ public final class Sender implements Serializable, Comparable<Sender> {
     @Override
     public String toString() {
         return "Sender{id=" + Arrays.toString(bytes.array()) + '}';
+    }
+
+    private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        this.bytes = ByteBuffer.wrap(byteBuffer);
     }
 }
