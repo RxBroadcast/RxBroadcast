@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 public final class Sender implements Serializable, Comparable<Sender> {
     private static final long serialVersionUID = 114L;
@@ -31,6 +32,6 @@ public final class Sender implements Serializable, Comparable<Sender> {
 
     @Override
     public String toString() {
-        return "Sender{" + "id=" + bytes + '}';
+        return "Sender{id=" + Arrays.toString(bytes.array()) + '}';
     }
 }
