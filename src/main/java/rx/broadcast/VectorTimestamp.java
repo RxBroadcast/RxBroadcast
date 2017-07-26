@@ -1,6 +1,7 @@
 package rx.broadcast;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -27,5 +28,10 @@ final class VectorTimestamp implements Serializable {
 
     Stream<VectorTimestampEntry> stream() {
         return IntStream.range(0, ids.length).mapToObj(idx -> new VectorTimestampEntry(ids[idx], timestamps[idx]));
+    }
+
+    @Override
+    public String toString() {
+        return Arrays.toString(stream().map(VectorTimestampEntry::toString).toArray());
     }
 }

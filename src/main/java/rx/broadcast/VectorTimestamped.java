@@ -29,4 +29,13 @@ final class VectorTimestamped<T> implements Serializable {
         this.timestamp = timestamp;
         this.value = value;
     }
+
+    @Override
+    public String toString() {
+        return String.format(
+            "VectorTimestamped<%s>{value=%s, timestamp=%s}",
+            value.getClass().getSimpleName(),
+            value,
+            timestamp);
+    }
 }
