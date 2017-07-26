@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
+import java.util.Base64;
 
 public final class Sender implements Serializable, Comparable<Sender> {
     private static final long serialVersionUID = 114L;
@@ -37,7 +37,7 @@ public final class Sender implements Serializable, Comparable<Sender> {
 
     @Override
     public String toString() {
-        return "Sender{id=" + Arrays.toString(bytes.array()) + '}';
+        return "Sender{id=" + Base64.getEncoder().encodeToString(bytes.array()) + '}';
     }
 
     private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
