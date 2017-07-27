@@ -6,6 +6,4 @@ Vagrant.configure(2) do |config|
         inline: "{ curl -fsSL https://get.docker.com/ | sh ; } &> /dev/null"
     config.vm.provision "shell", name: "Install Docker",
         inline: "{ sudo usermod -aG docker vagrant ; } &> /dev/null"
-    config.vm.provision "shell", name: "Install Travis CI Gem",
-        inline: "{ apt-get -y install ruby-dev && gem install travis ; } &> /dev/null"
 end
