@@ -2,26 +2,18 @@ package rx.broadcast;
 
 import org.jetbrains.annotations.NotNull;
 import rx.Observable;
-import rx.Subscriber;
+import rx.Scheduler;
+import rx.Single;
 import rx.schedulers.Schedulers;
 
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 public final class UdpBroadcast<A> implements Broadcast {
-    private static final int BYTES_INT_PORT = 4;
-
-    private static final int BYTES_IPV6_ADDRESS = 16;
-
-    private static final int MAX_UDP_PACKET_SIZE = 65535;
-
     private final DatagramSocket socket;
 
     private final Observable<Object> values;
@@ -34,7 +26,7 @@ public final class UdpBroadcast<A> implements Broadcast {
 
     private final int destinationPort;
 
-    private final BroadcastOrder<A, Object> order;
+    private final Single<BroadcastOrder<A, Object>> broadcastOrder;
 
     @SuppressWarnings("WeakerAccess")
     public UdpBroadcast(
@@ -42,17 +34,32 @@ public final class UdpBroadcast<A> implements Broadcast {
         final InetAddress destinationAddress,
         final int destinationPort,
         final Serializer<A> serializer,
-        final BroadcastOrder<A, Object> order
+        final Function<Sender, BroadcastOrder<A, Object>> createBroadcastOrder
     ) {
         this.socket = socket;
-        this.order = order;
-        this.values = Observable.<Object>unsafeCreate(this::receive)
-            .subscribeOn(Schedulers.from(Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory())))
+        final Scheduler singleThreadScheduler = Schedulers.from(
+            Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory()));
+        final Single<Sender> host = Single.fromCallable(new WhoAmI());
+        this.broadcastOrder = host.subscribeOn(Schedulers.io()).map(createBroadcastOrder::apply).cache();
+        this.broadcastOrder.subscribe();
+        this.values = broadcastOrder.flatMapObservable((order1) ->
+            Observable.unsafeCreate(new UdpBroadcastOnSubscribe<>(socket, serializer, order1))
+                .subscribeOn(singleThreadScheduler))
             .share();
         this.serializer = serializer;
         this.streams = new ConcurrentHashMap<>();
         this.destinationAddress = destinationAddress;
         this.destinationPort = destinationPort;
+    }
+
+    public UdpBroadcast(
+        final DatagramSocket socket,
+        final InetAddress destinationAddress,
+        final int destinationPort,
+        final Serializer<A> serializer,
+        final BroadcastOrder<A, Object> order
+    ) {
+        this(socket, destinationAddress, destinationPort, serializer, (host) -> order);
     }
 
     @SuppressWarnings("unchecked")
@@ -62,12 +69,12 @@ public final class UdpBroadcast<A> implements Broadcast {
         final int destinationPort,
         final BroadcastOrder<A, Object> order
     ) {
-        this(socket, destinationAddress, destinationPort, new KryoSerializer<>(), order);
+        this(socket, destinationAddress, destinationPort, new KryoSerializer<>(), (host) -> order);
     }
 
     @Override
     public Observable<Void> send(@NotNull final Object value) {
-        return Observable.defer(() -> {
+        return broadcastOrder.flatMapObservable((order) -> {
             try {
                 final byte[] data = serializer.encode(order.prepare(value));
                 final DatagramPacket packet = new DatagramPacket(
@@ -84,34 +91,5 @@ public final class UdpBroadcast<A> implements Broadcast {
     @SuppressWarnings("unchecked")
     public <T> Observable<@NotNull T> valuesOfType(@NotNull final Class<T> clazz) {
         return (Observable<T>) streams.computeIfAbsent(clazz, k -> values.ofType(k).share());
-    }
-
-    private void receive(final Subscriber<Object> subscriber) {
-        final Consumer<Object> consumer = subscriber::onNext;
-        while (true) {
-            if (subscriber.isUnsubscribed()) {
-                break;
-            }
-
-            final byte[] buffer = new byte[MAX_UDP_PACKET_SIZE];
-            final DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-            try {
-                socket.receive(packet);
-            } catch (final IOException e) {
-                subscriber.onError(e);
-                break;
-            }
-
-            final Sender sender = new Sender(ByteBuffer.allocate(BYTES_IPV6_ADDRESS + BYTES_INT_PORT)
-                .put(packet.getAddress().getAddress())
-                .putInt(packet.getPort())
-                .array());
-            final byte[] data = Arrays.copyOf(buffer, packet.getLength());
-            try {
-                order.receive(sender, consumer, serializer.decode(data));
-            } catch (final RuntimeException e) {
-                /* This is bad and I feel bad about it. See issue #47 for plans to fix this. */
-            }
-        }
     }
 }
