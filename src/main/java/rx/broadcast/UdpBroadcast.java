@@ -39,7 +39,7 @@ public final class UdpBroadcast<A> implements Broadcast {
         this.socket = socket;
         final Scheduler singleThreadScheduler = Schedulers.from(
             Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory()));
-        final Single<Sender> host = Single.fromCallable(new WhoAmI());
+        final Single<Sender> host = Single.fromCallable(new WhoAmI(destinationPort));
         this.broadcastOrder = host.subscribeOn(Schedulers.io()).map(createBroadcastOrder::apply).cache();
         this.broadcastOrder.subscribe();
         this.values = broadcastOrder.flatMapObservable((order1) ->

@@ -7,6 +7,12 @@ import java.net.InetAddress;
 import java.util.concurrent.Callable;
 
 class WhoAmI implements Callable<Sender> {
+    private final int destinationPort;
+
+    WhoAmI(final int destinationPort) {
+        this.destinationPort = destinationPort;
+    }
+
     @Override
     public final Sender call() throws IOException {
         // Listen all all interfaces, random port
@@ -21,6 +27,6 @@ class WhoAmI implements Callable<Sender> {
         ws.receive(recvPacket);
         // Whoever sent it is us
         ws.close();
-        return new Sender(recvPacket.getAddress(), recvPacket.getPort());
+        return new Sender(recvPacket.getAddress(), destinationPort);
     }
 }
