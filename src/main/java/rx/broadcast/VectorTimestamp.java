@@ -1,11 +1,17 @@
 package rx.broadcast;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-final class VectorTimestamp implements Serializable {
+final class VectorTimestamp implements Comparable<VectorTimestamp>, Serializable {
     private static final long serialVersionUID = 114L;
 
     private Sender[] ids;
@@ -33,5 +39,45 @@ final class VectorTimestamp implements Serializable {
     @Override
     public String toString() {
         return Arrays.toString(stream().map(VectorTimestampEntry::toString).toArray());
+    }
+
+    @SuppressWarnings({"checkstyle:AvoidInlineConditionals"})
+    @Override
+    public final int compareTo(@NotNull final VectorTimestamp other) {
+        final HashMap<Sender, Long> vt1 = new HashMap<>();
+        for (int i = 0; i < ids.length; i++) {
+            vt1.put(ids[i], timestamps[i]);
+        }
+
+        final HashMap<Sender, Long> vt2 = new HashMap<>();
+        for (int i = 0; i < other.ids.length; i++) {
+            vt2.put(other.ids[i], other.timestamps[i]);
+        }
+
+        final Set<Sender> senders = new HashSet<>();
+        senders.addAll(vt1.keySet());
+        senders.addAll(vt2.keySet());
+
+        final boolean lte = senders.stream().allMatch((sender) -> vt1.get(sender) <= vt2.get(sender));
+        final boolean lt  = senders.stream().anyMatch((sender) -> vt1.get(sender) <  vt2.get(sender)) && lte;
+        return lt ? -1 : lte ? 0 : 1;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        final VectorTimestamp timestamp = (VectorTimestamp) o;
+        return this.compareTo(timestamp) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(ids, timestamps);
     }
 }
