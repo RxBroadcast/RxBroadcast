@@ -72,6 +72,16 @@ public final class UdpBroadcast<A> implements Broadcast {
         this(socket, destinationAddress, destinationPort, new KryoSerializer<>(), (host) -> order);
     }
 
+    @SuppressWarnings("unchecked")
+    public UdpBroadcast(
+        final DatagramSocket socket,
+        final InetAddress destinationAddress,
+        final int destinationPort,
+        final Function<Sender, BroadcastOrder<A, Object>> createBroadcastOrder
+    ) {
+        this(socket, destinationAddress, destinationPort, new KryoSerializer<>(), createBroadcastOrder);
+    }
+
     @Override
     public Observable<Void> send(@NotNull final Object value) {
         return broadcastOrder.flatMapObservable((order) -> {

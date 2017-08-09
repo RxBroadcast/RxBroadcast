@@ -37,7 +37,8 @@ public class PingPongUdpCausalOrder {
             final InetAddress destination = System.getProperty("destination") != null
                 ? InetAddress.getByName(System.getProperty("destination"))
                 : InetAddress.getByName("localhost");
-            final Broadcast broadcast = new UdpBroadcast<>(socket, destination, destinationPort, new CausalOrder<>());
+            final Broadcast broadcast = new UdpBroadcast<>(
+                socket, destination, destinationPort, (host) -> new CausalOrder<>(host));
             final TestSubscriber<Ping> subscriber = new TestSubscriber<>();
 
             broadcast.valuesOfType(Ping.class)
@@ -76,7 +77,8 @@ public class PingPongUdpCausalOrder {
             ? InetAddress.getByName(System.getProperty("destination"))
             : InetAddress.getByName("localhost");
         try (final DatagramSocket socket = new DatagramSocket(port)) {
-            final Broadcast broadcast = new UdpBroadcast<>(socket, destination, destinationPort, new CausalOrder<>());
+            final Broadcast broadcast = new UdpBroadcast<>(
+                socket, destination, destinationPort, (host) -> new CausalOrder<>(host));
 
             Observable.range(1, MESSAGE_COUNT)
                 .map(Ping::new)
