@@ -13,9 +13,9 @@ public class SingleSourceFifoOrderTest {
     public final void receiveMessagesInOrder() {
         final Sender sender1 = new Sender(new byte[]{0});
         final TestSubscriber<TestValue> consumer = new TestSubscriber<>();
-        final Timestamped<TestValue> value0 = new Timestamped<>(0, new TestValue(41));
-        final Timestamped<TestValue> value1 = new Timestamped<>(1, new TestValue(42));
-        final Timestamped<TestValue> value2 = new Timestamped<>(2, new TestValue(43));
+        final Timestamped<TestValue> value0 = new Timestamped<>(1, new TestValue(41));
+        final Timestamped<TestValue> value1 = new Timestamped<>(2, new TestValue(42));
+        final Timestamped<TestValue> value2 = new Timestamped<>(3, new TestValue(43));
         final SingleSourceFifoOrder<TestValue> ssf = new SingleSourceFifoOrder<>();
 
         ssf.receive(sender1, consumer::onNext, value0);
@@ -29,9 +29,9 @@ public class SingleSourceFifoOrderTest {
     public final void receiveMessagesOutOfOrder() {
         final Sender sender1 = new Sender(new byte[]{0});
         final TestSubscriber<TestValue> consumer = new TestSubscriber<>();
-        final Timestamped<TestValue> value0 = new Timestamped<>(0, new TestValue(41));
-        final Timestamped<TestValue> value1 = new Timestamped<>(1, new TestValue(42));
-        final Timestamped<TestValue> value2 = new Timestamped<>(2, new TestValue(43));
+        final Timestamped<TestValue> value0 = new Timestamped<>(1, new TestValue(41));
+        final Timestamped<TestValue> value1 = new Timestamped<>(2, new TestValue(42));
+        final Timestamped<TestValue> value2 = new Timestamped<>(3, new TestValue(43));
         final SingleSourceFifoOrder<TestValue> ssf = new SingleSourceFifoOrder<>();
 
         ssf.receive(sender1, consumer::onNext, value1);
@@ -45,10 +45,10 @@ public class SingleSourceFifoOrderTest {
     public final void receiveMessagesInReverseOrder() {
         final Sender sender1 = new Sender(new byte[]{0});
         final TestSubscriber<TestValue> consumer = new TestSubscriber<>();
-        final Timestamped<TestValue> value0 = new Timestamped<>(0, new TestValue(41));
-        final Timestamped<TestValue> value1 = new Timestamped<>(1, new TestValue(42));
-        final Timestamped<TestValue> value2 = new Timestamped<>(2, new TestValue(43));
-        final Timestamped<TestValue> value3 = new Timestamped<>(3, new TestValue(44));
+        final Timestamped<TestValue> value0 = new Timestamped<>(1, new TestValue(41));
+        final Timestamped<TestValue> value1 = new Timestamped<>(2, new TestValue(42));
+        final Timestamped<TestValue> value2 = new Timestamped<>(3, new TestValue(43));
+        final Timestamped<TestValue> value3 = new Timestamped<>(4, new TestValue(44));
         final SingleSourceFifoOrder<TestValue> ssf = new SingleSourceFifoOrder<>();
 
         ssf.receive(sender1, consumer::onNext, value3);
@@ -63,10 +63,10 @@ public class SingleSourceFifoOrderTest {
     public final void receiveMessagesWithDropLateFlagDoesDropLateMessages() {
         final Sender sender1 = new Sender(new byte[]{0});
         final TestSubscriber<TestValue> consumer = new TestSubscriber<>();
-        final Timestamped<TestValue> value0 = new Timestamped<>(0, new TestValue(41));
-        final Timestamped<TestValue> value1 = new Timestamped<>(1, new TestValue(42));
-        final Timestamped<TestValue> value2 = new Timestamped<>(2, new TestValue(43));
-        final Timestamped<TestValue> value3 = new Timestamped<>(3, new TestValue(44));
+        final Timestamped<TestValue> value0 = new Timestamped<>(1, new TestValue(41));
+        final Timestamped<TestValue> value1 = new Timestamped<>(2, new TestValue(42));
+        final Timestamped<TestValue> value2 = new Timestamped<>(3, new TestValue(43));
+        final Timestamped<TestValue> value3 = new Timestamped<>(4, new TestValue(44));
         final SingleSourceFifoOrder<TestValue> ssf = new SingleSourceFifoOrder<>(SingleSourceFifoOrder.DROP_LATE);
 
         ssf.receive(sender1, consumer::onNext, value2);
@@ -81,10 +81,10 @@ public class SingleSourceFifoOrderTest {
     public final void receiveDuplicateMessagesInOrder() {
         final Sender sender1 = new Sender(new byte[]{0});
         final TestSubscriber<TestValue> consumer = new TestSubscriber<>();
-        final Timestamped<TestValue> value0 = new Timestamped<>(0, new TestValue(41));
-        final Timestamped<TestValue> value1 = new Timestamped<>(0, new TestValue(41));
-        final Timestamped<TestValue> value2 = new Timestamped<>(1, new TestValue(42));
-        final Timestamped<TestValue> value3 = new Timestamped<>(1, new TestValue(42));
+        final Timestamped<TestValue> value0 = new Timestamped<>(1, new TestValue(41));
+        final Timestamped<TestValue> value1 = new Timestamped<>(1, new TestValue(41));
+        final Timestamped<TestValue> value2 = new Timestamped<>(2, new TestValue(42));
+        final Timestamped<TestValue> value3 = new Timestamped<>(2, new TestValue(42));
         final SingleSourceFifoOrder<TestValue> ssf = new SingleSourceFifoOrder<>();
 
         ssf.receive(sender1, consumer::onNext, value0);
@@ -99,10 +99,10 @@ public class SingleSourceFifoOrderTest {
     public final void receiveDuplicateMessagesInReverseOrder() {
         final Sender sender1 = new Sender(new byte[]{0});
         final TestSubscriber<TestValue> consumer = new TestSubscriber<>();
-        final Timestamped<TestValue> value0 = new Timestamped<>(0, new TestValue(41));
-        final Timestamped<TestValue> value1 = new Timestamped<>(0, new TestValue(41));
-        final Timestamped<TestValue> value2 = new Timestamped<>(1, new TestValue(42));
-        final Timestamped<TestValue> value3 = new Timestamped<>(1, new TestValue(42));
+        final Timestamped<TestValue> value0 = new Timestamped<>(1, new TestValue(41));
+        final Timestamped<TestValue> value1 = new Timestamped<>(1, new TestValue(41));
+        final Timestamped<TestValue> value2 = new Timestamped<>(2, new TestValue(42));
+        final Timestamped<TestValue> value3 = new Timestamped<>(2, new TestValue(42));
         final SingleSourceFifoOrder<TestValue> ssf = new SingleSourceFifoOrder<>();
 
         ssf.receive(sender1, consumer::onNext, value3);
@@ -119,8 +119,8 @@ public class SingleSourceFifoOrderTest {
         final Sender sender2 = new Sender(ByteBuffer.allocate(Long.BYTES).putLong(-6048052815991921992L).array());
 
         final TestSubscriber<TestValue> consumer = new TestSubscriber<>();
-        final Timestamped<TestValue> value0 = new Timestamped<>(0, new TestValue(40));
-        final Timestamped<TestValue> value1 = new Timestamped<>(0, new TestValue(41));
+        final Timestamped<TestValue> value0 = new Timestamped<>(1, new TestValue(40));
+        final Timestamped<TestValue> value1 = new Timestamped<>(1, new TestValue(41));
         final SingleSourceFifoOrder<TestValue> ssf = new SingleSourceFifoOrder<>();
 
         ssf.receive(sender1, consumer::onNext, value0);
@@ -136,9 +136,9 @@ public class SingleSourceFifoOrderTest {
         final Sender sender2 = new Sender(ByteBuffer.allocate(Long.BYTES).putLong(-6048052815991921992L).array());
 
         final TestSubscriber<TestValue> consumer = new TestSubscriber<>();
-        final Timestamped<TestValue> value0 = new Timestamped<>(0, new TestValue(40));
-        final Timestamped<TestValue> value1 = new Timestamped<>(1, new TestValue(41));
-        final Timestamped<TestValue> value2 = new Timestamped<>(2, new TestValue(42));
+        final Timestamped<TestValue> value0 = new Timestamped<>(1, new TestValue(40));
+        final Timestamped<TestValue> value1 = new Timestamped<>(2, new TestValue(41));
+        final Timestamped<TestValue> value2 = new Timestamped<>(3, new TestValue(42));
         final SingleSourceFifoOrder<TestValue> ssf = new SingleSourceFifoOrder<>();
 
         ssf.receive(sender1, consumer::onNext, value2);
@@ -157,10 +157,10 @@ public class SingleSourceFifoOrderTest {
         final Sender sender2 = new Sender(ByteBuffer.allocate(Long.BYTES).putLong(-6048052815991921992L).array());
 
         final TestSubscriber<TestValue> consumer = new TestSubscriber<>();
-        final Timestamped<TestValue> value0 = new Timestamped<>(0, new TestValue(41));
-        final Timestamped<TestValue> value1 = new Timestamped<>(1, new TestValue(42));
-        final Timestamped<TestValue> value2 = new Timestamped<>(2, new TestValue(43));
-        final Timestamped<TestValue> value3 = new Timestamped<>(3, new TestValue(44));
+        final Timestamped<TestValue> value0 = new Timestamped<>(1, new TestValue(41));
+        final Timestamped<TestValue> value1 = new Timestamped<>(2, new TestValue(42));
+        final Timestamped<TestValue> value2 = new Timestamped<>(3, new TestValue(43));
+        final Timestamped<TestValue> value3 = new Timestamped<>(4, new TestValue(44));
         final SingleSourceFifoOrder<TestValue> ssf = new SingleSourceFifoOrder<>(SingleSourceFifoOrder.DROP_LATE);
 
         ssf.receive(sender1, consumer::onNext, value2);
@@ -182,10 +182,10 @@ public class SingleSourceFifoOrderTest {
         final Sender sender2 = new Sender(ByteBuffer.allocate(Long.BYTES).putLong(-6048052815991921992L).array());
 
         final TestSubscriber<TestValue> consumer = new TestSubscriber<>();
-        final Timestamped<TestValue> value0 = new Timestamped<>(0, new TestValue(41));
-        final Timestamped<TestValue> value1 = new Timestamped<>(0, new TestValue(41));
-        final Timestamped<TestValue> value2 = new Timestamped<>(1, new TestValue(42));
-        final Timestamped<TestValue> value3 = new Timestamped<>(1, new TestValue(42));
+        final Timestamped<TestValue> value0 = new Timestamped<>(1, new TestValue(41));
+        final Timestamped<TestValue> value1 = new Timestamped<>(1, new TestValue(41));
+        final Timestamped<TestValue> value2 = new Timestamped<>(2, new TestValue(42));
+        final Timestamped<TestValue> value3 = new Timestamped<>(2, new TestValue(42));
         final SingleSourceFifoOrder<TestValue> ssf = new SingleSourceFifoOrder<>();
 
         ssf.receive(sender1, consumer::onNext, value0);
@@ -207,10 +207,10 @@ public class SingleSourceFifoOrderTest {
         final Sender sender2 = new Sender(ByteBuffer.allocate(Long.BYTES).putLong(-6048052815991921992L).array());
 
         final TestSubscriber<TestValue> consumer = new TestSubscriber<>();
-        final Timestamped<TestValue> value0 = new Timestamped<>(0, new TestValue(41));
-        final Timestamped<TestValue> value1 = new Timestamped<>(0, new TestValue(41));
-        final Timestamped<TestValue> value2 = new Timestamped<>(1, new TestValue(42));
-        final Timestamped<TestValue> value3 = new Timestamped<>(1, new TestValue(42));
+        final Timestamped<TestValue> value0 = new Timestamped<>(1, new TestValue(41));
+        final Timestamped<TestValue> value1 = new Timestamped<>(1, new TestValue(41));
+        final Timestamped<TestValue> value2 = new Timestamped<>(2, new TestValue(42));
+        final Timestamped<TestValue> value3 = new Timestamped<>(2, new TestValue(42));
         final SingleSourceFifoOrder<TestValue> ssf = new SingleSourceFifoOrder<>();
 
         ssf.receive(sender1, consumer::onNext, value3);
@@ -230,8 +230,8 @@ public class SingleSourceFifoOrderTest {
     public final void prepareValueShouldReturnTimestampedValueWithIncreasingTimestamps() {
         final SingleSourceFifoOrder<TestValue> ssf = new SingleSourceFifoOrder<>();
 
-        Assert.assertEquals(new Timestamped<>(0, new TestValue(42)), ssf.prepare(new TestValue(42)));
         Assert.assertEquals(new Timestamped<>(1, new TestValue(42)), ssf.prepare(new TestValue(42)));
         Assert.assertEquals(new Timestamped<>(2, new TestValue(42)), ssf.prepare(new TestValue(42)));
+        Assert.assertEquals(new Timestamped<>(3, new TestValue(42)), ssf.prepare(new TestValue(42)));
     }
 }
