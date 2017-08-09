@@ -22,6 +22,12 @@ public final class Sender implements Serializable, Comparable<Sender> {
 
     private transient ByteBuffer bytes;
 
+    @SuppressWarnings("unused")
+    Sender() {
+        // This no-arg ctor is for deserialization purposes only
+        this(new byte[0]);
+    }
+
     Sender(final byte[] bytes) {
         this.byteBuffer = bytes;
         this.bytes = ByteBuffer.wrap(bytes);
