@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.IntStream;
@@ -54,12 +53,11 @@ final class VectorTimestamp implements Comparable<VectorTimestamp>, Serializable
             vt2.put(other.ids[i], other.timestamps[i]);
         }
 
-        final Set<Sender> senders = new HashSet<>();
-        senders.addAll(vt1.keySet());
-        senders.addAll(vt2.keySet());
-
-        final boolean lte = senders.stream().allMatch((sender) -> vt1.get(sender) <= vt2.get(sender));
-        final boolean lt  = senders.stream().anyMatch((sender) -> vt1.get(sender) <  vt2.get(sender)) && lte;
+        final Set<Sender> senders = vt1.keySet();
+        final boolean lte = senders.stream().allMatch(
+            (sender) -> vt2.containsKey(sender) && vt1.get(sender) <= vt2.get(sender));
+        final boolean lt  = senders.stream().anyMatch(
+            (sender) -> vt2.containsKey(sender) && vt1.get(sender) <  vt2.get(sender)) && lte;
         return lt ? -1 : lte ? 0 : 1;
     }
 
