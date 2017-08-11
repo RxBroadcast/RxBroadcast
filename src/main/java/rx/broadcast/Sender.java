@@ -2,11 +2,10 @@ package rx.broadcast;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Base64;
 
 public final class Sender implements Serializable, Comparable<Sender> {
@@ -18,9 +17,7 @@ public final class Sender implements Serializable, Comparable<Sender> {
 
     private static final int BYTES_SENDER_BUFFER = BYTES_IPV6_ADDRESS + BYTES_INT_PORT;
 
-    private final byte[] byteBuffer;
-
-    private transient ByteBuffer bytes;
+    final byte[] byteBuffer;
 
     @SuppressWarnings("unused")
     Sender() {
@@ -30,7 +27,6 @@ public final class Sender implements Serializable, Comparable<Sender> {
 
     Sender(final byte[] bytes) {
         this.byteBuffer = bytes;
-        this.bytes = ByteBuffer.wrap(bytes);
     }
 
     Sender(final InetAddress address, final int port) {
@@ -42,26 +38,22 @@ public final class Sender implements Serializable, Comparable<Sender> {
 
     @Override
     public final boolean equals(final Object o) {
-        return this == o || !(o == null || getClass() != o.getClass()) && bytes.equals(((Sender) o).bytes);
+        return this == o || !(o == null || getClass() != o.getClass())
+            && Arrays.equals(byteBuffer, ((Sender) o).byteBuffer);
     }
 
     @Override
     public final int hashCode() {
-        return bytes.hashCode();
+        return ByteBuffer.wrap(byteBuffer).hashCode();
     }
 
     @Override
     public int compareTo(@NotNull final Sender o) {
-        return bytes.compareTo(o.bytes);
+        return ByteBuffer.wrap(byteBuffer).compareTo(ByteBuffer.wrap(o.byteBuffer));
     }
 
     @Override
     public String toString() {
-        return "Sender{id=" + Base64.getEncoder().encodeToString(bytes.array()) + '}';
-    }
-
-    private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
-        in.defaultReadObject();
-        this.bytes = ByteBuffer.wrap(byteBuffer);
+        return "Sender{id=" + Base64.getEncoder().encodeToString(byteBuffer) + '}';
     }
 }
