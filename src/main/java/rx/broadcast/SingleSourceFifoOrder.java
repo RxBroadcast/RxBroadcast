@@ -40,7 +40,7 @@ public final class SingleSourceFifoOrder<T> implements BroadcastOrder<Timestampe
 
     @Override
     public void receive(final Sender sender, final Consumer<T> consumer, final Timestamped<T> value) {
-        expectedTimestamps.putIfAbsent(sender, 0L);
+        expectedTimestamps.putIfAbsent(sender, 1L);
 
         if (dropLateMessages) {
             if (Long.compareUnsigned(value.timestamp, expectedTimestamps.get(sender)) >= 0) {

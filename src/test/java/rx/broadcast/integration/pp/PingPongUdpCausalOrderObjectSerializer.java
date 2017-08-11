@@ -38,7 +38,7 @@ public class PingPongUdpCausalOrderObjectSerializer {
             : InetAddress.getByName("localhost");
         try (final DatagramSocket socket = new DatagramSocket(port)) {
             final Broadcast broadcast = new UdpBroadcast<>(
-                socket, destination, destinationPort, new ObjectSerializer<>(), new CausalOrder<>());
+                socket, destination, destinationPort, new ObjectSerializer<>(), (host) -> new CausalOrder<>(host));
             final TestSubscriber<Ping> subscriber = new TestSubscriber<>();
 
             broadcast.valuesOfType(Ping.class)
@@ -78,7 +78,7 @@ public class PingPongUdpCausalOrderObjectSerializer {
             : InetAddress.getByName("localhost");
         try (final DatagramSocket socket = new DatagramSocket(port)) {
             final Broadcast broadcast = new UdpBroadcast<>(
-                socket, destination, destinationPort, new ObjectSerializer<>(), new CausalOrder<>());
+                socket, destination, destinationPort, new ObjectSerializer<>(), (host) -> new CausalOrder<>(host));
 
             Observable.range(1, MESSAGE_COUNT)
                 .map(Ping::new)
