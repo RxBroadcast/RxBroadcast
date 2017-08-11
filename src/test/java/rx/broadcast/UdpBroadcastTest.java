@@ -108,7 +108,7 @@ public class UdpBroadcastTest {
 
     @SuppressWarnings({"checkstyle:magicnumber"})
     @Test
-    public final void deserializationErrorDoesNotTerminateStream() throws IOException {
+    public final void deserializationErrorDoesTerminateStream() throws IOException {
         final TestSubscriber<Object> subscriber = new TestSubscriber<>();
         final DatagramSocket s1 = datagramSocketSupplier.get();
         final DatagramSocket s2 = datagramSocketSupplier.get();
@@ -118,6 +118,34 @@ public class UdpBroadcastTest {
             s2, InetAddress.getLoopbackAddress(), s1.getLocalPort(), new NoOrder<>());
 
         broadcast2.valuesOfType(TestValue.class).take(4).subscribe(subscriber);
+
+        final Observable<Void> testValue = broadcast1.send(new TestValue(42));
+        s1.send(new DatagramPacket(new byte[]{42, 43, 44, 45}, 4, InetAddress.getLoopbackAddress(), s2.getLocalPort()));
+        testValue.toBlocking().subscribe();
+        testValue.toBlocking().subscribe();
+        testValue.toBlocking().subscribe();
+        testValue.toBlocking().subscribe();
+
+        subscriber.awaitTerminalEvent(10, TimeUnit.SECONDS);
+        subscriber.assertValueCount(0);
+        subscriber.assertError(RuntimeException.class);
+    }
+
+    @SuppressWarnings({"checkstyle:MagicNumber"})
+    @Test
+    public final void deserializationErrorStreamCanBeRestarted() throws IOException {
+        final TestSubscriber<Object> subscriber = new TestSubscriber<>();
+        final DatagramSocket s1 = datagramSocketSupplier.get();
+        final DatagramSocket s2 = datagramSocketSupplier.get();
+        final Broadcast broadcast1 = new UdpBroadcast<>(
+            s1, InetAddress.getLoopbackAddress(), s2.getLocalPort(), new NoOrder<>());
+        final Broadcast broadcast2 = new UdpBroadcast<>(
+            s2, InetAddress.getLoopbackAddress(), s1.getLocalPort(), new NoOrder<>());
+
+        broadcast2.valuesOfType(TestValue.class)
+            .take(4)
+            .retry()
+            .subscribe(subscriber);
 
         final Observable<Void> testValue = broadcast1.send(new TestValue(42));
         s1.send(new DatagramPacket(new byte[]{42, 43, 44, 45}, 4, InetAddress.getLoopbackAddress(), s2.getLocalPort()));

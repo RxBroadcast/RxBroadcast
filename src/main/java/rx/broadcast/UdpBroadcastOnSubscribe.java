@@ -47,12 +47,8 @@ final class UdpBroadcastOnSubscribe<T> implements Observable.OnSubscribe<Object>
 
             final Sender sender = new Sender(packet.getAddress(), packet.getPort());
             final byte[] data = Arrays.copyOf(buffer, packet.getLength());
-            try {
-                final T object = serializer.decode(data);
-                broadcastOrder.receive(sender, consumer, object);
-            } catch (final RuntimeException e) {
-                /* This is bad and I feel bad about it. See issue #47 for plans to fix this. */
-            }
+            final T object = serializer.decode(data);
+            broadcastOrder.receive(sender, consumer, object);
         }
     }
 }
