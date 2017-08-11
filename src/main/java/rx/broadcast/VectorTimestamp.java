@@ -54,11 +54,11 @@ final class VectorTimestamp implements Comparable<VectorTimestamp>, Serializable
         }
 
         final Set<Sender> senders = vt1.keySet();
-        final boolean lte = senders.stream().allMatch(
-            (sender) -> vt2.containsKey(sender) && vt1.get(sender) <= vt2.get(sender));
-        final boolean lt  = senders.stream().anyMatch(
-            (sender) -> vt2.containsKey(sender) && vt1.get(sender) <  vt2.get(sender)) && lte;
-        return lt ? -1 : lte ? 0 : 1;
+        final boolean allAreLessThanOrEql = senders.stream()
+            .allMatch((s) -> vt1.containsKey(s) && vt2.containsKey(s) && vt1.get(s) <= vt2.get(s));
+        final boolean oneExistsThatIsLess = senders.stream()
+            .anyMatch((s) -> vt1.containsKey(s) && vt2.containsKey(s) && vt1.get(s) <  vt2.get(s));
+        return (oneExistsThatIsLess && allAreLessThanOrEql) ? -1 : allAreLessThanOrEql ? 0 : 1;
     }
 
     @Override
