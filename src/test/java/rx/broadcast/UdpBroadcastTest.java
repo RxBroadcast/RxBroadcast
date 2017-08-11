@@ -108,7 +108,7 @@ public class UdpBroadcastTest {
 
     @SuppressWarnings({"checkstyle:magicnumber"})
     @Test
-    public final void deserializationErrorDoesNotTerminateStream() throws IOException {
+    public final void deserializationErrorDoesTerminateStream() throws IOException {
         final TestSubscriber<Object> subscriber = new TestSubscriber<>();
         final DatagramSocket s1 = datagramSocketSupplier.get();
         final DatagramSocket s2 = datagramSocketSupplier.get();
@@ -127,9 +127,7 @@ public class UdpBroadcastTest {
         testValue.toBlocking().subscribe();
 
         subscriber.awaitTerminalEvent(10, TimeUnit.SECONDS);
-        subscriber.assertNoErrors();
-        subscriber.assertValueCount(4);
-        subscriber.assertReceivedOnNext(Arrays.asList(
-            new TestValue(42), new TestValue(42), new TestValue(42), new TestValue(42)));
+        subscriber.assertValueCount(0);
+        subscriber.assertError(RuntimeException.class);
     }
 }
