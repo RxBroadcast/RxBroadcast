@@ -13,28 +13,28 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
 
-public final class UdpBroadcast<A> implements Broadcast {
+public final class UdpBroadcast<T> implements Broadcast {
     private final DatagramSocket socket;
 
     private final Observable<Object> values;
 
     private final ConcurrentHashMap<Class<?>, Observable<?>> streams;
 
-    private final Serializer<A> serializer;
+    private final Serializer<T> serializer;
 
     private final InetAddress destinationAddress;
 
     private final int destinationPort;
 
-    private final Single<BroadcastOrder<A, Object>> broadcastOrder;
+    private final Single<BroadcastOrder<T, Object>> broadcastOrder;
 
     @SuppressWarnings("WeakerAccess")
     public UdpBroadcast(
         final DatagramSocket socket,
         final InetAddress destinationAddress,
         final int destinationPort,
-        final Serializer<A> serializer,
-        final Function<Sender, BroadcastOrder<A, Object>> createBroadcastOrder
+        final Serializer<T> serializer,
+        final Function<Sender, BroadcastOrder<T, Object>> createBroadcastOrder
     ) {
         this.socket = socket;
         final Scheduler singleThreadScheduler = Schedulers.from(
@@ -56,8 +56,8 @@ public final class UdpBroadcast<A> implements Broadcast {
         final DatagramSocket socket,
         final InetAddress destinationAddress,
         final int destinationPort,
-        final Serializer<A> serializer,
-        final BroadcastOrder<A, Object> order
+        final Serializer<T> serializer,
+        final BroadcastOrder<T, Object> order
     ) {
         this(socket, destinationAddress, destinationPort, serializer, (host) -> order);
     }
@@ -67,7 +67,7 @@ public final class UdpBroadcast<A> implements Broadcast {
         final DatagramSocket socket,
         final InetAddress destinationAddress,
         final int destinationPort,
-        final BroadcastOrder<A, Object> order
+        final BroadcastOrder<T, Object> order
     ) {
         this(socket, destinationAddress, destinationPort, new KryoSerializer<>(), (host) -> order);
     }
@@ -77,7 +77,7 @@ public final class UdpBroadcast<A> implements Broadcast {
         final DatagramSocket socket,
         final InetAddress destinationAddress,
         final int destinationPort,
-        final Function<Sender, BroadcastOrder<A, Object>> createBroadcastOrder
+        final Function<Sender, BroadcastOrder<T, Object>> createBroadcastOrder
     ) {
         this(socket, destinationAddress, destinationPort, new KryoSerializer<>(), createBroadcastOrder);
     }
@@ -99,7 +99,7 @@ public final class UdpBroadcast<A> implements Broadcast {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> Observable<@NotNull T> valuesOfType(@NotNull final Class<T> clazz) {
-        return (Observable<T>) streams.computeIfAbsent(clazz, k -> values.ofType(k).share());
+    public <V> Observable<@NotNull V> valuesOfType(@NotNull final Class<V> clazz) {
+        return (Observable<V>) streams.computeIfAbsent(clazz, k -> values.ofType(k).share());
     }
 }
