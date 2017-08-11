@@ -14,8 +14,6 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Parser;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 public class CausalOrderProtobufSerializer<T> implements Serializer<VectorTimestamped<T>> {
     private static final String MESSAGE_NAME = "VectorTimestamped";
 
@@ -31,13 +29,13 @@ public class CausalOrderProtobufSerializer<T> implements Serializer<VectorTimest
 
     private static final int VALUE_FIELD_NUMBER = 3;
 
+    private final Descriptor messageDescriptor;
+
     private final FieldDescriptor ids;
 
     private final FieldDescriptor timestamps;
 
     private final FieldDescriptor value;
-
-    private final DynamicMessage.Builder messageBuilder;
 
     private final Parser<DynamicMessage> messageParser;
 
@@ -73,11 +71,13 @@ public class CausalOrderProtobufSerializer<T> implements Serializer<VectorTimest
             final Descriptor message = FileDescriptor
                 .buildFrom(timestampedMessageFile, new FileDescriptor[0])
                 .findMessageTypeByName(MESSAGE_NAME);
-            this.ids = message.findFieldByName(IDS_FIELD_NAME);
-            this.timestamps = message.findFieldByName(TIMESTAMPS_FIELD_NAME);
-            this.value = message.findFieldByName(VALUE_FIELD_NAME);
-            this.messageBuilder = DynamicMessage.newBuilder(message);
-            this.messageParser = messageBuilder.buildPartial().getParserForType();
+            this.messageDescriptor = message;
+            this.ids = messageDescriptor.findFieldByName(IDS_FIELD_NAME);
+            this.timestamps = messageDescriptor.findFieldByName(TIMESTAMPS_FIELD_NAME);
+            this.value = messageDescriptor.findFieldByName(VALUE_FIELD_NAME);
+            this.messageParser = DynamicMessage.newBuilder(messageDescriptor)
+                .buildPartial()
+                .getParserForType();
         } catch (final DescriptorValidationException e) {
             throw new RuntimeException(e);
         }
@@ -111,14 +111,12 @@ public class CausalOrderProtobufSerializer<T> implements Serializer<VectorTimest
     @NotNull
     @Override
     public final byte[] encode(@NotNull final VectorTimestamped<T> data) {
-        final DynamicMessage.Builder builder = messageBuilder
+        final DynamicMessage.Builder builder = DynamicMessage.newBuilder(messageDescriptor)
             .setField(this.value, objectSerializer.encode(data.value));
 
-        final AtomicInteger i = new AtomicInteger(0);
         data.timestamp.stream().forEachOrdered(entry -> {
-            builder.setRepeatedField(this.ids, i.get(), entry.id);
-            builder.setRepeatedField(this.timestamps, i.get(), entry.timestamp);
-            i.incrementAndGet();
+            builder.addRepeatedField(this.ids, entry.id.byteBuffer);
+            builder.addRepeatedField(this.timestamps, entry.timestamp);
         });
 
         return builder.build().toByteArray();
