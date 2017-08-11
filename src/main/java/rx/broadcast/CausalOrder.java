@@ -5,6 +5,8 @@ import rx.broadcast.time.LamportClock;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -19,6 +21,8 @@ public final class CausalOrder<T> implements BroadcastOrder<VectorTimestamped<T>
     private final Map<Sender, SortedSet<VectorTimestamped<T>>> pending = new HashMap<>();
 
     private final LamportClock localClock;
+
+    private final List<T> sendQueue = new LinkedList<>();
 
     public CausalOrder(final Sender me) {
         this.localClock = new LamportClock();
@@ -62,7 +66,7 @@ public final class CausalOrder<T> implements BroadcastOrder<VectorTimestamped<T>
         vectorClock.putIfAbsent(sender, new LamportClock());
         message.timestamp.stream().forEach((entry) -> vectorClock.putIfAbsent(entry.id, new LamportClock()));
         if (shouldBeDelivered(sender, message)) {
-            deliver(sender, consumer, message);
+            deliver(sender, sendQueue::add, message);
             adjustClock(sender, message);
         } else {
             queueMessage(sender, message);
@@ -75,10 +79,16 @@ public final class CausalOrder<T> implements BroadcastOrder<VectorTimestamped<T>
                 if (!shouldBeDelivered(id, timestamped)) {
                     continue;
                 }
-                deliver(id, consumer, timestamped);
+                deliver(id, sendQueue::add, timestamped);
                 adjustClock(id, timestamped);
                 iterator.remove();
             }
+        }
+
+        final Iterator<T> iterator = sendQueue.iterator();
+        while (iterator.hasNext()) {
+            consumer.accept(iterator.next());
+            iterator.remove();
         }
     }
 
