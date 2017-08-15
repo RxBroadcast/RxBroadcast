@@ -10,6 +10,7 @@ plugins {
     jacoco
     checkstyle
     findbugs
+    pmd
     id("com.jfrog.bintray") version "1.6"
     id("net.ltgt.errorprone-base") version "0.0.11"
 }
