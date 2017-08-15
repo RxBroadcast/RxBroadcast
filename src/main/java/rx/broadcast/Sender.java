@@ -38,7 +38,7 @@ public final class Sender implements Serializable, Comparable<Sender> {
 
     @Override
     public final boolean equals(final Object o) {
-        return this == o || !(o == null || getClass() != o.getClass())
+        return (this == o || !(o == null || getClass() != o.getClass()))
             && Arrays.equals(byteBuffer, ((Sender) o).byteBuffer);
     }
 
