@@ -73,6 +73,7 @@ jobs:
           script: scripts/infer
         - script: gradle findBugs{Main,Test}
         - script: gradle errorProne
+        - script: gradle pmd{Main,Test}
 deploy:
     provider: script
     script: scripts/deploy
