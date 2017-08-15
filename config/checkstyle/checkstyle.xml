@@ -29,6 +29,18 @@
         <property name="message" value="Line has trailing whitespace" />
     </module>
 
+    <!-- Disallow Throwable#printStackTrace() -->
+    <module name="RegexpSingleline">
+        <property name="format" value="\.printStackTrace\(\)" />
+        <property name="message" value="Do not use Throwable#printStackTrace" />
+    </module>
+
+    <!-- Disallow newline just inside class declaration -->
+    <module name="RegexpMultiline">
+        <property name="format" value="(\w+\s)*class\s(\w+\s)*\{$\s+$" />
+        <property name="message" value="Empty line immediately following the class declaration" />
+    </module>
+
     <module name="SuppressWarningsFilter" />
 
     <module name="TreeWalker">
