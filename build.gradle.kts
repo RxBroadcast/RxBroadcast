@@ -1,4 +1,5 @@
 import com.jfrog.bintray.gradle.BintrayExtension
+import net.ltgt.gradle.errorprone.ErrorProneToolChain
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
@@ -59,6 +60,13 @@ tasks.withType<FindBugs> {
         xml.isEnabled = false
         html.isEnabled = true
     }
+}
+
+task("errorProne") {
+    tasks.withType<JavaCompile>().all {
+        toolChain = ErrorProneToolChain(configurations.getByName("errorprone"))
+    }
+    dependsOn.add(tasks.withType<JavaCompile>())
 }
 
 task<Jar>("testJar") {
