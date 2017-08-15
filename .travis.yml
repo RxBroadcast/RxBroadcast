@@ -72,6 +72,7 @@ jobs:
                   - "$INFER_DIRECTORY"
           script: scripts/infer
         - script: gradle findBugs{Main,Test}
+        - script: gradle errorProne
 deploy:
     provider: script
     script: scripts/deploy

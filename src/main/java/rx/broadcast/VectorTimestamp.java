@@ -76,6 +76,26 @@ final class VectorTimestamp implements Comparable<VectorTimestamp>, Serializable
 
     @Override
     public int hashCode() {
-        return Objects.hash(ids, timestamps);
+        return Objects.hash(new Object() {
+            @Override
+            public boolean equals(final Object o) {
+                return this == o;
+            }
+
+            @Override
+            public int hashCode() {
+                return Arrays.hashCode(ids);
+            }
+        }, new Object() {
+            @Override
+            public boolean equals(final Object o) {
+                return this == o;
+            }
+
+            @Override
+            public int hashCode() {
+                return Arrays.hashCode(timestamps);
+            }
+        });
     }
 }
