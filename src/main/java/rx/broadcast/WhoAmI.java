@@ -19,6 +19,7 @@ class WhoAmI implements Callable<Sender> {
         final DatagramSocket ws = new DatagramSocket();
         // Send WHO_AM_I packet
         final byte[] data = new byte[]{0x42};
+        @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
         final DatagramPacket packet = new DatagramPacket(
             data, data.length, InetAddress.getByName("255.255.255.255"), ws.getLocalPort());
         ws.send(packet);
