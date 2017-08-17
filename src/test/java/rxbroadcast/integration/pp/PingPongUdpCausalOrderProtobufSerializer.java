@@ -1,13 +1,14 @@
 package rxbroadcast.integration.pp;
 
-import org.junit.Test;
-import rx.Observable;
 import rxbroadcast.Broadcast;
 import rxbroadcast.CausalOrder;
 import rxbroadcast.CausalOrderProtobufSerializer;
 import rxbroadcast.ObjectSerializer;
 import rxbroadcast.Serializer;
 import rxbroadcast.UdpBroadcast;
+
+import org.junit.Test;
+import rx.Observable;
 import rx.observers.TestSubscriber;
 
 import java.net.DatagramSocket;

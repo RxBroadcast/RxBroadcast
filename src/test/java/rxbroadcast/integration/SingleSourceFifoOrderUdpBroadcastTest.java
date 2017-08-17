@@ -1,11 +1,12 @@
 package rxbroadcast.integration;
 
-import org.junit.Test;
-import rx.Observable;
 import rxbroadcast.Broadcast;
 import rxbroadcast.SingleSourceFifoOrder;
 import rxbroadcast.TestValue;
 import rxbroadcast.UdpBroadcast;
+
+import org.junit.Test;
+import rx.Observable;
 import rx.observers.TestSubscriber;
 
 import java.net.DatagramSocket;
