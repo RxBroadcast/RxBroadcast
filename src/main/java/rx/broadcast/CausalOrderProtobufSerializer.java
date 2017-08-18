@@ -68,10 +68,9 @@ public class CausalOrderProtobufSerializer<T> implements Serializer<VectorTimest
                                 .setNumber(VALUE_FIELD_NUMBER)
                                 .setType(FieldDescriptorProto.Type.TYPE_BYTES)))
                 .build();
-            final Descriptor message = FileDescriptor
+            this.messageDescriptor = FileDescriptor
                 .buildFrom(timestampedMessageFile, new FileDescriptor[0])
                 .findMessageTypeByName(MESSAGE_NAME);
-            this.messageDescriptor = message;
             this.ids = messageDescriptor.findFieldByName(IDS_FIELD_NAME);
             this.timestamps = messageDescriptor.findFieldByName(TIMESTAMPS_FIELD_NAME);
             this.value = messageDescriptor.findFieldByName(VALUE_FIELD_NAME);
