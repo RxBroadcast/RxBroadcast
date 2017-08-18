@@ -29,6 +29,18 @@
         <property name="message" value="Line has trailing whitespace" />
     </module>
 
+    <!-- Disallow Throwable#printStackTrace() -->
+    <module name="RegexpSingleline">
+        <property name="format" value="\.printStackTrace\(\)" />
+        <property name="message" value="Do not use Throwable#printStackTrace" />
+    </module>
+
+    <!-- Disallow newline just inside class declaration -->
+    <module name="RegexpMultiline">
+        <property name="format" value="(\w+\s)*class\s(\w+\s)*\{$\s+$" />
+        <property name="message" value="Empty line immediately following the class declaration" />
+    </module>
+
     <module name="SuppressWarningsFilter" />
 
     <module name="TreeWalker">
@@ -54,14 +66,19 @@
 
         <!-- Checks for imports -->
         <!-- See http://checkstyle.sf.net/config_import.html -->
+        <module name="AvoidStaticImport" />
         <module name="AvoidStarImport" />
-        <module name="IllegalImport" />
+        <module name="IllegalImport">
+            <property name="illegalPkgs" value="rx.internal" />
+        </module>
         <module name="RedundantImport" />
         <module name="UnusedImports" />
         <module name="CustomImportOrder">
             <property name="thirdPartyPackageRegExp" value=".*" />
-            <property name="customImportOrderRules" value="THIRD_PARTY_PACKAGE###STANDARD_JAVA_PACKAGE" />
+            <property name="specialImportsRegExp" value="rxbroadcast\.*" />
+            <property name="customImportOrderRules" value="SPECIAL_IMPORTS###THIRD_PARTY_PACKAGE###STANDARD_JAVA_PACKAGE" />
             <property name="sortImportsInGroupAlphabetically" value="true" />
+            <property name="separateLineBetweenGroups" value="true"/>
         </module>
 
         <!-- Checks for Size Violations -->
@@ -70,7 +87,10 @@
             <property name="max" value="120" />
         </module>
         <module name="MethodLength" />
-        <module name="ParameterNumber" />
+        <module name="ParameterNumber">
+            <property name="max" value="10" />
+            <property name="tokens" value="METHOD_DEF" />
+        </module>
         <module name="AnonInnerLength" />
 
         <!-- Checks for whitespace -->
@@ -78,7 +98,8 @@
         <module name="CommentsIndentation"/>
         <module name="EmptyForIteratorPad" />
         <module name="EmptyLineSeparator">
-           <property name="allowMultipleEmptyLines" value="false"/>
+            <property name="allowMultipleEmptyLines" value="false" />
+            <property name="allowMultipleEmptyLinesInsideClassMembers" value="false" />
         </module>
         <module name="MethodParamPad" />
         <module name="NoWhitespaceAfter" />

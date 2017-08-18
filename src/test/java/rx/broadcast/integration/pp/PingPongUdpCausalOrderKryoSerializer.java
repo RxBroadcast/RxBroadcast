@@ -28,35 +28,36 @@ public class PingPongUdpCausalOrderKryoSerializer {
     @Test
     public final void recv() throws SocketException, UnknownHostException {
         final int port = System.getProperty("port") != null
-            ? Integer.valueOf(System.getProperty("port"))
+            ? Integer.parseInt(System.getProperty("port"))
             : 54321;
         final int destinationPort = System.getProperty("destinationPort") != null
-            ? Integer.valueOf(System.getProperty("destinationPort"))
+            ? Integer.parseInt(System.getProperty("destinationPort"))
             : 12345;
-        final DatagramSocket socket = new DatagramSocket(port);
-        final InetAddress destination = System.getProperty("destination") != null
-            ? InetAddress.getByName(System.getProperty("destination"))
-            : InetAddress.getByName("localhost");
-        final Broadcast broadcast = new UdpBroadcast<>(
-            socket, destination, destinationPort, new KryoSerializer<>(), new CausalOrder<>());
-        final TestSubscriber<Ping> subscriber = new TestSubscriber<>();
+        try (final DatagramSocket socket = new DatagramSocket(port)) {
+            final InetAddress destination = System.getProperty("destination") != null
+                ? InetAddress.getByName(System.getProperty("destination"))
+                : InetAddress.getByName("localhost");
+            final Broadcast broadcast = new UdpBroadcast<>(
+                socket, destination, destinationPort, new KryoSerializer<>(), (host) -> new CausalOrder<>(host));
+            final TestSubscriber<Ping> subscriber = new TestSubscriber<>();
 
-        broadcast.valuesOfType(Ping.class)
-            .doOnNext(System.out::println)
-            .concatMap(ping ->
-                broadcast.send(new Pong(ping.value))
-                    // Once we've sent the response, we can emit the PING value to the subscriber.
-                    // The cast here is a hack to allow us to concatenate a PING onto the stream.
-                    // Where this is an `Observable<Void>` we know we won't get anything that needs to be casted.
-                    .cast(Ping.class)
-                    .concatWith(Observable.just(ping))
-                    .doOnCompleted(() -> System.out.println("Sent PONG")))
-            .take(MESSAGE_COUNT)
-            .subscribe(subscriber);
+            broadcast.valuesOfType(Ping.class)
+                .doOnNext(System.out::println)
+                .concatMap(ping ->
+                    broadcast.send(new Pong(ping.value))
+                        // Once we've sent the response, we can emit the PING value to the subscriber.
+                        // The cast here is a hack to allow us to concatenate a PING onto the stream.
+                        // Where this is an `Observable<Void>` we know we won't get anything that needs to be casted.
+                        .cast(Ping.class)
+                        .concatWith(Observable.just(ping))
+                        .doOnCompleted(() -> System.out.println("Sent PONG")))
+                .take(MESSAGE_COUNT)
+                .subscribe(subscriber);
 
-        subscriber.awaitTerminalEventAndUnsubscribeOnTimeout(TIMEOUT, TimeUnit.SECONDS);
-        subscriber.assertNoErrors();
-        subscriber.assertValueCount(MESSAGE_COUNT);
+            subscriber.awaitTerminalEventAndUnsubscribeOnTimeout(TIMEOUT, TimeUnit.SECONDS);
+            subscriber.assertNoErrors();
+            subscriber.assertValueCount(MESSAGE_COUNT);
+        }
     }
 
     /**
@@ -67,29 +68,30 @@ public class PingPongUdpCausalOrderKryoSerializer {
      */
     public static void main(final String[] args) throws InterruptedException, SocketException, UnknownHostException {
         final int port = System.getProperty("port") != null
-            ? Integer.valueOf(System.getProperty("port"))
+            ? Integer.parseInt(System.getProperty("port"))
             : 54321;
         final int destinationPort = System.getProperty("destinationPort") != null
-            ? Integer.valueOf(System.getProperty("destinationPort"))
+            ? Integer.parseInt(System.getProperty("destinationPort"))
             : 12345;
-        final DatagramSocket socket = new DatagramSocket(port);
         final InetAddress destination = System.getProperty("destination") != null
             ? InetAddress.getByName(System.getProperty("destination"))
             : InetAddress.getByName("localhost");
-        final Broadcast broadcast = new UdpBroadcast<>(
-            socket, destination, destinationPort, new KryoSerializer<>(), new CausalOrder<>());
+        try (final DatagramSocket socket = new DatagramSocket(port)) {
+            final Broadcast broadcast = new UdpBroadcast<>(
+                socket, destination, destinationPort, new KryoSerializer<>(), (host) -> new CausalOrder<>(host));
 
-        Observable.range(1, MESSAGE_COUNT)
-            .map(Ping::new)
-            .doOnNext(System.out::println)
-            .concatMap(value ->
-                broadcast.send(value)
-                    .doOnCompleted(() -> System.out.printf("Sent %s%n", value))
-                    .cast(Pong.class)
-                    .concatWith(broadcast.valuesOfType(Pong.class).first()))
-            .timeout(TIMEOUT, TimeUnit.SECONDS)
-            .toBlocking()
-            .subscribe(pong ->
-                System.out.printf("Received %s%n", pong));
+            Observable.range(1, MESSAGE_COUNT)
+                .map(Ping::new)
+                .doOnNext(System.out::println)
+                .concatMap(value ->
+                    broadcast.send(value)
+                        .doOnCompleted(() -> System.out.printf("Sent %s%n", value))
+                        .cast(Pong.class)
+                        .concatWith(broadcast.valuesOfType(Pong.class).first()))
+                .timeout(TIMEOUT, TimeUnit.SECONDS)
+                .toBlocking()
+                .subscribe(pong ->
+                    System.out.printf("Received %s%n", pong));
+        }
     }
 }

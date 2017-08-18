@@ -1,4 +1,5 @@
 import com.jfrog.bintray.gradle.BintrayExtension
+import net.ltgt.gradle.errorprone.ErrorProneToolChain
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
@@ -8,7 +9,10 @@ plugins {
     java
     jacoco
     checkstyle
+    findbugs
+    pmd
     id("com.jfrog.bintray") version "1.6"
+    id("net.ltgt.errorprone-base") version "0.0.11"
 }
 
 repositories {
@@ -16,8 +20,8 @@ repositories {
 }
 
 dependencies {
-    compile("com.esotericsoftware:kryo:4.0.0")
-    compile("com.google.protobuf:protobuf-java:3.3.0")
+    compile("com.esotericsoftware:kryo:4.0.1")
+    compile("com.google.protobuf:protobuf-java:3.3.1")
     compile("io.reactivex:rxjava:1.3.0")
     compile("org.jetbrains:annotations:15.0")
     testCompile("junit:junit:4.12")
@@ -30,7 +34,7 @@ project.setProperty(archivesBaseNameProperty, project.name.toLowerCase())
 val archivesBaseName = { "${project.property(archivesBaseNameProperty)}" }
 
 group = project.name.toLowerCase()
-version = "1.2.1"
+version = "2.0.0-rc1"
 description = "A small distributed event library for the JVM"
 
 tasks.withType<JavaCompile> {
@@ -50,6 +54,20 @@ tasks.withType<Test> {
         events = setOf(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
         showStandardStreams = true
     })
+}
+
+tasks.withType<FindBugs> {
+    reports {
+        xml.isEnabled = false
+        html.isEnabled = true
+    }
+}
+
+task("errorProne") {
+    tasks.withType<JavaCompile>().all {
+        toolChain = ErrorProneToolChain(configurations.getByName("errorprone"))
+    }
+    dependsOn.add(tasks.withType<JavaCompile>())
 }
 
 task<Jar>("testJar") {
@@ -86,7 +104,7 @@ task<Jar>("javadocJar") {
 }
 
 configure<CheckstyleExtension> {
-    toolVersion = "6.15"
+    toolVersion = "8.0"
 }
 
 configure<JacocoPluginExtension> {

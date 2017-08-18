@@ -3,7 +3,8 @@ package rx.broadcast.integration.pp;
 import org.junit.Test;
 import rx.Observable;
 import rx.broadcast.Broadcast;
-import rx.broadcast.CausalOrder;
+import rx.broadcast.NoOrder;
+import rx.broadcast.ObjectSerializer;
 import rx.broadcast.UdpBroadcast;
 import rx.observers.TestSubscriber;
 
@@ -13,8 +14,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
-@SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:AvoidInlineConditionals"})
-public class PingPongUdpCausalOrder {
+public class PingPongUdpNoOrderObjectSerializer {
     private static final int MESSAGE_COUNT = 100;
 
     private static final long TIMEOUT = 30;
@@ -26,19 +26,12 @@ public class PingPongUdpCausalOrder {
      */
     @Test
     public final void recv() throws SocketException, UnknownHostException {
-        final int port = System.getProperty("port") != null
-            ? Integer.parseInt(System.getProperty("port"))
-            : 54321;
-        final int destinationPort = System.getProperty("destinationPort") != null
-            ? Integer.parseInt(System.getProperty("destinationPort"))
-            : 12345;
-
+        final int port = Integer.parseInt(System.getProperty("port"));
+        final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
         try (final DatagramSocket socket = new DatagramSocket(port)) {
-            final InetAddress destination = System.getProperty("destination") != null
-                ? InetAddress.getByName(System.getProperty("destination"))
-                : InetAddress.getByName("localhost");
             final Broadcast broadcast = new UdpBroadcast<>(
-                socket, destination, destinationPort, (host) -> new CausalOrder<>(host));
+                socket, destination, port, new ObjectSerializer<>(), new NoOrder<>());
+
             final TestSubscriber<Ping> subscriber = new TestSubscriber<>();
 
             broadcast.valuesOfType(Ping.class)
@@ -67,18 +60,11 @@ public class PingPongUdpCausalOrder {
      * @throws UnknownHostException if no IP address for the host machine could be found.
      */
     public static void main(final String[] args) throws InterruptedException, SocketException, UnknownHostException {
-        final int port = System.getProperty("port") != null
-            ? Integer.parseInt(System.getProperty("port"))
-            : 54321;
-        final int destinationPort = System.getProperty("destinationPort") != null
-            ? Integer.parseInt(System.getProperty("destinationPort"))
-            : 12345;
-        final InetAddress destination = System.getProperty("destination") != null
-            ? InetAddress.getByName(System.getProperty("destination"))
-            : InetAddress.getByName("localhost");
+        final int port = Integer.parseInt(System.getProperty("port"));
+        final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
         try (final DatagramSocket socket = new DatagramSocket(port)) {
             final Broadcast broadcast = new UdpBroadcast<>(
-                socket, destination, destinationPort, (host) -> new CausalOrder<>(host));
+                socket, destination, port, new ObjectSerializer<>(), new NoOrder<>());
 
             Observable.range(1, MESSAGE_COUNT)
                 .map(Ping::new)
