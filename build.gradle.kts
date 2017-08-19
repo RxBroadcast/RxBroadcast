@@ -48,7 +48,7 @@ tasks.withType<Javadoc> {
 }
 
 tasks.withType<Test> {
-    exclude("rx/broadcast/integration/**")
+    exclude("rxbroadcast/integration/**")
     testLogging({
         exceptionFormat = TestExceptionFormat.FULL
         events = setOf(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
