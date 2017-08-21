@@ -13,6 +13,8 @@ import java.util.stream.Stream;
 final class VectorTimestamp implements Comparable<VectorTimestamp>, Serializable {
     private static final long serialVersionUID = 114L;
 
+    private Integer hashCode = null;
+
     private Sender[] ids;
 
     private long[] timestamps;
@@ -76,26 +78,30 @@ final class VectorTimestamp implements Comparable<VectorTimestamp>, Serializable
 
     @Override
     public int hashCode() {
-        return Objects.hash(new Object() {
-            @Override
-            public boolean equals(final Object o) {
-                return this == o;
-            }
+        if (hashCode == null) {
+            hashCode = Objects.hash(new Object() {
+                @Override
+                public boolean equals(final Object o) {
+                    return this == o;
+                }
 
-            @Override
-            public int hashCode() {
-                return Arrays.hashCode(ids);
-            }
-        }, new Object() {
-            @Override
-            public boolean equals(final Object o) {
-                return this == o;
-            }
+                @Override
+                public int hashCode() {
+                    return Arrays.hashCode(ids);
+                }
+            }, new Object() {
+                @Override
+                public boolean equals(final Object o) {
+                    return this == o;
+                }
 
-            @Override
-            public int hashCode() {
-                return Arrays.hashCode(timestamps);
-            }
-        });
+                @Override
+                public int hashCode() {
+                    return Arrays.hashCode(timestamps);
+                }
+            });
+        }
+
+        return hashCode;
     }
 }
