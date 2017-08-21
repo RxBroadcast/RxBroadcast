@@ -14,7 +14,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Parser;
 import org.jetbrains.annotations.NotNull;
 
-public class CausalOrderProtobufSerializer<T> implements Serializer<VectorTimestamped<T>> {
+public final class CausalOrderProtobufSerializer<T> implements Serializer<VectorTimestamped<T>> {
     private static final String MESSAGE_NAME = "VectorTimestamped";
 
     private static final String IDS_FIELD_NAME = "ids";
