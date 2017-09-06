@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
 
-class DaemonThreadFactory implements ThreadFactory {
+final class DaemonThreadFactory implements ThreadFactory {
     private final AtomicLong id = new AtomicLong();
 
     @NotNull

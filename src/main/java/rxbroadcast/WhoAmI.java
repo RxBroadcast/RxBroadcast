@@ -6,7 +6,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.concurrent.Callable;
 
-class WhoAmI implements Callable<Sender> {
+final class WhoAmI implements Callable<Sender> {
     private final int destinationPort;
 
     WhoAmI(final int destinationPort) {

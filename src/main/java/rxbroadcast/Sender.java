@@ -54,6 +54,6 @@ public final class Sender implements Serializable, Comparable<Sender> {
 
     @Override
     public String toString() {
-        return "Sender{id=" + Base64.getEncoder().encodeToString(byteBuffer) + '}';
+        return String.format("Sender{id=%s}", Base64.getEncoder().encodeToString(byteBuffer));
     }
 }
