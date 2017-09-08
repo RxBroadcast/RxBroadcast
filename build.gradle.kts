@@ -104,7 +104,7 @@ task<Jar>("javadocJar") {
 }
 
 configure<CheckstyleExtension> {
-    toolVersion = "8.0"
+    toolVersion = "8.2"
 }
 
 configure<JacocoPluginExtension> {
