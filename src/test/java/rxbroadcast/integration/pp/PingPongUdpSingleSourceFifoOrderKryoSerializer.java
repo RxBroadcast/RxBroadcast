@@ -11,6 +11,7 @@ import rx.observers.TestSubscriber;
 
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
@@ -37,9 +38,10 @@ public class PingPongUdpSingleSourceFifoOrderKryoSerializer {
         final InetAddress destination = System.getProperty("destination") != null
             ? InetAddress.getByName(System.getProperty("destination"))
             : InetAddress.getByName("localhost");
+        final InetSocketAddress destinationSocket = new InetSocketAddress(destination, destinationPort);
         try (final DatagramSocket socket = new DatagramSocket(port)) {
             final Broadcast broadcast = new UdpBroadcast<>(
-                socket, destination, destinationPort, new KryoSerializer<>(), new SingleSourceFifoOrder<>());
+                socket, destinationSocket, new KryoSerializer<>(), new SingleSourceFifoOrder<>());
             final TestSubscriber<Ping> subscriber = new TestSubscriber<>();
 
             broadcast.valuesOfType(Ping.class)
@@ -77,9 +79,10 @@ public class PingPongUdpSingleSourceFifoOrderKryoSerializer {
         final InetAddress destination = System.getProperty("destination") != null
             ? InetAddress.getByName(System.getProperty("destination"))
             : InetAddress.getByName("localhost");
+        final InetSocketAddress destinationSocket = new InetSocketAddress(destination, destinationPort);
         try (final DatagramSocket socket = new DatagramSocket(port)) {
             final Broadcast broadcast = new UdpBroadcast<>(
-                socket, destination, destinationPort, new KryoSerializer<>(), new SingleSourceFifoOrder<>());
+                socket, destinationSocket, new KryoSerializer<>(), new SingleSourceFifoOrder<>());
 
             Observable.range(1, MESSAGE_COUNT)
                 .map(Ping::new)

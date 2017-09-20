@@ -11,6 +11,7 @@ import rx.observers.TestSubscriber;
 
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +31,8 @@ public final class SingleSourceFifoOrderUdpBroadcastTest {
         try (final DatagramSocket socket = new DatagramSocket(port)) {
             final TestSubscriber<TestValue> subscriber = new TestSubscriber<>();
             final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
-            final Broadcast broadcast = new UdpBroadcast<>(socket, destination, port, new SingleSourceFifoOrder<>());
+            final Broadcast broadcast = new UdpBroadcast<>(
+                socket, new InetSocketAddress(destination, port), new SingleSourceFifoOrder<>());
 
             broadcast.valuesOfType(TestValue.class).take(MESSAGE_COUNT).subscribe(subscriber);
 
@@ -45,7 +47,8 @@ public final class SingleSourceFifoOrderUdpBroadcastTest {
         final int port = Integer.parseInt(System.getProperty("port"));
         try (final DatagramSocket socket = new DatagramSocket(port)) {
             final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
-            final Broadcast broadcast = new UdpBroadcast<>(socket, destination, port, new SingleSourceFifoOrder<>());
+            final Broadcast broadcast = new UdpBroadcast<>(
+                socket, new InetSocketAddress(destination, port), new SingleSourceFifoOrder<>());
 
             MESSAGES.flatMap(broadcast::send).toBlocking().subscribe(null, System.err::println);
         }
