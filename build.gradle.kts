@@ -81,7 +81,7 @@ task<Jar>("testJar") {
             else -> zipTree(file)
         })
 
-        from(sourceSets.findByName("main").output + sourceSets.findByName("test").output)
+        from(sourceSets.findByName("main")!!.output + sourceSets.findByName("test")!!.output)
         from(files, {
             exclude("META-INF/**")
         })
@@ -92,7 +92,7 @@ task<Jar>("sourcesJar") {
     classifier = "sources"
     afterEvaluate({
         val sourceSets = convention.getPlugin(JavaPluginConvention::class).sourceSets
-        from(sourceSets.findByName("main").allSource)
+        from(sourceSets.findByName("main")!!.allSource)
     })
 }
 
