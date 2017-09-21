@@ -9,7 +9,7 @@ import rx.Observable;
 import rx.observers.TestSubscriber;
 
 import java.net.DatagramSocket;
-import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
@@ -27,9 +27,9 @@ public class PingPongUdpNoOrder {
     @Test
     public final void recv() throws SocketException, UnknownHostException {
         final int port = Integer.parseInt(System.getProperty("port"));
-        final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
+        final InetSocketAddress destination = new InetSocketAddress(System.getProperty("destination"), port);
         try (final DatagramSocket socket = new DatagramSocket(port)) {
-            final Broadcast broadcast = new UdpBroadcast<>(socket, destination, port, new NoOrder<>());
+            final Broadcast broadcast = new UdpBroadcast<>(socket, destination, new NoOrder<>());
 
             final TestSubscriber<Ping> subscriber = new TestSubscriber<>();
 
@@ -60,9 +60,9 @@ public class PingPongUdpNoOrder {
      */
     public static void main(final String[] args) throws InterruptedException, SocketException, UnknownHostException {
         final int port = Integer.parseInt(System.getProperty("port"));
-        final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
+        final InetSocketAddress destination = new InetSocketAddress(System.getProperty("destination"), port);
         try (final DatagramSocket socket = new DatagramSocket(port)) {
-            final Broadcast broadcast = new UdpBroadcast<>(socket, destination, port, new NoOrder<>());
+            final Broadcast broadcast = new UdpBroadcast<>(socket, destination, new NoOrder<>());
 
             Observable.range(1, MESSAGE_COUNT)
                 .map(Ping::new)

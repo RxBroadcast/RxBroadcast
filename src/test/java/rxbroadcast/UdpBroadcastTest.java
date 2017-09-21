@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -49,9 +50,9 @@ public class UdpBroadcastTest {
         final DatagramSocket s1 = datagramSocketSupplier.get();
         final DatagramSocket s2 = datagramSocketSupplier.get();
         final Broadcast broadcast1 = new UdpBroadcast<>(
-            s1, InetAddress.getLoopbackAddress(), s2.getLocalPort(), new NoOrder<>());
+            s1, new InetSocketAddress(InetAddress.getLoopbackAddress(), s2.getLocalPort()), new NoOrder<>());
         final Broadcast broadcast2 = new UdpBroadcast<>(
-            s2, InetAddress.getLoopbackAddress(), s1.getLocalPort(), new NoOrder<>());
+            s2, new InetSocketAddress(InetAddress.getLoopbackAddress(), s1.getLocalPort()), new NoOrder<>());
 
         broadcast2.valuesOfType(TestValue.class).first().subscribe(subscriber);
         broadcast1.send(new TestValue(42)).toBlocking().subscribe();
@@ -70,9 +71,9 @@ public class UdpBroadcastTest {
         final DatagramSocket s1 = datagramSocketSupplier.get();
         final DatagramSocket s2 = datagramSocketSupplier.get();
         final Broadcast broadcast1 = new UdpBroadcast<>(
-            s1, InetAddress.getLoopbackAddress(), s2.getLocalPort(), new NoOrder<>());
+            s1, new InetSocketAddress(InetAddress.getLoopbackAddress(), s2.getLocalPort()), new NoOrder<>());
         final Broadcast broadcast2 = new UdpBroadcast<>(
-            s2, InetAddress.getLoopbackAddress(), s1.getLocalPort(), new NoOrder<>());
+            s2, new InetSocketAddress(InetAddress.getLoopbackAddress(), s1.getLocalPort()), new NoOrder<>());
 
         broadcast2.valuesOfType(TestValue.class).take(4).subscribe(subscriber);
 
@@ -97,7 +98,7 @@ public class UdpBroadcastTest {
         final DatagramSocket s1 = datagramSocketSupplier.get();
         final DatagramSocket s2 = datagramSocketSupplier.get();
         final Broadcast broadcast1 = new UdpBroadcast<>(
-            s1, InetAddress.getLoopbackAddress(), s2.getLocalPort(), new NoOrder<>());
+            s1, new InetSocketAddress(InetAddress.getLoopbackAddress(), s2.getLocalPort()), new NoOrder<>());
 
         s1.close();
         broadcast1.send(new TestValue(42)).toBlocking().subscribe(subscriber);
@@ -113,9 +114,9 @@ public class UdpBroadcastTest {
         final DatagramSocket s1 = datagramSocketSupplier.get();
         final DatagramSocket s2 = datagramSocketSupplier.get();
         final Broadcast broadcast1 = new UdpBroadcast<>(
-            s1, InetAddress.getLoopbackAddress(), s2.getLocalPort(), new NoOrder<>());
+            s1, new InetSocketAddress(InetAddress.getLoopbackAddress(), s2.getLocalPort()), new NoOrder<>());
         final Broadcast broadcast2 = new UdpBroadcast<>(
-            s2, InetAddress.getLoopbackAddress(), s1.getLocalPort(), new NoOrder<>());
+            s2, new InetSocketAddress(InetAddress.getLoopbackAddress(), s1.getLocalPort()), new NoOrder<>());
 
         broadcast2.valuesOfType(TestValue.class).take(4).subscribe(subscriber);
 
@@ -138,9 +139,9 @@ public class UdpBroadcastTest {
         final DatagramSocket s1 = datagramSocketSupplier.get();
         final DatagramSocket s2 = datagramSocketSupplier.get();
         final Broadcast broadcast1 = new UdpBroadcast<>(
-            s1, InetAddress.getLoopbackAddress(), s2.getLocalPort(), new NoOrder<>());
+            s1, new InetSocketAddress(InetAddress.getLoopbackAddress(), s2.getLocalPort()), new NoOrder<>());
         final Broadcast broadcast2 = new UdpBroadcast<>(
-            s2, InetAddress.getLoopbackAddress(), s1.getLocalPort(), new NoOrder<>());
+            s2, new InetSocketAddress(InetAddress.getLoopbackAddress(), s1.getLocalPort()), new NoOrder<>());
 
         broadcast2.valuesOfType(TestValue.class)
             .take(4)
