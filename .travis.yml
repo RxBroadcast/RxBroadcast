@@ -36,6 +36,9 @@ script:
     - scripts/test-table-tennis rxbroadcast.integration.pp.PingPongUdpCausalOrderObjectSerializer
     - scripts/test-table-tennis rxbroadcast.integration.pp.PingPongUdpCausalOrderProtobufSerializer
 jobs:
+    allow_failures:
+        - stage: "Test"
+          jdk: oraclejdk9
     include:
         - stage: "Static analysis"
           jdk: oraclejdk8
