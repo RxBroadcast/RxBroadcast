@@ -13,18 +13,20 @@ import java.util.stream.Stream;
 final class VectorTimestamp implements Comparable<VectorTimestamp>, Serializable {
     private static final long serialVersionUID = 114L;
 
-    private Integer hashCode = null;
+    private int hashCode;
 
-    private Sender[] ids;
+    @NotNull
+    private final Sender[] ids;
 
-    private long[] timestamps;
+    @NotNull
+    private final long[] timestamps;
 
     @SuppressWarnings("unused")
     VectorTimestamp() {
-
+        this(new Sender[0], new long[0]);
     }
 
-    VectorTimestamp(final Sender[] ids, final long[] timestamps) {
+    VectorTimestamp(@NotNull final Sender[] ids, @NotNull final long[] timestamps) {
         if (ids.length != timestamps.length) {
             throw new IllegalArgumentException("IDs and timestamps must contain the same number of elements");
         }
@@ -78,30 +80,34 @@ final class VectorTimestamp implements Comparable<VectorTimestamp>, Serializable
 
     @Override
     public int hashCode() {
-        if (hashCode == null) {
-            hashCode = Objects.hash(new Object() {
-                @Override
-                public boolean equals(final Object o) {
-                    return this == o;
-                }
-
-                @Override
-                public int hashCode() {
-                    return Arrays.hashCode(ids);
-                }
-            }, new Object() {
-                @Override
-                public boolean equals(final Object o) {
-                    return this == o;
-                }
-
-                @Override
-                public int hashCode() {
-                    return Arrays.hashCode(timestamps);
-                }
-            });
+        if (hashCode == 0) {
+            hashCode = computeHashCode();
         }
 
         return hashCode;
+    }
+
+    private int computeHashCode() {
+        return Objects.hash(new Object() {
+            @Override
+            public boolean equals(final Object o) {
+                return this == o;
+            }
+
+            @Override
+            public int hashCode() {
+                return Arrays.hashCode(ids);
+            }
+        }, new Object() {
+            @Override
+            public boolean equals(final Object o) {
+                return this == o;
+            }
+
+            @Override
+            public int hashCode() {
+                return Arrays.hashCode(timestamps);
+            }
+        });
     }
 }
