@@ -13,13 +13,15 @@ import java.util.Objects;
 public final class VectorTimestamped<T> implements Comparable<VectorTimestamped<T>>, Serializable {
     private static final long serialVersionUID = 114L;
 
-    public VectorTimestamp timestamp;
+    @NotNull
+    public final VectorTimestamp timestamp;
 
-    public T value;
+    public final T value;
 
+    @Deprecated
     @SuppressWarnings("unused")
     VectorTimestamped() {
-
+        this(null, new VectorTimestamp());
     }
 
     /**
@@ -28,7 +30,7 @@ public final class VectorTimestamped<T> implements Comparable<VectorTimestamped<
      * @param value the timestamped value
      * @param timestamp the timestamp
      */
-    public VectorTimestamped(final T value, final VectorTimestamp timestamp) {
+    public VectorTimestamped(final T value, @NotNull final VectorTimestamp timestamp) {
         this.timestamp = timestamp;
         this.value = value;
     }
