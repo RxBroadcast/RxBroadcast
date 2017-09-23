@@ -25,6 +25,7 @@ dependencies {
     compile("io.reactivex:rxjava:1.3.0")
     compile("org.jetbrains:annotations:15.0")
     testCompile("junit:junit:4.12")
+    testCompile("nl.jqno.equalsverifier:equalsverifier:2.3.3")
 }
 
 fun linkGitHub(resource: String = "") = "https://github.com/${project.name}/${project.name}$resource"
