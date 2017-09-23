@@ -37,7 +37,7 @@ public class PingPongUdpSingleSourceFifoOrderKryoSerializer {
             : 12345;
         final InetAddress destination = System.getProperty("destination") != null
             ? InetAddress.getByName(System.getProperty("destination"))
-            : InetAddress.getByName("localhost");
+            : InetAddress.getLoopbackAddress();
         final InetSocketAddress destinationSocket = new InetSocketAddress(destination, destinationPort);
         try (final DatagramSocket socket = new DatagramSocket(port)) {
             final Broadcast broadcast = new UdpBroadcast<>(
@@ -78,7 +78,7 @@ public class PingPongUdpSingleSourceFifoOrderKryoSerializer {
             : 12345;
         final InetAddress destination = System.getProperty("destination") != null
             ? InetAddress.getByName(System.getProperty("destination"))
-            : InetAddress.getByName("localhost");
+            : InetAddress.getLoopbackAddress();
         final InetSocketAddress destinationSocket = new InetSocketAddress(destination, destinationPort);
         try (final DatagramSocket socket = new DatagramSocket(port)) {
             final Broadcast broadcast = new UdpBroadcast<>(

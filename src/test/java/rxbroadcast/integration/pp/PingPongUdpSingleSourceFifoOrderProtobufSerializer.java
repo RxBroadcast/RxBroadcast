@@ -39,7 +39,7 @@ public class PingPongUdpSingleSourceFifoOrderProtobufSerializer {
             : 12345;
         final InetAddress destination = System.getProperty("destination") != null
             ? InetAddress.getByName(System.getProperty("destination"))
-            : InetAddress.getByName("localhost");
+            : InetAddress.getLoopbackAddress();
         final InetSocketAddress destinationSocket = new InetSocketAddress(destination, destinationPort);
         try (final DatagramSocket socket = new DatagramSocket(port)) {
             final Serializer<Object> s = new ObjectSerializer<>();
@@ -81,7 +81,7 @@ public class PingPongUdpSingleSourceFifoOrderProtobufSerializer {
             : 12345;
         final InetAddress destination = System.getProperty("destination") != null
             ? InetAddress.getByName(System.getProperty("destination"))
-            : InetAddress.getByName("localhost");
+            : InetAddress.getLoopbackAddress();
         final InetSocketAddress destinationSocket = new InetSocketAddress(destination, destinationPort);
         try (final DatagramSocket socket = new DatagramSocket(port)) {
             final Serializer<Object> s = new ObjectSerializer<>();
