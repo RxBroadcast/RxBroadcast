@@ -20,6 +20,7 @@ public final class Sender implements Serializable, Comparable<Sender> {
     @NotNull
     final byte[] byteBuffer;
 
+    @Deprecated
     @SuppressWarnings("unused")
     Sender() {
         // This no-arg ctor is for deserialization purposes only
