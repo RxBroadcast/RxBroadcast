@@ -1,5 +1,6 @@
 package rxbroadcast.time;
 
+import java.util.Objects;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.LongFunction;
@@ -80,5 +81,23 @@ public final class LamportClock implements Clock {
     @Override
     public final String toString() {
         return String.format("LamportClock{time=%d}", time);
+    }
+
+    @Override
+    public final boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        final LamportClock that = (LamportClock) o;
+        return time == that.time;
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(time);
     }
 }

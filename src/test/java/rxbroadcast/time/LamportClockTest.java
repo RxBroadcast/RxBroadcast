@@ -1,5 +1,7 @@
 package rxbroadcast.time;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -64,5 +66,13 @@ public final class LamportClockTest {
     public final void toStringDoesNotReturnNull() {
         final LamportClock clock = new LamportClock();
         Assert.assertThat(clock.toString(), CoreMatchers.notNullValue());
+    }
+
+    @Test
+    public final void equalsContract() {
+        EqualsVerifier.forClass(LamportClock.class)
+            .withIgnoredFields("lock")
+            .suppress(Warning.NONFINAL_FIELDS)
+            .verify();
     }
 }
