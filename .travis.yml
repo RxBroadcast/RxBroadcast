@@ -11,6 +11,7 @@ env:
 language: java
 jdk:
     - oraclejdk8
+    - oraclejdk9
     - openjdk8
 before_install:
     - ( cd $HOME && curl -LO "https://services.gradle.org/distributions/gradle-$GRADLE_VERSION-bin.zip" )
@@ -35,6 +36,9 @@ script:
     - scripts/test-table-tennis rxbroadcast.integration.pp.PingPongUdpCausalOrderObjectSerializer
     - scripts/test-table-tennis rxbroadcast.integration.pp.PingPongUdpCausalOrderProtobufSerializer
 jobs:
+    allow_failures:
+        - stage: "Test"
+          jdk: oraclejdk9
     include:
         - stage: "Static analysis"
           jdk: oraclejdk8
