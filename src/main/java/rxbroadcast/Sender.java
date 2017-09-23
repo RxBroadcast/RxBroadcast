@@ -17,6 +17,7 @@ public final class Sender implements Serializable, Comparable<Sender> {
 
     private static final int BYTES_SENDER_BUFFER = BYTES_IPV6_ADDRESS + BYTES_INT_PORT;
 
+    @NotNull
     final byte[] byteBuffer;
 
     @SuppressWarnings("unused")
@@ -25,7 +26,7 @@ public final class Sender implements Serializable, Comparable<Sender> {
         this(new byte[0]);
     }
 
-    Sender(final byte[] bytes) {
+    Sender(@NotNull final byte[] bytes) {
         this.byteBuffer = bytes;
     }
 
