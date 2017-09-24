@@ -1,4 +1,5 @@
 import com.jfrog.bintray.gradle.BintrayExtension
+import info.solidsoft.gradle.pitest.PitestPluginExtension
 import net.ltgt.gradle.errorprone.ErrorProneToolChain
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
@@ -11,6 +12,7 @@ plugins {
     checkstyle
     findbugs
     pmd
+    id("info.solidsoft.pitest") version "1.2.2"
     id("com.jfrog.bintray") version "1.6"
     id("net.ltgt.errorprone-base") version "0.0.13"
 }
@@ -38,6 +40,17 @@ val archivesBaseName = { "${project.property(archivesBaseNameProperty)}" }
 group = project.name.toLowerCase()
 version = "2.0.0-rc2"
 description = "A small distributed event library for the JVM"
+
+val testSourceSet = java.sourceSets["test"]!!
+java.sourceSets.create("pitest") {
+    java {
+        srcDirs(testSourceSet.java.srcDirs)
+        exclude("rxbroadcast/integration/**")
+    }
+
+    compileClasspath += files(testSourceSet.compileClasspath)
+    runtimeClasspath += compileClasspath
+}
 
 tasks.withType<JavaCompile> {
     options.compilerArgs.addAll(arrayOf("-Xlint:all", "-Xdiags:verbose", "-Werror"))
@@ -88,6 +101,10 @@ task<Jar>("testJar") {
             exclude("META-INF/**")
         })
     })
+}
+
+configure<PitestPluginExtension> {
+    testSourceSets = setOf(java.sourceSets["pitest"])
 }
 
 task<Jar>("sourcesJar") {
