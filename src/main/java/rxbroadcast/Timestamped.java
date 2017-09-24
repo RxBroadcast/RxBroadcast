@@ -9,13 +9,14 @@ final class Timestamped<T> implements Comparable<Timestamped<T>>, Serializable {
     private static final long serialVersionUID = 114L;
 
     @SuppressWarnings("WeakerAccess")
-    public long timestamp;
+    public final long timestamp;
 
-    public T value;
+    public final T value;
 
+    @Deprecated
     @SuppressWarnings("unused")
     Timestamped() {
-
+        this(0, null);
     }
 
     Timestamped(final long timestamp, final T value) {

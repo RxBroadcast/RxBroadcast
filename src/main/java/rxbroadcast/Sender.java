@@ -17,15 +17,17 @@ public final class Sender implements Serializable, Comparable<Sender> {
 
     private static final int BYTES_SENDER_BUFFER = BYTES_IPV6_ADDRESS + BYTES_INT_PORT;
 
+    @NotNull
     final byte[] byteBuffer;
 
+    @Deprecated
     @SuppressWarnings("unused")
     Sender() {
         // This no-arg ctor is for deserialization purposes only
         this(new byte[0]);
     }
 
-    Sender(final byte[] bytes) {
+    Sender(@NotNull final byte[] bytes) {
         this.byteBuffer = bytes;
     }
 
