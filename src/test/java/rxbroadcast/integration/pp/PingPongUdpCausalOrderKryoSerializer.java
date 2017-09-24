@@ -38,7 +38,7 @@ public class PingPongUdpCausalOrderKryoSerializer {
         try (final DatagramSocket socket = new DatagramSocket(port)) {
             final InetAddress destination = System.getProperty("destination") != null
                 ? InetAddress.getByName(System.getProperty("destination"))
-                : InetAddress.getByName("localhost");
+                : InetAddress.getLoopbackAddress();
             final InetSocketAddress destinationSocket = new InetSocketAddress(destination, destinationPort);
             final Broadcast broadcast = new UdpBroadcast<>(
                 socket, destinationSocket, new KryoSerializer<>(), (host) -> new CausalOrder<>(host));
@@ -78,7 +78,7 @@ public class PingPongUdpCausalOrderKryoSerializer {
             : 12345;
         final InetAddress destination = System.getProperty("destination") != null
             ? InetAddress.getByName(System.getProperty("destination"))
-            : InetAddress.getByName("localhost");
+            : InetAddress.getLoopbackAddress();
         final InetSocketAddress destinationSocket = new InetSocketAddress(destination, destinationPort);
         try (final DatagramSocket socket = new DatagramSocket(port)) {
             final Broadcast broadcast = new UdpBroadcast<>(
