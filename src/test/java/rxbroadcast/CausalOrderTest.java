@@ -35,6 +35,23 @@ public class CausalOrderTest {
     }
 
     @Test
+    public final void receiveMessagesFromSingleSourceOutOfOrder() {
+        final Sender sender0 = sender(0);
+        final VectorTimestamped<TestValue> value0 = timestampedValue(42, arrayOf(sender0), new long[]{1});
+        final VectorTimestamped<TestValue> value1 = timestampedValue(43, arrayOf(sender0), new long[]{2});
+        final VectorTimestamped<TestValue> value2 = timestampedValue(44, arrayOf(sender0), new long[]{3});
+        final CausalOrder<TestValue> causalOrder = new CausalOrder<>(sender(1));
+        final TestSubscriber<TestValue> consumer = new TestSubscriber<>();
+
+        causalOrder.receive(sender0, consumer::onNext, value2);
+        causalOrder.receive(sender0, consumer::onNext, value1);
+        causalOrder.receive(sender0, consumer::onNext, value0);
+
+        consumer.assertReceivedOnNext(Arrays.asList(value0.value, value1.value, value2.value));
+        Assert.assertEquals(0, causalOrder.queueSize());
+    }
+
+    @Test
     public final void receiveMessagesFromSingleSourceInOrder() {
         final Sender sender0 = sender(0);
         final VectorTimestamped<TestValue> value0 = timestampedValue(42, arrayOf(sender0), new long[]{1});
