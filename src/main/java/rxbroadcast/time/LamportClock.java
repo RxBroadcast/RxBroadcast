@@ -85,9 +85,6 @@ public final class LamportClock implements Clock {
 
     @Override
     public final boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
