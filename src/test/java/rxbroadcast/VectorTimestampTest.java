@@ -13,4 +13,9 @@ public final class VectorTimestampTest {
             ))
             .verify();
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public final void timestampMustHaveEqualLengthFields() {
+        new VectorTimestamp(new Sender[0], new long[]{3, 4});
+    }
 }
