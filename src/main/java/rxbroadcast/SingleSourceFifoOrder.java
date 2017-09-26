@@ -71,4 +71,8 @@ public final class SingleSourceFifoOrder<T> implements BroadcastOrder<Timestampe
             iterator.remove();
         }
     }
+
+    int queueSize() {
+        return pendingQueues.values().stream().mapToInt(SortedSet::size).sum();
+    }
 }
