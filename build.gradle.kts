@@ -104,7 +104,7 @@ task<Jar>("testJar") {
 }
 
 configure<PitestPluginExtension> {
-    excludedMethods = setOf("toString", "newThread")
+    excludedMethods = setOf("toString", "newThread", "hashCode")
     timestampedReports = false
     mutationThreshold = 100
     mutators = setOf("DEFAULTS", "REMOVE_CONDITIONALS")
