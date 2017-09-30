@@ -84,23 +84,14 @@ final class VectorTimestamp implements Comparable<VectorTimestamp>, Serializable
         return hashCode;
     }
 
+    @SuppressWarnings("checkstyle:EqualsHashCode")
     private int computeHashCode() {
         return Objects.hash(new Object() {
-            @Override
-            public boolean equals(final Object o) {
-                return this == o;
-            }
-
             @Override
             public int hashCode() {
                 return Arrays.hashCode(ids);
             }
         }, new Object() {
-            @Override
-            public boolean equals(final Object o) {
-                return this == o;
-            }
-
             @Override
             public int hashCode() {
                 return Arrays.hashCode(timestamps);
