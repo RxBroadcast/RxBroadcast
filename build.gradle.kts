@@ -104,6 +104,10 @@ task<Jar>("testJar") {
 }
 
 configure<PitestPluginExtension> {
+    excludedMethods = setOf("toString", "newThread")
+    timestampedReports = false
+    mutationThreshold = 100
+    mutators = setOf("DEFAULTS", "REMOVE_CONDITIONALS")
     testSourceSets = setOf(java.sourceSets["pitest"])
 }
 
