@@ -5,12 +5,12 @@ import org.jetbrains.annotations.NotNull;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-final class VectorTimestamp implements Comparable<VectorTimestamp>, Serializable {
+final class VectorTimestamp implements Serializable {
     private static final long serialVersionUID = 114L;
 
     private int hashCode;
@@ -44,27 +44,6 @@ final class VectorTimestamp implements Comparable<VectorTimestamp>, Serializable
         return Arrays.toString(stream().map(VectorTimestampEntry::toString).toArray());
     }
 
-    @SuppressWarnings({"checkstyle:AvoidInlineConditionals"})
-    @Override
-    public final int compareTo(@NotNull final VectorTimestamp other) {
-        final HashMap<Sender, Long> vt1 = new HashMap<>();
-        for (int i = 0; i < ids.length; i++) {
-            vt1.put(ids[i], timestamps[i]);
-        }
-
-        final HashMap<Sender, Long> vt2 = new HashMap<>();
-        for (int i = 0; i < other.ids.length; i++) {
-            vt2.put(other.ids[i], other.timestamps[i]);
-        }
-
-        final Set<Sender> senders = vt1.keySet();
-        final boolean allAreLessThanOrEql = senders.stream()
-            .allMatch((s) -> vt1.containsKey(s) && vt2.containsKey(s) && vt1.get(s) <= vt2.get(s));
-        final boolean oneExistsThatIsLess = senders.stream()
-            .anyMatch((s) -> vt1.containsKey(s) && vt2.containsKey(s) && vt1.get(s) <  vt2.get(s));
-        return (oneExistsThatIsLess && allAreLessThanOrEql) ? -1 : allAreLessThanOrEql ? 0 : 1;
-    }
-
     @Override
     public boolean equals(final Object o) {
         if (o == null || getClass() != o.getClass()) {
@@ -72,7 +51,7 @@ final class VectorTimestamp implements Comparable<VectorTimestamp>, Serializable
         }
 
         final VectorTimestamp timestamp = (VectorTimestamp) o;
-        return this.compareTo(timestamp) == 0;
+        return asMap().equals(timestamp.asMap());
     }
 
     @Override
@@ -97,5 +76,14 @@ final class VectorTimestamp implements Comparable<VectorTimestamp>, Serializable
                 return Arrays.hashCode(timestamps);
             }
         });
+    }
+
+    private Map<Sender, Long> asMap() {
+        final Map<Sender, Long> map = new HashMap<>(ids.length);
+        for (int i = 0; i < ids.length; i++) {
+            map.put(ids[i], timestamps[i]);
+        }
+
+        return map;
     }
 }
