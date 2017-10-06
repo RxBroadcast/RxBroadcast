@@ -1,7 +1,9 @@
 package rxbroadcast;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 import rx.Observable;
 import rx.observers.TestSubscriber;
 
@@ -31,6 +33,9 @@ public class UdpBroadcastTest {
             throw new RuntimeException(e);
         }
     };
+
+    @Rule
+    public final Timeout timeout = Timeout.seconds(60);
 
     @After
     public final void tearDown() {
