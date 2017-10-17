@@ -1,3 +1,4 @@
+group: edge
 sudo: required
 dist: trusty
 services:
@@ -13,6 +14,7 @@ jdk:
     - oraclejdk8
     - oraclejdk9
     - openjdk8
+    - ibmjava8
 before_install:
     - ( cd $HOME && curl -LO "https://services.gradle.org/distributions/gradle-$GRADLE_VERSION-bin.zip" )
     - ( cd $HOME && unzip -q gradle-$GRADLE_VERSION-bin.zip && rm gradle-$GRADLE_VERSION-bin.zip )
