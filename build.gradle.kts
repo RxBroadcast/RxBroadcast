@@ -12,7 +12,7 @@ plugins {
     findbugs
     pmd
     id("com.jfrog.bintray") version "1.6"
-    id("net.ltgt.errorprone-base") version "0.0.11"
+    id("net.ltgt.errorprone-base") version "0.0.13"
 }
 
 repositories {
@@ -24,6 +24,7 @@ dependencies {
     compile("com.google.protobuf:protobuf-java:3.3.1")
     compile("io.reactivex:rxjava:1.3.0")
     compile("org.jetbrains:annotations:15.0")
+    errorprone("com.google.errorprone:error_prone_core:2.1.1")
     testCompile("junit:junit:4.12")
     testCompile("nl.jqno.equalsverifier:equalsverifier:2.3.3")
 }
