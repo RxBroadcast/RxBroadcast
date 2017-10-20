@@ -1,6 +1,8 @@
 package rxbroadcast;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
@@ -165,5 +167,25 @@ public class UdpBroadcastTest {
         subscriber.assertValueCount(4);
         subscriber.assertReceivedOnNext(Arrays.asList(
             new TestValue(42), new TestValue(42), new TestValue(42), new TestValue(42)));
+    }
+
+    @SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:LineLength"})
+    @Test
+    public final void broadcastOrderDoesGetNonNullHostMachineAddress() {
+        final DatagramSocket s1 = datagramSocketSupplier.get();
+        final DatagramSocket s2 = datagramSocketSupplier.get();
+        final InetSocketAddress destination = new InetSocketAddress(InetAddress.getLoopbackAddress(), s2.getLocalPort());
+        final Broadcast broadcast1 = new UdpBroadcast<>(s1, destination, (host) -> {
+            Assert.assertThat(host, CoreMatchers.notNullValue());
+            return new NoOrder<>();
+        });
+        final TestSubscriber<TestValue> subscriber = new TestSubscriber<>();
+
+        broadcast1.valuesOfType(TestValue.class).subscribe(subscriber);
+
+        subscriber.awaitTerminalEvent(100, TimeUnit.MILLISECONDS);
+        subscriber.assertNoValues();
+        subscriber.assertNoErrors();
+        subscriber.assertNotCompleted();
     }
 }
