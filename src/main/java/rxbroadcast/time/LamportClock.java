@@ -13,11 +13,15 @@ public final class LamportClock implements Clock {
 
     private long time = 0L;
 
+    LamportClock(final Lock lock) {
+        this.lock = lock;
+    }
+
     /**
      * Creates an instance of {@code LamportClock}.
      */
     public LamportClock() {
-        this.lock = new ReentrantLock();
+        this(new ReentrantLock());
     }
 
     /**
