@@ -188,4 +188,21 @@ public class UdpBroadcastTest {
         subscriber.assertNoErrors();
         subscriber.assertNotCompleted();
     }
+
+    @SuppressWarnings({"checkstyle:MagicNumber"})
+    @Test
+    public final void sendDoesCompleteSuccessfully() {
+        final TestSubscriber<Void> subscriber = new TestSubscriber<>();
+        final DatagramSocket s1 = datagramSocketSupplier.get();
+        final DatagramSocket s2 = datagramSocketSupplier.get();
+        final Broadcast broadcast1 = new UdpBroadcast<>(
+            s1, new InetSocketAddress(InetAddress.getLoopbackAddress(), s2.getLocalPort()), new NoOrder<>());
+
+        broadcast1.send(new TestValue(42)).subscribe(subscriber);
+
+        subscriber.awaitTerminalEvent(10, TimeUnit.SECONDS);
+        subscriber.assertNoErrors();
+        subscriber.assertNoValues();
+        subscriber.assertCompleted();
+    }
 }
