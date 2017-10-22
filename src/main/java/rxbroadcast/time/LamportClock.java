@@ -48,9 +48,7 @@ public final class LamportClock implements Clock {
     public void set(final long incoming) {
         lock.lock();
         try {
-            if (Long.compareUnsigned(time, incoming) < 0) {
-                time = incoming;
-            }
+            time = incoming;
         } finally {
             lock.unlock();
         }

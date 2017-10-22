@@ -28,24 +28,6 @@ public final class LamportClockTest {
     }
 
     @Test
-    public final void setTimestampDoesNotUpdateTimestampIfNewValueIsLess() {
-        final LamportClock clock = new LamportClock();
-
-        clock.tick();
-        clock.tick();
-        clock.tick();
-        clock.tick();
-        clock.tick();
-        Assert.assertEquals(5, clock.time());
-
-        clock.set(3);
-        Assert.assertEquals(5, clock.time());
-
-        clock.tick();
-        Assert.assertEquals(6, clock.time());
-    }
-
-    @Test
     public final void tickClockDoesIncrementItsValue() {
         final LamportClock clock = new LamportClock();
 
