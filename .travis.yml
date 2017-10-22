@@ -80,6 +80,9 @@ jobs:
         - script: gradle findBugs{Main,Test}
         - script: gradle errorProne
         - script: gradle pmd{Main,Test}
+        - stage: "Mutation testing"
+          jdk: oraclejdk8
+          script: gradle pitest
 deploy:
     provider: script
     script: scripts/deploy
