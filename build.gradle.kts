@@ -26,7 +26,7 @@ dependencies {
     compile("com.google.protobuf:protobuf-java:3.3.1")
     compile("io.reactivex:rxjava:1.3.0")
     compile("org.jetbrains:annotations:15.0")
-    errorprone("com.google.errorprone:error_prone_core:2.1.1")
+    errorprone("com.google.errorprone:error_prone_core:2.1.2")
     testCompile("junit:junit:4.12")
     testCompile("nl.jqno.equalsverifier:equalsverifier:2.3.3")
 }
