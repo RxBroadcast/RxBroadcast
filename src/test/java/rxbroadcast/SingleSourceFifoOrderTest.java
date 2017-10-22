@@ -23,6 +23,7 @@ public class SingleSourceFifoOrderTest {
         ssf.receive(sender1, consumer::onNext, value2);
 
         consumer.assertReceivedOnNext(Arrays.asList(value0.value, value1.value, value2.value));
+        Assert.assertEquals(0, ssf.queueSize());
     }
 
     @Test
@@ -39,6 +40,7 @@ public class SingleSourceFifoOrderTest {
         ssf.receive(sender1, consumer::onNext, value2);
 
         consumer.assertReceivedOnNext(Arrays.asList(value0.value, value1.value, value2.value));
+        Assert.assertEquals(0, ssf.queueSize());
     }
 
     @Test
@@ -57,6 +59,7 @@ public class SingleSourceFifoOrderTest {
         ssf.receive(sender1, consumer::onNext, value0);
 
         consumer.assertReceivedOnNext(Arrays.asList(value0.value, value1.value, value2.value, value3.value));
+        Assert.assertEquals(0, ssf.queueSize());
     }
 
     @Test
@@ -75,6 +78,7 @@ public class SingleSourceFifoOrderTest {
         ssf.receive(sender1, consumer::onNext, value3);
 
         consumer.assertReceivedOnNext(Arrays.asList(value2.value, value3.value));
+        Assert.assertEquals(0, ssf.queueSize());
     }
 
     @Test
@@ -93,6 +97,7 @@ public class SingleSourceFifoOrderTest {
         ssf.receive(sender1, consumer::onNext, value3);
 
         consumer.assertReceivedOnNext(Arrays.asList(value0.value, value2.value));
+        Assert.assertEquals(0, ssf.queueSize());
     }
 
     @Test
@@ -111,6 +116,7 @@ public class SingleSourceFifoOrderTest {
         ssf.receive(sender1, consumer::onNext, value0);
 
         consumer.assertReceivedOnNext(Arrays.asList(value0.value, value2.value));
+        Assert.assertEquals(0, ssf.queueSize());
     }
 
     @Test
@@ -127,6 +133,7 @@ public class SingleSourceFifoOrderTest {
         ssf.receive(sender2, consumer::onNext, value1);
 
         consumer.assertReceivedOnNext(Arrays.asList(value0.value, value1.value));
+        Assert.assertEquals(0, ssf.queueSize());
     }
 
     @SuppressWarnings({"checkstyle:LineLength"})
@@ -149,6 +156,7 @@ public class SingleSourceFifoOrderTest {
         ssf.receive(sender2, consumer::onNext, value0);
 
         consumer.assertReceivedOnNext(Arrays.asList(value0.value, value1.value, value2.value, value0.value, value1.value, value2.value));
+        Assert.assertEquals(0, ssf.queueSize());
     }
 
     @Test
@@ -174,6 +182,7 @@ public class SingleSourceFifoOrderTest {
         ssf.receive(sender2, consumer::onNext, value3);
 
         consumer.assertReceivedOnNext(Arrays.asList(value2.value, value3.value, value2.value, value3.value));
+        Assert.assertEquals(0, ssf.queueSize());
     }
 
     @Test
@@ -199,6 +208,7 @@ public class SingleSourceFifoOrderTest {
         ssf.receive(sender2, consumer::onNext, value3);
 
         consumer.assertReceivedOnNext(Arrays.asList(value0.value, value2.value, value0.value, value2.value));
+        Assert.assertEquals(0, ssf.queueSize());
     }
 
     @Test
@@ -224,6 +234,7 @@ public class SingleSourceFifoOrderTest {
         ssf.receive(sender2, consumer::onNext, value0);
 
         consumer.assertReceivedOnNext(Arrays.asList(value0.value, value2.value, value0.value, value2.value));
+        Assert.assertEquals(0, ssf.queueSize());
     }
 
     @Test

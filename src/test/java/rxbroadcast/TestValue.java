@@ -1,8 +1,11 @@
 package rxbroadcast;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class TestValue {
+public final class TestValue implements Serializable {
+    private static final long serialVersionUID = 114L;
+
     @SuppressWarnings("WeakerAccess")
     public int value;
 

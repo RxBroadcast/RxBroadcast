@@ -1,5 +1,7 @@
 package rxbroadcast;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -17,6 +19,12 @@ final class WhoAmI implements Callable<Sender> {
     public final Sender call() throws IOException {
         // Listen all all interfaces, random port
         final DatagramSocket ws = new DatagramSocket();
+        final DatagramPacket recvPacket = sendRecv(ws);
+        return new Sender(recvPacket.getAddress(), destinationPort);
+    }
+
+    @NotNull
+    final DatagramPacket sendRecv(@NotNull final DatagramSocket ws) throws IOException {
         // Send WHO_AM_I packet
         final byte[] data = new byte[]{0x42};
         @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
@@ -28,6 +36,6 @@ final class WhoAmI implements Callable<Sender> {
         ws.receive(recvPacket);
         // Whoever sent it is us
         ws.close();
-        return new Sender(recvPacket.getAddress(), destinationPort);
+        return recvPacket;
     }
 }

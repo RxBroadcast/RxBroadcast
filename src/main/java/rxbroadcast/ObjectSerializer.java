@@ -28,7 +28,6 @@ public final class ObjectSerializer<T> implements Serializer<T> {
             final ByteArrayOutputStream stream = new ByteArrayOutputStream();
             final ObjectOutputStream oos = new ObjectOutputStream(stream);
             oos.writeObject(data);
-            oos.flush();
             return stream.toByteArray();
         } catch (final IOException e) {
             throw new RuntimeException(e);

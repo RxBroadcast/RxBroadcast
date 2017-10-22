@@ -4,167 +4,272 @@ import org.junit.Assert;
 import org.junit.Test;
 import rx.observers.TestSubscriber;
 
-import java.util.Arrays;
-
 public class CausalOrderTest {
-    private static Sender[] arrayOf(final Sender... buffers) {
-        return buffers;
-    }
+    @Test
+    public final void prepareDoesIncrementTheLocalClock() {
+        final Sender s = new Sender(new byte[]{1});
+        final CausalOrder<TestValue> causalOrder = new CausalOrder<>(s);
 
-    private static Sender sender(final int... args) {
-        final byte[] bytes = new byte[args.length];
-        for (int i = 0; i < args.length; i++) {
-            bytes[i] = (byte) args[i];
-        }
-        return new Sender(bytes);
-    }
+        final VectorTimestamped<TestValue> value = causalOrder.prepare(new TestValue('a'));
 
-    /**
-     * Returns a new {@link VectorTimestamped<TestValue>}.
-     * @param value the test value
-     * @param identifiers the IDs for the timestamp
-     * @param clocks the times for the timestamp
-     * @return a new {@link VectorTimestamped<TestValue>}
-     */
-    private static VectorTimestamped<TestValue> timestampedValue(
-        final int value,
-        final Sender[] identifiers,
-        final long[] clocks
-    ) {
-        return new VectorTimestamped<>(new TestValue(value), new VectorTimestamp(identifiers, clocks));
+        Assert.assertEquals(
+            new VectorTimestamped<>(new TestValue('a'), new VectorTimestamp(new Sender[]{s}, new long[]{1})),
+            value);
     }
 
     @Test
-    public final void receiveMessagesFromSingleSourceInOrder() {
-        final Sender sender0 = sender(0);
-        final VectorTimestamped<TestValue> value0 = timestampedValue(42, arrayOf(sender0), new long[]{1});
-        final VectorTimestamped<TestValue> value1 = timestampedValue(43, arrayOf(sender0), new long[]{2});
-        final VectorTimestamped<TestValue> value2 = timestampedValue(44, arrayOf(sender0), new long[]{3});
-        final CausalOrder<TestValue> causalOrder = new CausalOrder<>(sender(1));
-        final TestSubscriber<TestValue> consumer = new TestSubscriber<>();
+    public final void prepareDoesAttachTheFullClockToTheMessage() {
+        final Sender s1 = new Sender(new byte[]{1});
+        final Sender s2 = new Sender(new byte[]{2});
+        final CausalOrder<TestValue> causalOrder1 = new CausalOrder<>(s1);
+        final CausalOrder<TestValue> causalOrder2 = new CausalOrder<>(s2);
+        final TestSubscriber<TestValue> subscriber = new TestSubscriber<>();
 
-        causalOrder.receive(sender0, consumer::onNext, value0);
-        causalOrder.receive(sender0, consumer::onNext, value1);
-        causalOrder.receive(sender0, consumer::onNext, value2);
+        causalOrder2.prepare(new TestValue('b'));
+        causalOrder2.receive(s1, subscriber::onNext, causalOrder1.prepare(new TestValue('a')));
+        final VectorTimestamped<TestValue> value = causalOrder2.prepare(new TestValue('c'));
 
-        consumer.assertReceivedOnNext(Arrays.asList(value0.value, value1.value, value2.value));
-        Assert.assertEquals(0, causalOrder.queueSize());
+        Assert.assertEquals(
+            new VectorTimestamped<>(new TestValue('c'), new VectorTimestamp(new Sender[]{s1, s2}, new long[]{1, 2})),
+            value);
     }
 
-    /**
-     * Test messages are received in causal order. This process is the 0th process in the
-     * following diagram:
-     * <p>
-     * <pre>
-     * {@code
-     * 0 -------x----x------
-     *          |    |
-     *          |    |
-     *          |    |
-     * 1 ---x---o----|------
-     *      |________|
-     *     /
-     *    |
-     * 2 -o-----------------
-     * }
-     * </pre>
-     */
+    @SuppressWarnings("checkstyle:MagicNumber")
     @Test
-    public final void receiveMessagesInCausalOrder() {
-        final Sender sender0 = sender(0);
-        final Sender sender1 = sender(1);
-        final Sender sender2 = sender(2);
-        final VectorTimestamped<TestValue> value0 = timestampedValue(42, arrayOf(sender2), new long[]{1});
-        final VectorTimestamped<TestValue> value1 = timestampedValue(43, arrayOf(sender1, sender2), new long[]{1, 1});
-        final CausalOrder<TestValue> causalOrder = new CausalOrder<>(sender0);
-        final TestSubscriber<TestValue> consumer = new TestSubscriber<>();
+    public final void firstMessagePreparedCanBeReceived() {
+        final Sender s = new Sender(new byte[]{1});
+        final CausalOrder<TestValue> causalOrder = new CausalOrder<>(s);
+        final TestSubscriber<TestValue> subscriber = new TestSubscriber<>();
 
-        causalOrder.receive(sender1, consumer::onNext, value1);
-        causalOrder.receive(sender2, consumer::onNext, value0);
+        causalOrder.receive(s, subscriber::onNext, causalOrder.prepare(new TestValue(42)));
 
-        consumer.assertReceivedOnNext(Arrays.asList(value0.value, value1.value));
-        Assert.assertEquals(0, causalOrder.queueSize());
+        subscriber.assertNotCompleted();
+        subscriber.assertNoErrors();
+        subscriber.assertValues(new TestValue(42));
+        Assert.assertEquals(0, causalOrder.delayQueueSize());
     }
 
-    /**
-     * See {@see CausalOrderTest#receiveMessagesInCausalOrder()} for drawing.
-     */
+    @SuppressWarnings("checkstyle:MagicNumber")
     @Test
-    public final void receiveDuplicateMessagesInCausalOrder() {
-        final Sender sender0 = sender(0);
-        final Sender sender1 = sender(1);
-        final Sender sender2 = sender(2);
-        final VectorTimestamped<TestValue> value0 = timestampedValue(42, arrayOf(sender2), new long[]{1});
-        final VectorTimestamped<TestValue> value1 = timestampedValue(43, arrayOf(sender1, sender2), new long[]{1, 1});
-        final CausalOrder<TestValue> causalOrder = new CausalOrder<>(sender0);
-        final TestSubscriber<TestValue> consumer = new TestSubscriber<>();
+    public final void duplicateMessageFromHostIsDelayedIndefinitely() {
+        final Sender s = new Sender(new byte[]{1});
+        final CausalOrder<TestValue> causalOrder = new CausalOrder<>(s);
+        final TestSubscriber<TestValue> subscriber = new TestSubscriber<>();
 
-        causalOrder.receive(sender1, consumer::onNext, value1);
-        causalOrder.receive(sender1, consumer::onNext, value1);
-        causalOrder.receive(sender2, consumer::onNext, value0);
-        causalOrder.receive(sender2, consumer::onNext, value0);
+        final VectorTimestamped<TestValue> value = causalOrder.prepare(new TestValue(42));
+        causalOrder.receive(s, subscriber::onNext, value);
+        causalOrder.receive(s, subscriber::onNext, value);
 
-        consumer.assertReceivedOnNext(Arrays.asList(value0.value, value1.value));
+        subscriber.assertNotCompleted();
+        subscriber.assertNoErrors();
+        subscriber.assertValues(new TestValue(42));
+        Assert.assertEquals(1, causalOrder.delayQueueSize());
     }
 
-    @SuppressWarnings({"checkstyle:MagicNumber"})
+    @SuppressWarnings("checkstyle:MagicNumber")
     @Test
-    public final void prepareDoesReturnVectorTimestampedValueWithIncreasingTimestamps() {
-        final CausalOrder<TestValue> causalOrder = new CausalOrder<>(sender(0));
-        final VectorTimestamped<TestValue> value1 = new VectorTimestamped<>(
-            new TestValue(42), new VectorTimestamp(arrayOf(sender(0)), new long[]{1}));
-        final VectorTimestamped<TestValue> value2 = new VectorTimestamped<>(
-            new TestValue(42), new VectorTimestamp(arrayOf(sender(0)), new long[]{2}));
-        final VectorTimestamped<TestValue> value3 = new VectorTimestamped<>(
-            new TestValue(42), new VectorTimestamp(arrayOf(sender(0)), new long[]{3}));
+    public final void receiveTwoOutOfOrderMessagesFromHost() {
+        final Sender s = new Sender(new byte[]{1});
+        final CausalOrder<TestValue> causalOrder = new CausalOrder<>(s);
+        final TestSubscriber<TestValue> subscriber = new TestSubscriber<>();
 
-        Assert.assertEquals(value1, causalOrder.prepare(new TestValue(42)));
-        Assert.assertEquals(value2, causalOrder.prepare(new TestValue(42)));
-        Assert.assertEquals(value3, causalOrder.prepare(new TestValue(42)));
+        final VectorTimestamped<TestValue> value1 = causalOrder.prepare(new TestValue(42));
+        final VectorTimestamped<TestValue> value2 = causalOrder.prepare(new TestValue(43));
+        causalOrder.receive(s, subscriber::onNext, value2);
+        causalOrder.receive(s, subscriber::onNext, value1);
+
+        subscriber.assertNotCompleted();
+        subscriber.assertNoErrors();
+        subscriber.assertValues(new TestValue(42), new TestValue(43));
+        Assert.assertEquals(0, causalOrder.delayQueueSize());
+    }
+
+    @SuppressWarnings("checkstyle:MagicNumber")
+    @Test
+    public final void receiveMessagesInReverseOrderFromHost() {
+        final Sender s = new Sender(new byte[]{1});
+        final CausalOrder<TestValue> causalOrder = new CausalOrder<>(s);
+        final TestSubscriber<TestValue> subscriber = new TestSubscriber<>();
+
+        final VectorTimestamped<TestValue> value1 = causalOrder.prepare(new TestValue(42));
+        final VectorTimestamped<TestValue> value2 = causalOrder.prepare(new TestValue(43));
+        final VectorTimestamped<TestValue> value3 = causalOrder.prepare(new TestValue(44));
+        causalOrder.receive(s, subscriber::onNext, value3);
+        causalOrder.receive(s, subscriber::onNext, value2);
+        causalOrder.receive(s, subscriber::onNext, value1);
+
+        subscriber.assertNotCompleted();
+        subscriber.assertNoErrors();
+        subscriber.assertValues(new TestValue(42), new TestValue(43), new TestValue(44));
+        Assert.assertEquals(0, causalOrder.delayQueueSize());
+    }
+
+    @SuppressWarnings("checkstyle:MagicNumber")
+    @Test
+    public final void duplicateMessagesReceivedInReverseOrderFromHostAreDelayedIndefinitely() {
+        final Sender s = new Sender(new byte[]{1});
+        final CausalOrder<TestValue> causalOrder = new CausalOrder<>(s);
+        final TestSubscriber<TestValue> subscriber = new TestSubscriber<>();
+
+        final VectorTimestamped<TestValue> value1 = causalOrder.prepare(new TestValue(42));
+        final VectorTimestamped<TestValue> value2 = causalOrder.prepare(new TestValue(43));
+        final VectorTimestamped<TestValue> value3 = causalOrder.prepare(new TestValue(44));
+        causalOrder.receive(s, subscriber::onNext, value3);
+        causalOrder.receive(s, subscriber::onNext, value3);
+        causalOrder.receive(s, subscriber::onNext, value2);
+        causalOrder.receive(s, subscriber::onNext, value2);
+        causalOrder.receive(s, subscriber::onNext, value1);
+        causalOrder.receive(s, subscriber::onNext, value1);
+
+        subscriber.assertNotCompleted();
+        subscriber.assertNoErrors();
+        subscriber.assertValues(new TestValue(42), new TestValue(43), new TestValue(44));
+        Assert.assertEquals(3, causalOrder.delayQueueSize());
+    }
+
+    @SuppressWarnings("checkstyle:MagicNumber")
+    @Test
+    public final void receiveMessagesInSingleSourceFifoOrder() {
+        final Sender s1 = new Sender(new byte[]{1});
+        final Sender s2 = new Sender(new byte[]{2});
+        final CausalOrder<TestValue> causalOrder1 = new CausalOrder<>(s1);
+        final CausalOrder<TestValue> causalOrder2 = new CausalOrder<>(s2);
+        final TestSubscriber<TestValue> subscriber = new TestSubscriber<>();
+
+        final VectorTimestamped<TestValue> v1 = causalOrder2.prepare(new TestValue(42));
+        final VectorTimestamped<TestValue> v2 = causalOrder2.prepare(new TestValue(43));
+        causalOrder1.receive(s2, subscriber::onNext, v1);
+        causalOrder1.receive(s2, subscriber::onNext, v2);
+
+        subscriber.assertNotCompleted();
+        subscriber.assertNoErrors();
+        subscriber.assertValues(new TestValue(42), new TestValue(43));
+        Assert.assertEquals(0, causalOrder1.delayQueueSize());
+    }
+
+    @SuppressWarnings("checkstyle:MagicNumber")
+    @Test
+    public final void receiveMessagesInReverseOrderFromSingleSource() {
+        final Sender s1 = new Sender(new byte[]{1});
+        final Sender s2 = new Sender(new byte[]{2});
+        final CausalOrder<TestValue> causalOrder1 = new CausalOrder<>(s1);
+        final CausalOrder<TestValue> causalOrder2 = new CausalOrder<>(s2);
+        final TestSubscriber<TestValue> subscriber = new TestSubscriber<>();
+
+        final VectorTimestamped<TestValue> v1 = causalOrder2.prepare(new TestValue(42));
+        final VectorTimestamped<TestValue> v2 = causalOrder2.prepare(new TestValue(43));
+        final VectorTimestamped<TestValue> v3 = causalOrder2.prepare(new TestValue(44));
+        causalOrder1.receive(s2, subscriber::onNext, v3);
+        causalOrder1.receive(s2, subscriber::onNext, v2);
+        causalOrder1.receive(s2, subscriber::onNext, v1);
+
+        subscriber.assertNotCompleted();
+        subscriber.assertNoErrors();
+        subscriber.assertValues(new TestValue(42), new TestValue(43), new TestValue(44));
+        Assert.assertEquals(0, causalOrder1.delayQueueSize());
     }
 
     @Test
-    public final void sendReceiveUnrelatedMessagesWithTwoConsumers() {
-        final Sender sender0 = sender(0);
-        final Sender sender1 = sender(1);
-        final VectorTimestamped<TestValue> value01 = timestampedValue(42, arrayOf(sender0), new long[]{1});
-        final VectorTimestamped<TestValue> value02 = timestampedValue(43, arrayOf(sender0), new long[]{2});
-        final VectorTimestamped<TestValue> value11 = timestampedValue(44, arrayOf(sender1), new long[]{1});
-        final VectorTimestamped<TestValue> value12 = timestampedValue(44, arrayOf(sender1), new long[]{2});
-        final CausalOrder<TestValue> causalOrder0 = new CausalOrder<>(sender0);
+    public final void receiveMessagesInCausalOrder1() {
+        final Sender s1 = new Sender(new byte[]{1});
+        final Sender s2 = new Sender(new byte[]{2});
+        final Sender s3 = new Sender(new byte[]{3});
+        final CausalOrder<TestValue> causalOrder1 = new CausalOrder<>(s1);
+        final CausalOrder<TestValue> causalOrder2 = new CausalOrder<>(s2);
+        final CausalOrder<TestValue> causalOrder3 = new CausalOrder<>(s3);
+        final TestSubscriber<TestValue> subscriber2 = new TestSubscriber<>();
+        final TestSubscriber<TestValue> subscriber3 = new TestSubscriber<>();
+
+        final VectorTimestamped<TestValue> valueA = causalOrder1.prepare(new TestValue('a'));
+        causalOrder2.receive(s1, subscriber2::onNext, valueA);
+        final VectorTimestamped<TestValue> valueB = causalOrder2.prepare(new TestValue('b'));
+        causalOrder3.receive(s2, subscriber3::onNext, valueB);
+        causalOrder3.receive(s1, subscriber3::onNext, valueA);
+
+        subscriber2.assertNotCompleted();
+        subscriber2.assertNoErrors();
+        subscriber2.assertValue(new TestValue('a'));
+        subscriber3.assertNotCompleted();
+        subscriber3.assertNoErrors();
+        subscriber3.assertValues(new TestValue('a'), new TestValue('b'));
+        Assert.assertEquals(0, causalOrder2.delayQueueSize());
+        Assert.assertEquals(0, causalOrder3.delayQueueSize());
+    }
+
+    @Test
+    public final void receiveMessagesInCausalOrder2() {
+        final Sender sender1 = new Sender(new byte[]{1});
+        final Sender sender2 = new Sender(new byte[]{2});
+        final Sender sender3 = new Sender(new byte[]{3});
         final CausalOrder<TestValue> causalOrder1 = new CausalOrder<>(sender1);
-        final TestSubscriber<TestValue> consumer0 = new TestSubscriber<>();
-        final TestSubscriber<TestValue> consumer1 = new TestSubscriber<>();
+        final CausalOrder<TestValue> causalOrder2 = new CausalOrder<>(sender2);
+        final CausalOrder<TestValue> causalOrder3 = new CausalOrder<>(sender3);
+        final TestSubscriber<TestValue> subscriber1 = new TestSubscriber<>();
+        final TestSubscriber<TestValue> subscriber2 = new TestSubscriber<>();
+        final TestSubscriber<TestValue> subscriber3 = new TestSubscriber<>();
 
-        causalOrder1.receive(sender0, consumer1::onNext, value01);
-        causalOrder0.receive(sender1, consumer0::onNext, value11);
-        causalOrder1.receive(sender0, consumer1::onNext, value02);
-        causalOrder0.receive(sender1, consumer0::onNext, value12);
+        final VectorTimestamped<TestValue> valueA = causalOrder1.prepare(new TestValue('a'));
+        causalOrder1.receive(sender1, subscriber1::onNext, valueA);
 
-        consumer0.assertReceivedOnNext(Arrays.asList(value11.value, value12.value));
-        consumer1.assertReceivedOnNext(Arrays.asList(value01.value, value02.value));
-        Assert.assertEquals(0, causalOrder0.queueSize());
-        Assert.assertEquals(0, causalOrder1.queueSize());
+        final VectorTimestamped<TestValue> valueL = causalOrder2.prepare(new TestValue('l'));
+        causalOrder2.receive(sender2, subscriber2::onNext, valueL);
+        causalOrder2.receive(sender1, subscriber2::onNext, valueA);
+
+        final VectorTimestamped<TestValue> valueV = causalOrder3.prepare(new TestValue('v'));
+        causalOrder3.receive(sender3, subscriber3::onNext, valueV);
+        causalOrder3.receive(sender2, subscriber3::onNext, valueL);
+        causalOrder3.receive(sender1, subscriber3::onNext, valueA);
+        causalOrder2.receive(sender3, subscriber2::onNext, valueV);
+        causalOrder1.receive(sender3, subscriber1::onNext, valueV);
+        causalOrder1.receive(sender2, subscriber1::onNext, valueL);
+
+        final VectorTimestamped<TestValue> valueM = causalOrder2.prepare(new TestValue('m'));
+        causalOrder2.receive(sender2, subscriber2::onNext, valueM);
+        causalOrder1.receive(sender2, subscriber1::onNext, valueM);
+        causalOrder3.receive(sender2, subscriber3::onNext, valueM);
+
+        subscriber1.assertNotCompleted();
+        subscriber1.assertNoErrors();
+        subscriber1.assertValues(new TestValue('a'), new TestValue('v'), new TestValue('l'), new TestValue('m'));
+        subscriber2.assertNotCompleted();
+        subscriber2.assertNoErrors();
+        subscriber2.assertValues(new TestValue('l'), new TestValue('a'), new TestValue('v'), new TestValue('m'));
+        subscriber3.assertNotCompleted();
+        subscriber3.assertNoErrors();
+        subscriber3.assertValues(new TestValue('v'), new TestValue('l'), new TestValue('a'), new TestValue('m'));
+
+        final VectorTimestamped<TestValue> valueW = causalOrder3.prepare(new TestValue('w'));
+        Assert.assertEquals(
+            new VectorTimestamped<>(new TestValue('w'), new VectorTimestamp(
+                new Sender[]{sender1, sender2, sender3}, new long[]{1, 2, 2})),
+            valueW);
     }
 
-    @SuppressWarnings({"checkstyle:MagicNumber"})
     @Test
-    public final void sendReceiveCausalMessagesWithTwoConsumers() {
-        final Sender sender0 = sender(0);
-        final Sender sender1 = sender(1);
-        final CausalOrder<TestValue> causalOrder0 = new CausalOrder<>(sender0);
-        final CausalOrder<TestValue> causalOrder1 = new CausalOrder<>(sender1);
-        final TestSubscriber<TestValue> consumer0 = new TestSubscriber<>();
-        final TestSubscriber<TestValue> consumer1 = new TestSubscriber<>();
+    public final void duplicateMessagesReceivedInCausalOrderAreDelayedIndefinitely1() {
+        final Sender s1 = new Sender(new byte[]{1});
+        final Sender s2 = new Sender(new byte[]{2});
+        final Sender s3 = new Sender(new byte[]{3});
+        final CausalOrder<TestValue> causalOrder1 = new CausalOrder<>(s1);
+        final CausalOrder<TestValue> causalOrder2 = new CausalOrder<>(s2);
+        final CausalOrder<TestValue> causalOrder3 = new CausalOrder<>(s3);
+        final TestSubscriber<TestValue> subscriber2 = new TestSubscriber<>();
+        final TestSubscriber<TestValue> subscriber3 = new TestSubscriber<>();
 
-        causalOrder1.receive(sender0, consumer1::onNext, causalOrder0.prepare(new TestValue(42)));
-        causalOrder0.receive(sender1, consumer0::onNext, causalOrder1.prepare(new TestValue(42)));
-        causalOrder1.receive(sender0, consumer1::onNext, causalOrder0.prepare(new TestValue(43)));
-        causalOrder0.receive(sender1, consumer0::onNext, causalOrder1.prepare(new TestValue(43)));
+        final VectorTimestamped<TestValue> valueA = causalOrder1.prepare(new TestValue('a'));
+        causalOrder2.receive(s1, subscriber2::onNext, valueA);
+        final VectorTimestamped<TestValue> valueB = causalOrder2.prepare(new TestValue('b'));
+        causalOrder3.receive(s2, subscriber3::onNext, valueB);
+        causalOrder3.receive(s1, subscriber3::onNext, valueA);
+        causalOrder3.receive(s1, subscriber3::onNext, valueA);
 
-        consumer0.assertReceivedOnNext(Arrays.asList(new TestValue(42), new TestValue(43)));
-        consumer1.assertReceivedOnNext(Arrays.asList(new TestValue(42), new TestValue(43)));
-        Assert.assertEquals(0, causalOrder0.queueSize());
-        Assert.assertEquals(0, causalOrder1.queueSize());
+        subscriber2.assertNotCompleted();
+        subscriber2.assertNoErrors();
+        subscriber2.assertValue(new TestValue('a'));
+        subscriber3.assertNotCompleted();
+        subscriber3.assertNoErrors();
+        subscriber3.assertValues(new TestValue('a'), new TestValue('b'));
+        Assert.assertEquals(0, causalOrder2.delayQueueSize());
+        Assert.assertEquals(1, causalOrder3.delayQueueSize());
     }
 }

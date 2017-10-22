@@ -10,7 +10,7 @@ import java.util.Objects;
  * @param <T> the type of the timestamped value.
  */
 @SuppressWarnings("WeakerAccess")
-public final class VectorTimestamped<T> implements Comparable<VectorTimestamped<T>>, Serializable {
+public final class VectorTimestamped<T> implements Serializable {
     private static final long serialVersionUID = 114L;
 
     @NotNull
@@ -45,15 +45,7 @@ public final class VectorTimestamped<T> implements Comparable<VectorTimestamped<
     }
 
     @Override
-    public final int compareTo(@NotNull final VectorTimestamped<T> other) {
-        return this.timestamp.compareTo(other.timestamp);
-    }
-
-    @Override
     public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
         if (o == null || getClass() != o.getClass()) {
             return false;
         }

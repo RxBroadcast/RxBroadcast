@@ -83,7 +83,7 @@ public final class UdpBroadcast<T> implements Broadcast {
                 final DatagramPacket packet = new DatagramPacket(
                     data, data.length, destination.getAddress(), destination.getPort());
                 socket.send(packet);
-                return Observable.empty();
+                return null;
             } catch (final Throwable e) {
                 return Observable.error(e);
             }

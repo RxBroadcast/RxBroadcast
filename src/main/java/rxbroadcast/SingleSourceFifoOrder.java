@@ -53,12 +53,7 @@ public final class SingleSourceFifoOrder<T> implements BroadcastOrder<Timestampe
 
         final SortedSet<Timestamped<T>> queue = pendingQueues.computeIfAbsent(sender, k -> new TreeSet<>());
 
-        if (value.timestamp == expectedTimestamps.get(sender)) {
-            consumer.accept(value.value);
-            expectedTimestamps.compute(sender, (k, v) -> value.timestamp + 1);
-        } else {
-            queue.add(value);
-        }
+        queue.add(value);
 
         final Iterator<Timestamped<T>> iterator = queue.iterator();
         while (iterator.hasNext()) {
@@ -75,5 +70,9 @@ public final class SingleSourceFifoOrder<T> implements BroadcastOrder<Timestampe
             expectedTimestamps.compute(sender, (k, v) -> tv.timestamp + 1);
             iterator.remove();
         }
+    }
+
+    int queueSize() {
+        return pendingQueues.values().stream().mapToInt(SortedSet::size).sum();
     }
 }
