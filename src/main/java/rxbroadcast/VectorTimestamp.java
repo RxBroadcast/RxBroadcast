@@ -78,7 +78,7 @@ final class VectorTimestamp implements Serializable {
         });
     }
 
-    private Map<Sender, Long> asMap() {
+    Map<Sender, Long> asMap() {
         final Map<Sender, Long> map = new HashMap<>(ids.length);
         for (int i = 0; i < ids.length; i++) {
             map.put(ids[i], timestamps[i]);
