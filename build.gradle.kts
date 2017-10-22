@@ -107,7 +107,7 @@ configure<PitestPluginExtension> {
     excludedMethods = setOf("toString", "newThread", "hashCode")
     detectInlinedCode = true
     timestampedReports = false
-    mutationThreshold = 100
+    mutationThreshold = 99
     mutators = setOf("DEFAULTS", "REMOVE_CONDITIONALS")
     testSourceSets = setOf(java.sourceSets["pitest"])
 }
