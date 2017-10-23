@@ -17,7 +17,7 @@ import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:LineLength", "checkstyle:AvoidInlineConditionals"})
-public class PingPongUdpSingleSourceFifoOrderKryoSerializer {
+public final class PingPongUdpSingleSourceFifoOrderKryoSerializer {
     private static final int MESSAGE_COUNT = 100;
 
     private static final long TIMEOUT = 30;

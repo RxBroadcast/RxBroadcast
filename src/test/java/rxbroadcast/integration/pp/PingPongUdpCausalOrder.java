@@ -16,7 +16,7 @@ import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:AvoidInlineConditionals"})
-public class PingPongUdpCausalOrder {
+public final class PingPongUdpCausalOrder {
     private static final int MESSAGE_COUNT = 100;
 
     private static final long TIMEOUT = 30;

@@ -15,7 +15,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
-public class PingPongUdpNoOrderKryoSerializer {
+public final class PingPongUdpNoOrderKryoSerializer {
     private static final int MESSAGE_COUNT = 100;
 
     private static final long TIMEOUT = 30;
