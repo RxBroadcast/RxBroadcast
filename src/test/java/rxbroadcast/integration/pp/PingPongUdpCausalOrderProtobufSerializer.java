@@ -41,11 +41,11 @@ public final class PingPongUdpCausalOrderProtobufSerializer {
             ? InetAddress.getByName(System.getProperty("destination"))
             : InetAddress.getLoopbackAddress();
         final InetSocketAddress destinationSocket = new InetSocketAddress(destination, destinationPort);
+        final Serializer<Object> s = new ObjectSerializer<>();
+        final TestSubscriber<Ping> subscriber = new TestSubscriber<>();
         try (final DatagramSocket socket = new DatagramSocket(port)) {
-            final Serializer<Object> s = new ObjectSerializer<>();
             final Broadcast broadcast = new UdpBroadcast<>(
                 socket, destinationSocket, new CausalOrderProtobufSerializer<>(s), (host) -> new CausalOrder<>(host));
-            final TestSubscriber<Ping> subscriber = new TestSubscriber<>();
 
             broadcast.valuesOfType(Ping.class)
                 .doOnNext(System.out::println)
@@ -83,8 +83,8 @@ public final class PingPongUdpCausalOrderProtobufSerializer {
             ? InetAddress.getByName(System.getProperty("destination"))
             : InetAddress.getLoopbackAddress();
         final InetSocketAddress destinationSocket = new InetSocketAddress(destination, destinationPort);
+        final Serializer<Object> s = new ObjectSerializer<>();
         try (final DatagramSocket socket = new DatagramSocket(port)) {
-            final Serializer<Object> s = new ObjectSerializer<>();
             final Broadcast broadcast = new UdpBroadcast<>(
                 socket, destinationSocket, new CausalOrderProtobufSerializer<>(s), (host) -> new CausalOrder<>(host));
 

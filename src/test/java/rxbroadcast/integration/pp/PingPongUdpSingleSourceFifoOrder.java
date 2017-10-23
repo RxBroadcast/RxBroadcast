@@ -38,9 +38,9 @@ public final class PingPongUdpSingleSourceFifoOrder {
             ? InetAddress.getByName(System.getProperty("destination"))
             : InetAddress.getLoopbackAddress();
         final InetSocketAddress destinationSocket = new InetSocketAddress(destination, destinationPort);
+        final TestSubscriber<Ping> subscriber = new TestSubscriber<>();
         try (final DatagramSocket socket = new DatagramSocket(port)) {
             final Broadcast broadcast = new UdpBroadcast<>(socket, destinationSocket, new SingleSourceFifoOrder<>());
-            final TestSubscriber<Ping> subscriber = new TestSubscriber<>();
 
             broadcast.valuesOfType(Ping.class)
                 .doOnNext(System.out::println)

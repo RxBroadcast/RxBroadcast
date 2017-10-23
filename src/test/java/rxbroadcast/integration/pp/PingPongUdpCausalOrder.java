@@ -34,14 +34,14 @@ public final class PingPongUdpCausalOrder {
         final int destinationPort = System.getProperty("destinationPort") != null
             ? Integer.parseInt(System.getProperty("destinationPort"))
             : 12345;
+        final InetAddress destination = System.getProperty("destination") != null
+            ? InetAddress.getByName(System.getProperty("destination"))
+            : InetAddress.getLoopbackAddress();
+        final TestSubscriber<Ping> subscriber = new TestSubscriber<>();
 
         try (final DatagramSocket socket = new DatagramSocket(port)) {
-            final InetAddress destination = System.getProperty("destination") != null
-                ? InetAddress.getByName(System.getProperty("destination"))
-                : InetAddress.getLoopbackAddress();
             final Broadcast broadcast = new UdpBroadcast<>(
                 socket, new InetSocketAddress(destination, destinationPort), (host) -> new CausalOrder<>(host));
-            final TestSubscriber<Ping> subscriber = new TestSubscriber<>();
 
             broadcast.valuesOfType(Ping.class)
                 .doOnNext(System.out::println)

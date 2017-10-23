@@ -29,11 +29,10 @@ public final class PingPongUdpNoOrderKryoSerializer {
     public final void recv() throws SocketException, UnknownHostException {
         final int port = Integer.parseInt(System.getProperty("port"));
         final InetSocketAddress destination = new InetSocketAddress(System.getProperty("destination"), port);
+        final TestSubscriber<Ping> subscriber = new TestSubscriber<>();
         try (final DatagramSocket socket = new DatagramSocket(port)) {
             final Broadcast broadcast = new UdpBroadcast<>(
                 socket, destination, new KryoSerializer<>(), new NoOrder<>());
-
-            final TestSubscriber<Ping> subscriber = new TestSubscriber<>();
 
             broadcast.valuesOfType(Ping.class)
                 .doOnNext(System.out::println)
