@@ -1,7 +1,6 @@
 package rxbroadcast;
 
 import org.hamcrest.CoreMatchers;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -9,7 +8,6 @@ import org.junit.rules.Timeout;
 import rx.Observable;
 import rx.observers.TestSubscriber;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -18,191 +16,185 @@ import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 public class UdpBroadcastTest {
-    private final List<Closeable> resources = new LinkedList<>();
-
-    private final Supplier<DatagramSocket> datagramSocketSupplier = () -> {
-        try {
-            final DatagramSocket socket = new DatagramSocket();
-            resources.add(socket);
-            return socket;
-        } catch (final SocketException e) {
-            throw new RuntimeException(e);
-        }
-    };
-
     @Rule
     public final Timeout timeout = Timeout.seconds(60);
 
-    @After
-    public final void tearDown() {
-        resources.forEach(closeable -> {
-            try {
-                closeable.close();
-            } catch (final IOException e) {
-                // ???
-            }
-        });
-    }
-
     @SuppressWarnings({"checkstyle:magicnumber"})
     @Test
-    public final void valuesOfTypeDoesReceiveBroadcastValue() {
+    public final void valuesOfTypeDoesReceiveBroadcastValue() throws SocketException {
         final TestSubscriber<Object> subscriber = new TestSubscriber<>();
-        final DatagramSocket s1 = datagramSocketSupplier.get();
-        final DatagramSocket s2 = datagramSocketSupplier.get();
-        final Broadcast broadcast1 = new UdpBroadcast<>(
-            s1, new InetSocketAddress(InetAddress.getLoopbackAddress(), s2.getLocalPort()), new NoOrder<>());
-        final Broadcast broadcast2 = new UdpBroadcast<>(
-            s2, new InetSocketAddress(InetAddress.getLoopbackAddress(), s1.getLocalPort()), new NoOrder<>());
+        try (
+            final DatagramSocket s1 = new DatagramSocket();
+            final DatagramSocket s2 = new DatagramSocket();
+        ) {
+            final Broadcast broadcast1 = new UdpBroadcast<>(
+                s1, new InetSocketAddress(InetAddress.getLoopbackAddress(), s2.getLocalPort()), new NoOrder<>());
+            final Broadcast broadcast2 = new UdpBroadcast<>(
+                s2, new InetSocketAddress(InetAddress.getLoopbackAddress(), s1.getLocalPort()), new NoOrder<>());
 
-        broadcast2.valuesOfType(TestValue.class).first().subscribe(subscriber);
-        broadcast1.send(new TestValue(42)).toBlocking().subscribe();
+            broadcast2.valuesOfType(TestValue.class).first().subscribe(subscriber);
+            broadcast1.send(new TestValue(42)).toBlocking().subscribe();
 
-        subscriber.awaitTerminalEvent(10, TimeUnit.SECONDS);
+            subscriber.awaitTerminalEvent(10, TimeUnit.SECONDS);
 
-        subscriber.assertNoErrors();
-        subscriber.assertValueCount(1);
-        subscriber.assertReceivedOnNext(Collections.singletonList(new TestValue(42)));
+            subscriber.assertNoErrors();
+            subscriber.assertValueCount(1);
+            subscriber.assertReceivedOnNext(Collections.singletonList(new TestValue(42)));
+        }
     }
 
     @SuppressWarnings({"checkstyle:magicnumber"})
     @Test
-    public final void eachSubscriptionDoesSendTheBroadcast() {
+    public final void eachSubscriptionDoesSendTheBroadcast() throws SocketException {
         final TestSubscriber<Object> subscriber = new TestSubscriber<>();
-        final DatagramSocket s1 = datagramSocketSupplier.get();
-        final DatagramSocket s2 = datagramSocketSupplier.get();
-        final Broadcast broadcast1 = new UdpBroadcast<>(
-            s1, new InetSocketAddress(InetAddress.getLoopbackAddress(), s2.getLocalPort()), new NoOrder<>());
-        final Broadcast broadcast2 = new UdpBroadcast<>(
-            s2, new InetSocketAddress(InetAddress.getLoopbackAddress(), s1.getLocalPort()), new NoOrder<>());
+        try (
+            final DatagramSocket s1 = new DatagramSocket();
+            final DatagramSocket s2 = new DatagramSocket();
+        ) {
+            final Broadcast broadcast1 = new UdpBroadcast<>(
+                s1, new InetSocketAddress(InetAddress.getLoopbackAddress(), s2.getLocalPort()), new NoOrder<>());
+            final Broadcast broadcast2 = new UdpBroadcast<>(
+                s2, new InetSocketAddress(InetAddress.getLoopbackAddress(), s1.getLocalPort()), new NoOrder<>());
 
-        broadcast2.valuesOfType(TestValue.class).take(4).subscribe(subscriber);
+            broadcast2.valuesOfType(TestValue.class).take(4).subscribe(subscriber);
 
-        final Observable<Void> testValue = broadcast1.send(new TestValue(42));
-        testValue.toBlocking().subscribe();
-        testValue.toBlocking().subscribe();
-        testValue.toBlocking().subscribe();
-        testValue.toBlocking().subscribe();
+            final Observable<Void> testValue = broadcast1.send(new TestValue(42));
+            testValue.toBlocking().subscribe();
+            testValue.toBlocking().subscribe();
+            testValue.toBlocking().subscribe();
+            testValue.toBlocking().subscribe();
 
-        subscriber.awaitTerminalEvent(10, TimeUnit.SECONDS);
+            subscriber.awaitTerminalEvent(10, TimeUnit.SECONDS);
 
-        subscriber.assertNoErrors();
-        subscriber.assertValueCount(4);
-        subscriber.assertReceivedOnNext(Arrays.asList(
-            new TestValue(42), new TestValue(42), new TestValue(42), new TestValue(42)));
+            subscriber.assertNoErrors();
+            subscriber.assertValueCount(4);
+            subscriber.assertReceivedOnNext(Arrays.asList(
+                new TestValue(42), new TestValue(42), new TestValue(42), new TestValue(42)));
+        }
     }
 
     @SuppressWarnings({"checkstyle:magicnumber"})
     @Test
-    public final void errorSendingBroadcastIsReceivedInOnError() {
+    public final void errorSendingBroadcastIsReceivedInOnError() throws SocketException {
         final TestSubscriber<Void> subscriber = new TestSubscriber<>();
-        final DatagramSocket s1 = datagramSocketSupplier.get();
-        final DatagramSocket s2 = datagramSocketSupplier.get();
-        final Broadcast broadcast1 = new UdpBroadcast<>(
-            s1, new InetSocketAddress(InetAddress.getLoopbackAddress(), s2.getLocalPort()), new NoOrder<>());
+        final DatagramSocket s1 = new DatagramSocket();
+        try (final DatagramSocket s2 = new DatagramSocket()) {
+            final Broadcast broadcast1 = new UdpBroadcast<>(
+                s1, new InetSocketAddress(InetAddress.getLoopbackAddress(), s2.getLocalPort()), new NoOrder<>());
 
-        s1.close();
-        broadcast1.send(new TestValue(42)).toBlocking().subscribe(subscriber);
+            s1.close();
+            broadcast1.send(new TestValue(42)).toBlocking().subscribe(subscriber);
 
-        subscriber.awaitTerminalEvent(10, TimeUnit.SECONDS);
-        subscriber.assertError(SocketException.class);
-    }
-
-    @SuppressWarnings({"checkstyle:magicnumber"})
-    @Test
-    public final void deserializationErrorDoesTerminateStream() throws IOException {
-        final TestSubscriber<Object> subscriber = new TestSubscriber<>();
-        final DatagramSocket s1 = datagramSocketSupplier.get();
-        final DatagramSocket s2 = datagramSocketSupplier.get();
-        final Broadcast broadcast1 = new UdpBroadcast<>(
-            s1, new InetSocketAddress(InetAddress.getLoopbackAddress(), s2.getLocalPort()), new NoOrder<>());
-        final Broadcast broadcast2 = new UdpBroadcast<>(
-            s2, new InetSocketAddress(InetAddress.getLoopbackAddress(), s1.getLocalPort()), new NoOrder<>());
-
-        broadcast2.valuesOfType(TestValue.class).take(4).subscribe(subscriber);
-
-        final Observable<Void> testValue = broadcast1.send(new TestValue(42));
-        s1.send(new DatagramPacket(new byte[]{42, 43, 44, 45}, 4, InetAddress.getLoopbackAddress(), s2.getLocalPort()));
-        testValue.toBlocking().subscribe();
-        testValue.toBlocking().subscribe();
-        testValue.toBlocking().subscribe();
-        testValue.toBlocking().subscribe();
-
-        subscriber.awaitTerminalEvent(10, TimeUnit.SECONDS);
-        subscriber.assertValueCount(0);
-        subscriber.assertError(RuntimeException.class);
-    }
-
-    @SuppressWarnings({"checkstyle:MagicNumber"})
-    @Test
-    public final void deserializationErrorStreamCanBeRestarted() throws IOException {
-        final TestSubscriber<Object> subscriber = new TestSubscriber<>();
-        final DatagramSocket s1 = datagramSocketSupplier.get();
-        final DatagramSocket s2 = datagramSocketSupplier.get();
-        final Broadcast broadcast1 = new UdpBroadcast<>(
-            s1, new InetSocketAddress(InetAddress.getLoopbackAddress(), s2.getLocalPort()), new NoOrder<>());
-        final Broadcast broadcast2 = new UdpBroadcast<>(
-            s2, new InetSocketAddress(InetAddress.getLoopbackAddress(), s1.getLocalPort()), new NoOrder<>());
-
-        broadcast2.valuesOfType(TestValue.class)
-            .take(4)
-            .retry()
-            .subscribe(subscriber);
-
-        final Observable<Void> testValue = broadcast1.send(new TestValue(42));
-        s1.send(new DatagramPacket(new byte[]{42, 43, 44, 45}, 4, InetAddress.getLoopbackAddress(), s2.getLocalPort()));
-        testValue.toBlocking().subscribe();
-        testValue.toBlocking().subscribe();
-        testValue.toBlocking().subscribe();
-        testValue.toBlocking().subscribe();
-
-        subscriber.awaitTerminalEvent(10, TimeUnit.SECONDS);
-        subscriber.assertNoErrors();
-        subscriber.assertValueCount(4);
-        subscriber.assertReceivedOnNext(Arrays.asList(
-            new TestValue(42), new TestValue(42), new TestValue(42), new TestValue(42)));
+            subscriber.awaitTerminalEvent(10, TimeUnit.SECONDS);
+            subscriber.assertError(SocketException.class);
+        }
     }
 
     @SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:LineLength"})
     @Test
-    public final void broadcastOrderDoesGetNonNullHostMachineAddress() {
-        final DatagramSocket s1 = datagramSocketSupplier.get();
-        final DatagramSocket s2 = datagramSocketSupplier.get();
-        final InetSocketAddress destination = new InetSocketAddress(InetAddress.getLoopbackAddress(), s2.getLocalPort());
-        final Broadcast broadcast1 = new UdpBroadcast<>(s1, destination, (host) -> {
-            Assert.assertThat(host, CoreMatchers.notNullValue());
-            return new NoOrder<>();
-        });
-        final TestSubscriber<TestValue> subscriber = new TestSubscriber<>();
+    public final void deserializationErrorDoesTerminateStream() throws IOException {
+        final TestSubscriber<Object> subscriber = new TestSubscriber<>();
+        try (
+            final DatagramSocket s1 = new DatagramSocket();
+            final DatagramSocket s2 = new DatagramSocket();
+        ) {
+            final Broadcast broadcast1 = new UdpBroadcast<>(
+                s1, new InetSocketAddress(InetAddress.getLoopbackAddress(), s2.getLocalPort()), new NoOrder<>());
+            final Broadcast broadcast2 = new UdpBroadcast<>(
+                s2, new InetSocketAddress(InetAddress.getLoopbackAddress(), s1.getLocalPort()), new NoOrder<>());
 
-        broadcast1.valuesOfType(TestValue.class).subscribe(subscriber);
+            broadcast2.valuesOfType(TestValue.class).take(4).subscribe(subscriber);
 
-        subscriber.awaitTerminalEvent(100, TimeUnit.MILLISECONDS);
-        subscriber.assertNoValues();
-        subscriber.assertNoErrors();
-        subscriber.assertNotCompleted();
+            final Observable<Void> testValue = broadcast1.send(new TestValue(42));
+            s1.send(new DatagramPacket(new byte[]{42, 43, 44, 45}, 4, InetAddress.getLoopbackAddress(), s2.getLocalPort()));
+            testValue.toBlocking().subscribe();
+            testValue.toBlocking().subscribe();
+            testValue.toBlocking().subscribe();
+            testValue.toBlocking().subscribe();
+
+            subscriber.awaitTerminalEvent(10, TimeUnit.SECONDS);
+            subscriber.assertValueCount(0);
+            subscriber.assertError(RuntimeException.class);
+        }
+    }
+
+    @SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:LineLength"})
+    @Test
+    public final void deserializationErrorStreamCanBeRestarted() throws IOException {
+        final TestSubscriber<Object> subscriber = new TestSubscriber<>();
+        try (
+            final DatagramSocket s1 = new DatagramSocket();
+            final DatagramSocket s2 = new DatagramSocket();
+        ) {
+            final Broadcast broadcast1 = new UdpBroadcast<>(
+                s1, new InetSocketAddress(InetAddress.getLoopbackAddress(), s2.getLocalPort()), new NoOrder<>());
+            final Broadcast broadcast2 = new UdpBroadcast<>(
+                s2, new InetSocketAddress(InetAddress.getLoopbackAddress(), s1.getLocalPort()), new NoOrder<>());
+
+            broadcast2.valuesOfType(TestValue.class)
+                .take(4)
+                .retry()
+                .subscribe(subscriber);
+
+            final Observable<Void> testValue = broadcast1.send(new TestValue(42));
+            s1.send(new DatagramPacket(new byte[]{42, 43, 44, 45}, 4, InetAddress.getLoopbackAddress(), s2.getLocalPort()));
+            testValue.toBlocking().subscribe();
+            testValue.toBlocking().subscribe();
+            testValue.toBlocking().subscribe();
+            testValue.toBlocking().subscribe();
+
+            subscriber.awaitTerminalEvent(10, TimeUnit.SECONDS);
+            subscriber.assertNoErrors();
+            subscriber.assertValueCount(4);
+            subscriber.assertReceivedOnNext(Arrays.asList(
+                new TestValue(42), new TestValue(42), new TestValue(42), new TestValue(42)));
+        }
+    }
+
+    @SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:LineLength"})
+    @Test
+    public final void broadcastOrderDoesGetNonNullHostMachineAddress() throws SocketException {
+        try (
+            final DatagramSocket s1 = new DatagramSocket();
+            final DatagramSocket s2 = new DatagramSocket();
+        ) {
+            final InetSocketAddress destination = new InetSocketAddress(
+                InetAddress.getLoopbackAddress(), s2.getLocalPort());
+            final Broadcast broadcast1 = new UdpBroadcast<>(s1, destination, (host) -> {
+                Assert.assertThat(host, CoreMatchers.notNullValue());
+                return new NoOrder<>();
+            });
+            final TestSubscriber<TestValue> subscriber = new TestSubscriber<>();
+
+            broadcast1.valuesOfType(TestValue.class).subscribe(subscriber);
+
+            subscriber.awaitTerminalEvent(100, TimeUnit.MILLISECONDS);
+            subscriber.assertNoValues();
+            subscriber.assertNoErrors();
+            subscriber.assertNotCompleted();
+        }
     }
 
     @SuppressWarnings({"checkstyle:MagicNumber"})
     @Test
-    public final void sendDoesCompleteSuccessfully() {
+    public final void sendDoesCompleteSuccessfully() throws SocketException {
         final TestSubscriber<Void> subscriber = new TestSubscriber<>();
-        final DatagramSocket s1 = datagramSocketSupplier.get();
-        final DatagramSocket s2 = datagramSocketSupplier.get();
-        final Broadcast broadcast1 = new UdpBroadcast<>(
-            s1, new InetSocketAddress(InetAddress.getLoopbackAddress(), s2.getLocalPort()), new NoOrder<>());
+        try (
+            final DatagramSocket s1 = new DatagramSocket();
+            final DatagramSocket s2 = new DatagramSocket();
+        ) {
+            final Broadcast broadcast1 = new UdpBroadcast<>(
+                s1, new InetSocketAddress(InetAddress.getLoopbackAddress(), s2.getLocalPort()), new NoOrder<>());
 
-        broadcast1.send(new TestValue(42)).subscribe(subscriber);
+            broadcast1.send(new TestValue(42)).subscribe(subscriber);
 
-        subscriber.awaitTerminalEvent(10, TimeUnit.SECONDS);
-        subscriber.assertNoErrors();
-        subscriber.assertNoValues();
-        subscriber.assertCompleted();
+            subscriber.awaitTerminalEvent(10, TimeUnit.SECONDS);
+            subscriber.assertNoErrors();
+            subscriber.assertNoValues();
+            subscriber.assertCompleted();
+        }
     }
 }
