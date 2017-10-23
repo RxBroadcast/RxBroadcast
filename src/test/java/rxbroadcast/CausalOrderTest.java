@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import rx.observers.TestSubscriber;
 
-public class CausalOrderTest {
+public final class CausalOrderTest {
     @Test
     public final void prepareDoesIncrementTheLocalClock() {
         final Sender s = new Sender(new byte[]{1});

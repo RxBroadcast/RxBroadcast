@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 @SuppressWarnings({"Duplicates", "checkstyle:MagicNumber"})
-public class SingleSourceFifoOrderTest {
+public final class SingleSourceFifoOrderTest {
     @Test
     public final void receiveMessagesInOrder() {
         final Sender sender1 = new Sender(new byte[]{0});

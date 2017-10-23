@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
-public class InMemoryBroadcastTest {
+public final class InMemoryBroadcastTest {
     @SuppressWarnings({"checkstyle:magicnumber"})
     @Test
     public final void valuesOfTypeDoesReceiveBroadcastValue() {

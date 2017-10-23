@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
-public class UdpBroadcastTest {
+public final class UdpBroadcastTest {
     @Rule
     public final Timeout timeout = Timeout.seconds(60);
 
