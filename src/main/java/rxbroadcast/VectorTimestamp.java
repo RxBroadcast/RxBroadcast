@@ -21,6 +21,7 @@ final class VectorTimestamp implements Serializable {
     @NotNull
     private final long[] timestamps;
 
+    @Deprecated
     @SuppressWarnings("unused")
     VectorTimestamp() {
         this(new Sender[0], new long[0]);

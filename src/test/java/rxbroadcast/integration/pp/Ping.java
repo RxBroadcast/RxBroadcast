@@ -13,6 +13,7 @@ public final class Ping implements Serializable {
         this.value = value;
     }
 
+    @Deprecated
     @SuppressWarnings("unused")
     public Ping() {
 
