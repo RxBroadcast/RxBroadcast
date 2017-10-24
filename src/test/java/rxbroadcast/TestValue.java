@@ -13,6 +13,7 @@ public final class TestValue implements Serializable {
         this.value = value;
     }
 
+    @Deprecated
     @SuppressWarnings("unused")
     public TestValue() {
 

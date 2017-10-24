@@ -13,6 +13,7 @@ final class Pong implements Serializable {
         this.value = value;
     }
 
+    @Deprecated
     @SuppressWarnings("unused")
     public Pong() {
 
