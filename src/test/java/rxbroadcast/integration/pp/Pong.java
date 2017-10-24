@@ -3,7 +3,7 @@ package rxbroadcast.integration.pp;
 import java.io.Serializable;
 import java.util.Objects;
 
-public final class Pong implements Serializable {
+final class Pong implements Serializable {
     private static final long serialVersionUID = 114L;
 
     @SuppressWarnings("WeakerAccess")

@@ -11,9 +11,9 @@ import java.util.function.Consumer;
 
 public final class CausalOrder<T> implements BroadcastOrder<VectorTimestamped<T>, T> {
     private final class DelayQueueEntry {
-        public final Sender sender;
+        final Sender sender;
 
-        public final VectorTimestamped<T> message;
+        final VectorTimestamped<T> message;
 
         private DelayQueueEntry(final Sender sender, final VectorTimestamped<T> message) {
             this.sender = sender;
