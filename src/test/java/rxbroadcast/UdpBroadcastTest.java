@@ -22,7 +22,7 @@ public final class UdpBroadcastTest {
     @Rule
     public final Timeout timeout = Timeout.seconds(60);
 
-    @SuppressWarnings({"checkstyle:magicnumber"})
+    @SuppressWarnings({"checkstyle:MagicNumber"})
     @Test
     public final void valuesOfTypeDoesReceiveBroadcastValue() throws SocketException {
         final TestSubscriber<Object> subscriber = new TestSubscriber<>();
@@ -46,7 +46,7 @@ public final class UdpBroadcastTest {
         }
     }
 
-    @SuppressWarnings({"checkstyle:magicnumber"})
+    @SuppressWarnings({"checkstyle:MagicNumber"})
     @Test
     public final void eachSubscriptionDoesSendTheBroadcast() throws SocketException {
         final TestSubscriber<Object> subscriber = new TestSubscriber<>();
@@ -76,7 +76,7 @@ public final class UdpBroadcastTest {
         }
     }
 
-    @SuppressWarnings({"checkstyle:magicnumber"})
+    @SuppressWarnings({"checkstyle:MagicNumber"})
     @Test
     public final void errorSendingBroadcastIsReceivedInOnError() throws SocketException {
         final TestSubscriber<Void> subscriber = new TestSubscriber<>();

@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 public final class InMemoryBroadcastTest {
-    @SuppressWarnings({"checkstyle:magicnumber"})
+    @SuppressWarnings({"checkstyle:MagicNumber"})
     @Test
     public final void valuesOfTypeDoesReceiveBroadcastValue() {
         final TestSubscriber<TestValue> subscriber = new TestSubscriber<>();
@@ -25,7 +25,7 @@ public final class InMemoryBroadcastTest {
         subscriber.assertReceivedOnNext(Collections.singletonList(new TestValue(42)));
     }
 
-    @SuppressWarnings({"checkstyle:magicnumber"})
+    @SuppressWarnings({"checkstyle:MagicNumber"})
     @Test
     public final void eachSubscriptionDoesSendTheBroadcast() {
         final TestSubscriber<Object> subscriber = new TestSubscriber<>();
