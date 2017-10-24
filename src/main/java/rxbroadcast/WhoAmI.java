@@ -15,6 +15,7 @@ final class WhoAmI implements Callable<Sender> {
         this.destinationPort = destinationPort;
     }
 
+    @NotNull
     @Override
     public final Sender call() throws IOException {
         // Listen all all interfaces, random port

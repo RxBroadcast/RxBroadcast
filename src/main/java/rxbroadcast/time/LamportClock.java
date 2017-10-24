@@ -1,5 +1,7 @@
 package rxbroadcast.time;
 
+import org.jetbrains.annotations.Contract;
+
 import java.util.Objects;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -73,6 +75,7 @@ public final class LamportClock implements Clock {
         return String.format("LamportClock{time=%d}", time);
     }
 
+    @Contract("null -> false")
     @Override
     public final boolean equals(final Object o) {
         if (o == null || getClass() != o.getClass()) {

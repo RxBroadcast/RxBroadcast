@@ -1,5 +1,6 @@
 package rxbroadcast;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
@@ -38,6 +39,7 @@ public final class Sender implements Serializable, Comparable<Sender> {
             .array());
     }
 
+    @Contract("null -> false")
     @Override
     public final boolean equals(final Object o) {
         return !(o == null || getClass() != o.getClass())

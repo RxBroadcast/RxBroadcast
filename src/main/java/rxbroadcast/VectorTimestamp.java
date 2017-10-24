@@ -1,5 +1,6 @@
 package rxbroadcast;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
@@ -40,11 +41,13 @@ final class VectorTimestamp implements Serializable {
         return IntStream.range(0, ids.length).mapToObj(idx -> new VectorTimestampEntry(ids[idx], timestamps[idx]));
     }
 
+    @NotNull
     @Override
     public String toString() {
         return Arrays.toString(stream().map(VectorTimestampEntry::toString).toArray());
     }
 
+    @Contract("null -> false")
     @Override
     public boolean equals(final Object o) {
         if (o == null || getClass() != o.getClass()) {

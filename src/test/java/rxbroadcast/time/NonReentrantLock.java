@@ -1,5 +1,6 @@
 package rxbroadcast.time;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.Semaphore;
@@ -35,6 +36,7 @@ final class NonReentrantLock implements Lock {
         semaphore.release();
     }
 
+    @Contract(" -> fail")
     @NotNull
     @Override
     public final Condition newCondition() {

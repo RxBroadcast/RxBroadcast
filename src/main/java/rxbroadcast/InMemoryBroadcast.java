@@ -22,6 +22,7 @@ public final class InMemoryBroadcast implements Broadcast {
     /**
      * {@inheritDoc}
      */
+    @NotNull
     @Override
     public Observable<Void> send(@NotNull final Object value) {
         return Observable.defer(() -> {
@@ -33,6 +34,7 @@ public final class InMemoryBroadcast implements Broadcast {
     /**
      * {@inheritDoc}
      */
+    @NotNull
     @Override
     @SuppressWarnings("unchecked")
     public <T> Observable<@NotNull T> valuesOfType(@NotNull final Class<T> clazz) {

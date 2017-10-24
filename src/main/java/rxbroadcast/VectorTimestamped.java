@@ -1,5 +1,6 @@
 package rxbroadcast;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
@@ -44,6 +45,7 @@ public final class VectorTimestamped<T> implements Serializable {
             timestamp);
     }
 
+    @Contract("null -> false")
     @Override
     public boolean equals(final Object o) {
         if (o == null || getClass() != o.getClass()) {

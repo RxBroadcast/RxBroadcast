@@ -1,5 +1,7 @@
 package rxbroadcast;
 
+import org.jetbrains.annotations.Contract;
+
 import java.util.function.Consumer;
 
 /**
@@ -11,6 +13,7 @@ public final class NoOrder<T> implements BroadcastOrder<T, T> {
     /**
      * {@inheritDoc}
      */
+    @Contract(pure = true)
     @Override
     public T prepare(final T value) {
         return value;

@@ -1,5 +1,6 @@
 package rxbroadcast;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
@@ -24,6 +25,7 @@ final class Timestamped<T> implements Comparable<Timestamped<T>>, Serializable {
         this.value = value;
     }
 
+    @Contract(pure = true)
     @Override
     public int compareTo(@NotNull final Timestamped<T> other) {
         return Long.compareUnsigned(timestamp, other.timestamp);
@@ -34,6 +36,7 @@ final class Timestamped<T> implements Comparable<Timestamped<T>>, Serializable {
         return String.format("Timestamped{timestamp=%d, value=%s}", timestamp, value);
     }
 
+    @Contract("null -> false")
     @Override
     public boolean equals(final Object o) {
         if (o == null || getClass() != o.getClass()) {
