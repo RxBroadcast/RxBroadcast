@@ -55,18 +55,6 @@ public final class LamportClock implements Clock {
     }
 
     /**
-     * Executes a single tick of the clock, generating a timestamp.
-     */
-    public void tick() {
-        lock.lock();
-        try {
-            time = time  + 1;
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override

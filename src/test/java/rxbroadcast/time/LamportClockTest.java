@@ -7,9 +7,12 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.concurrent.locks.Lock;
+import java.util.function.LongFunction;
 
 @SuppressWarnings({"checkstyle:MagicNumber"})
 public final class LamportClockTest {
+    private final LongFunction<Void> noOp = (val) -> null;
+
     @Test
     public final void clockDoesStartAtZero() {
         final LamportClock clock = new LamportClock();
@@ -23,7 +26,7 @@ public final class LamportClockTest {
         clock.set(5);
         Assert.assertEquals(5, clock.time());
 
-        clock.tick();
+        clock.tick(noOp);
         Assert.assertEquals(6, clock.time());
     }
 
@@ -31,7 +34,7 @@ public final class LamportClockTest {
     public final void tickClockDoesIncrementItsValue() {
         final LamportClock clock = new LamportClock();
 
-        clock.tick();
+        clock.tick(noOp);
 
         Assert.assertEquals(1, clock.time());
     }
@@ -86,9 +89,9 @@ public final class LamportClockTest {
         final LamportClock clock = new LamportClock(lock);
 
         Assert.assertThat(lock, LockMatchers.isUnlocked());
-        clock.tick();
+        clock.tick(noOp);
         Assert.assertThat(lock, LockMatchers.isUnlocked());
-        clock.tick((time) -> null);
+        clock.tick(noOp);
         Assert.assertThat(lock, LockMatchers.isUnlocked());
     }
 }
