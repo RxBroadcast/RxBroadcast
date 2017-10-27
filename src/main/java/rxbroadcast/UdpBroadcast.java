@@ -8,6 +8,7 @@ import rx.schedulers.Schedulers;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.Inet6Address;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -36,7 +37,8 @@ public final class UdpBroadcast<T> implements Broadcast {
         this.socket = socket;
         final Scheduler singleThreadScheduler = Schedulers.from(
             Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory()));
-        final Single<Sender> host = Single.fromCallable(new WhoAmI(destination.getPort()));
+        final Single<Sender> host = Single.fromCallable(new WhoAmI(
+            destination.getPort(), destination.getAddress() instanceof Inet6Address));
         this.broadcastOrder = host.subscribeOn(Schedulers.io()).map(createBroadcastOrder::apply).cache();
         this.broadcastOrder.subscribe();
         this.values = broadcastOrder.flatMapObservable((order1) ->
