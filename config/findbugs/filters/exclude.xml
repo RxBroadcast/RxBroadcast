@@ -1,0 +1,25 @@
+<FindBugsFilter>
+    <Match>
+        <Bug pattern="PL_PARALLEL_LISTS" />
+    </Match>
+    <Match>
+        <And>
+            <Or>
+                <Class name="rxbroadcast.CausalOrderProtobufSerializer" />
+                <Class name="rxbroadcast.ObjectSerializer" />
+                <Class name="rxbroadcast.SingleSourceFifoOrderProtobufSerializer" />
+            </Or>
+            <Or>
+                <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CHECKED" />
+                <Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS" />
+            </Or>
+        </And>
+    </Match>
+    <Match>
+        <Or>
+            <Class name="~rxbroadcast[.].*Test" />
+            <Class name="~rxbroadcast[.]integration[.].*" />
+        </Or>
+        <Bug pattern="PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS" />
+    </Match>
+</FindBugsFilter>

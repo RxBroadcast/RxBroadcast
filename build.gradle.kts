@@ -27,6 +27,7 @@ dependencies {
     compile("io.reactivex:rxjava:1.3.0")
     compile("org.jetbrains:annotations:15.0")
     errorprone("com.google.errorprone:error_prone_core:2.1.2")
+    findbugsPlugins("com.mebigfatguy.fb-contrib:fb-contrib:7.0.5")
     testCompile("junit:junit:4.12")
     testCompile("nl.jqno.equalsverifier:equalsverifier:2.3.3")
 }
@@ -72,6 +73,8 @@ tasks.withType<Test> {
 }
 
 tasks.withType<FindBugs> {
+    excludeFilter = file("${rootProject.projectDir}/config/findbugs/filters/exclude.xml")
+    pluginClasspath = project.configurations["findbugsPlugins"]
     reports {
         xml.isEnabled = false
         html.isEnabled = true

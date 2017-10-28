@@ -28,6 +28,6 @@ public final class SenderTest {
     public final void testCompareToSimple3() {
         final Sender s1 = new Sender(new byte[]{2});
         final Sender s2 = new Sender(new byte[]{2});
-        Assert.assertTrue("s1 ≡ s2", s1.compareTo(s2) == 0);
+        Assert.assertEquals(0, s1.compareTo(s2));
     }
 }
