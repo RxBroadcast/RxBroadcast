@@ -4,7 +4,6 @@ set -e
 set -u
 set -o pipefail
 
-INFER_DIR="${INFER_DIRECTORY}/infer-linux64-v${INFER_VERSION}"
 INFER_BIN="${INFER_DIRECTORY}/infer-linux64-v${INFER_VERSION}/infer/bin"
 
 if [[ ! -x "${INFER_BIN}/infer" ]]
