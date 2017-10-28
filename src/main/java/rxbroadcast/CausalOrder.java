@@ -37,14 +37,10 @@ public final class CausalOrder<T> implements BroadcastOrder<VectorTimestamped<T>
     @Override
     public VectorTimestamped<T> prepare(final T value) {
         return vt.get(me).tick((time) -> {
-            final List<Sender> senders = new ArrayList<>(vt.keySet());
-            final Sender[] ids = new Sender[senders.size()];
-            final long[] timestamps = new long[senders.size()];
-
-            for (int i = 0; i < senders.size(); i++) {
-                final Sender s = senders.get(i);
-                ids[i] = s;
-                timestamps[i] = vt.get(s).time();
+            final Sender[] ids = vt.keySet().toArray(new Sender[vt.size()]);
+            final long[] timestamps = new long[ids.length];
+            for (int i = 0; i < ids.length; i++) {
+                timestamps[i] = vt.get(ids[i]).time();
             }
 
             return new VectorTimestamped<>(value, new VectorTimestamp(ids, timestamps));
