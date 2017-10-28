@@ -11,8 +11,13 @@ import java.util.TreeSet;
 import java.util.function.Consumer;
 
 public final class SingleSourceFifoOrder<T> implements BroadcastOrder<Timestamped<T>, T> {
+    public enum SingleSourceFifoOrderQueueOption {
+        DROP,
+        QUEUE,
+    }
+
     @SuppressWarnings("WeakerAccess")
-    public static final boolean DROP_LATE = true;
+    public static final SingleSourceFifoOrderQueueOption DROP_LATE = SingleSourceFifoOrderQueueOption.DROP;
 
     private final Clock clock = new LamportClock();
 
@@ -23,14 +28,14 @@ public final class SingleSourceFifoOrder<T> implements BroadcastOrder<Timestampe
     private final boolean dropLateMessages;
 
     public SingleSourceFifoOrder() {
-        this(!DROP_LATE);
+        this(SingleSourceFifoOrderQueueOption.QUEUE);
     }
 
     @SuppressWarnings("WeakerAccess")
-    public SingleSourceFifoOrder(final boolean dropLateMessages) {
+    public SingleSourceFifoOrder(final SingleSourceFifoOrderQueueOption queueOpt) {
         this.pendingSets = new HashMap<>();
         this.expectedTimestamps = new HashMap<>();
-        this.dropLateMessages = dropLateMessages;
+        this.dropLateMessages = queueOpt == SingleSourceFifoOrderQueueOption.DROP;
     }
 
     @Override
