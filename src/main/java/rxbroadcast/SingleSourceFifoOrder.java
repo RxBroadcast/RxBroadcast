@@ -1,6 +1,5 @@
 package rxbroadcast;
 
-import rxbroadcast.time.Clock;
 import rxbroadcast.time.LamportClock;
 
 import java.util.HashMap;
@@ -19,7 +18,7 @@ public final class SingleSourceFifoOrder<T> implements BroadcastOrder<Timestampe
     @SuppressWarnings("WeakerAccess")
     public static final SingleSourceFifoOrderQueueOption DROP_LATE = SingleSourceFifoOrderQueueOption.DROP;
 
-    private final Clock clock = new LamportClock();
+    private final LamportClock clock = new LamportClock();
 
     private final Map<Sender, SortedSet<Timestamped<T>>> pendingSets;
 

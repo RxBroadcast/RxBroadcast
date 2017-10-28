@@ -1,17 +1,18 @@
 package rxbroadcast.time;
 
-import nl.jqno.equalsverifier.EqualsVerifier;
-import nl.jqno.equalsverifier.Warning;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.concurrent.locks.Lock;
 import java.util.function.LongFunction;
+import java.util.function.Supplier;
 
 @SuppressWarnings({"checkstyle:MagicNumber"})
 public final class LamportClockTest {
     private final LongFunction<Void> noOp = (val) -> null;
+
+    private final Supplier<Void> nullSupplier = () -> null;
 
     @Test
     public final void clockDoesStartAtZero() {
@@ -56,14 +57,6 @@ public final class LamportClockTest {
     }
 
     @Test
-    public final void equalsContract() {
-        EqualsVerifier.forClass(LamportClock.class)
-            .withIgnoredFields("lock")
-            .suppress(Warning.NONFINAL_FIELDS)
-            .verify();
-    }
-
-    @Test
     public final void timeDoesReleaseItsLock() {
         final Lock lock = new NonReentrantLock();
         final LamportClock clock = new LamportClock(lock);
@@ -91,7 +84,17 @@ public final class LamportClockTest {
         Assert.assertThat(lock, LockMatchers.isUnlocked());
         clock.tick(noOp);
         Assert.assertThat(lock, LockMatchers.isUnlocked());
-        clock.tick(noOp);
+        clock.tick(nullSupplier);
+        Assert.assertThat(lock, LockMatchers.isUnlocked());
+    }
+
+    @Test
+    public final void toStringDoesReleaseItsLock() {
+        final Lock lock = new NonReentrantLock();
+        final LamportClock clock = new LamportClock(lock);
+
+        Assert.assertThat(lock, LockMatchers.isUnlocked());
+        Assert.assertThat(clock.toString(), CoreMatchers.anything());
         Assert.assertThat(lock, LockMatchers.isUnlocked());
     }
 }

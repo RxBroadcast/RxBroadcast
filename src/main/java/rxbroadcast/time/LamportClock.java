@@ -1,16 +1,16 @@
 package rxbroadcast.time;
 
-import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.LongFunction;
+import java.util.function.Supplier;
 
 /**
  * A clock used to generate <a href="https://en.wikipedia.org/wiki/Lamport_timestamps">Lamport timestamps</a>.
  */
-public final class LamportClock implements Clock {
+public final class LamportClock {
     private final Lock lock;
 
     private long time = 0L;
@@ -56,11 +56,7 @@ public final class LamportClock implements Clock {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public <T> T tick(final LongFunction<T> ticker) {
+    public <T> T tick(@NotNull final LongFunction<T> ticker) {
         lock.lock();
         try {
             time = time + 1;
@@ -70,24 +66,24 @@ public final class LamportClock implements Clock {
         }
     }
 
+    public <T> T tick(@NotNull final Supplier<T> ticker) {
+        lock.lock();
+        try {
+            time = time + 1;
+            return ticker.get();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @NotNull
     @Override
     public final String toString() {
-        return String.format("LamportClock{time=%d}", time);
-    }
-
-    @Contract("null -> false")
-    @Override
-    public final boolean equals(final Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
+        lock.lock();
+        try {
+            return String.format("LamportClock{time=%d}", time);
+        } finally {
+            lock.unlock();
         }
-
-        final LamportClock that = (LamportClock) o;
-        return time == that.time;
-    }
-
-    @Override
-    public final int hashCode() {
-        return Objects.hash(time);
     }
 }
