@@ -16,7 +16,7 @@ public final class SingleSourceFifoOrder<T> implements BroadcastOrder<Timestampe
 
     private final Clock clock = new LamportClock();
 
-    private final Map<Sender, SortedSet<Timestamped<T>>> pendingQueues;
+    private final Map<Sender, SortedSet<Timestamped<T>>> pendingSets;
 
     private final Map<Sender, Long> expectedTimestamps;
 
@@ -28,7 +28,7 @@ public final class SingleSourceFifoOrder<T> implements BroadcastOrder<Timestampe
 
     @SuppressWarnings("WeakerAccess")
     public SingleSourceFifoOrder(final boolean dropLateMessages) {
-        this.pendingQueues = new HashMap<>();
+        this.pendingSets = new HashMap<>();
         this.expectedTimestamps = new HashMap<>();
         this.dropLateMessages = dropLateMessages;
     }
@@ -51,11 +51,11 @@ public final class SingleSourceFifoOrder<T> implements BroadcastOrder<Timestampe
             return;
         }
 
-        final SortedSet<Timestamped<T>> queue = pendingQueues.computeIfAbsent(sender, k -> new TreeSet<>());
+        final SortedSet<Timestamped<T>> pendingSet = pendingSets.computeIfAbsent(sender, k -> new TreeSet<>());
 
-        queue.add(value);
+        pendingSet.add(value);
 
-        final Iterator<Timestamped<T>> iterator = queue.iterator();
+        final Iterator<Timestamped<T>> iterator = pendingSet.iterator();
         while (iterator.hasNext()) {
             final Timestamped<T> tv = iterator.next();
             if (tv.timestamp < expectedTimestamps.get(sender)) {
@@ -73,6 +73,6 @@ public final class SingleSourceFifoOrder<T> implements BroadcastOrder<Timestampe
     }
 
     int queueSize() {
-        return pendingQueues.values().stream().mapToInt(SortedSet::size).sum();
+        return pendingSets.values().stream().mapToInt(SortedSet::size).sum();
     }
 }
