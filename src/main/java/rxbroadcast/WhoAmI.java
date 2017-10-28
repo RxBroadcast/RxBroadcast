@@ -27,7 +27,7 @@ final class WhoAmI implements Callable<Sender> {
     @NotNull
     @Override
     public final Sender call() throws IOException {
-        // Listen all all interfaces, random port
+        // Listen on all interfaces, random port
         final DatagramSocket ws = new DatagramSocket();
         final DatagramPacket recvPacket = sendRecv(ws);
         return new Sender(recvPacket.getAddress(), destinationPort);
