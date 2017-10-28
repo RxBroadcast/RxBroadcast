@@ -113,6 +113,7 @@ configure<PitestPluginExtension> {
     mutationThreshold = 99
     mutators = setOf("DEFAULTS", "REMOVE_CONDITIONALS")
     testSourceSets = setOf(java.sourceSets["pitest"])
+    verbose = System.getenv("CI").toBoolean()
 }
 
 task<Jar>("sourcesJar") {
