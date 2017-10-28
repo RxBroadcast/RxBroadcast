@@ -15,4 +15,11 @@
             </Or>
         </And>
     </Match>
+    <Match>
+        <Or>
+            <Class name="~rxbroadcast[.].*Test" />
+            <Class name="~rxbroadcast[.]integration[.].*" />
+        </Or>
+        <Bug pattern="PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS" />
+    </Match>
 </FindBugsFilter>
