@@ -1,6 +1,8 @@
 package rxbroadcast;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
+import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
 import org.junit.Test;
 
 @SuppressWarnings({"checkstyle:MagicNumber"})
@@ -16,6 +18,7 @@ public final class VectorTimestampTest {
 
     @Test(expected = IllegalArgumentException.class)
     public final void timestampMustHaveEqualLengthFields() {
-        new VectorTimestamp(new Sender[0], new long[]{3, 4});
+        final VectorTimestamp t = new VectorTimestamp(new Sender[0], new long[]{3, 4});
+        Assert.assertThat(t, CoreMatchers.notNullValue());
     }
 }
