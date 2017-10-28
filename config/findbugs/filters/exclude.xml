@@ -1,0 +1,5 @@
+<FindBugsFilter>
+    <Match>
+        <Bug pattern="PL_PARALLEL_LISTS" />
+    </Match>
+</FindBugsFilter>

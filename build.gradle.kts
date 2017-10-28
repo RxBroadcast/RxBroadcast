@@ -73,6 +73,7 @@ tasks.withType<Test> {
 }
 
 tasks.withType<FindBugs> {
+    excludeFilter = file("${rootProject.projectDir}/config/findbugs/filters/exclude.xml")
     pluginClasspath = project.configurations["findbugsPlugins"]
     reports {
         xml.isEnabled = false
