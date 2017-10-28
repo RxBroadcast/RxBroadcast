@@ -32,7 +32,7 @@ public final class Sender implements Serializable, Comparable<Sender> {
         this.byteBuffer = bytes;
     }
 
-    Sender(final InetAddress address, final int port) {
+    Sender(@NotNull final InetAddress address, final int port) {
         this(ByteBuffer.allocate(BYTES_SENDER_BUFFER)
             .put(address.getAddress())
             .putInt(port)
