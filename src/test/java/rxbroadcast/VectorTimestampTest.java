@@ -18,7 +18,6 @@ public final class VectorTimestampTest {
 
     @Test(expected = IllegalArgumentException.class)
     public final void timestampMustHaveEqualLengthFields() {
-        final VectorTimestamp t = new VectorTimestamp(new Sender[0], new long[]{3, 4});
-        Assert.assertThat(t, CoreMatchers.notNullValue());
+        Assert.assertThat(new VectorTimestamp(new Sender[0], new long[]{3, 4}), CoreMatchers.anything());
     }
 }
