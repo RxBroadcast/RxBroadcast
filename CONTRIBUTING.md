@@ -81,5 +81,5 @@ docker run -it rxb \
     '-Ddestination=255.255.255.255' \
     '-Dport=8888' \
     'org.junit.runner.JUnitCore' \
-    'rx.broadcast.integration.pp.PingPongUdpBasicOrder'
+    'rxbroadcast.integration.pp.PingPongUdpNoOrder'
 ```
