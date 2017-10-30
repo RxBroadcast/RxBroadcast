@@ -87,7 +87,7 @@ jobs:
           script: gradle pitest
 deploy:
     provider: script
-    script: scripts/deploy
+    script: .travis/deploy
     on:
         jdk: openjdk8
         tags: true
