@@ -6,7 +6,7 @@ By contributing to this project, you agree to license your contribution(s) under
 GitHub
 ------
 
-All RxBroadcast devlopment happens through GitHub. If you're new to GitHub, start with some of [their awesome guides](https://guides.github.com):
+All RxBroadcast development happens through GitHub. If you're new to GitHub, start with some of [their awesome guides](https://guides.github.com):
 
 - [Contributing to Open Source on GitHub](https://guides.github.com/activities/contributing-to-open-source/)
 - [Forking Projects](https://guides.github.com/activities/forking/)
@@ -15,7 +15,7 @@ All RxBroadcast devlopment happens through GitHub. If you're new to GitHub, star
 The build system
 ----------------
 
-RxBroadcast uses Gradle as its build sysem. To build the project from the command line:
+RxBroadcast uses Gradle as its build system. To build the project from the command line:
 
 ```bash
 $ gradle build

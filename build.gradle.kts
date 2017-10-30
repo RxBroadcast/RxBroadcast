@@ -1,4 +1,5 @@
 import com.jfrog.bintray.gradle.BintrayExtension
+import info.solidsoft.gradle.pitest.PitestPluginExtension
 import net.ltgt.gradle.errorprone.ErrorProneToolChain
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
@@ -11,8 +12,9 @@ plugins {
     checkstyle
     findbugs
     pmd
+    id("info.solidsoft.pitest") version "1.2.2"
     id("com.jfrog.bintray") version "1.6"
-    id("net.ltgt.errorprone-base") version "0.0.11"
+    id("net.ltgt.errorprone-base") version "0.0.13"
 }
 
 repositories {
@@ -24,7 +26,10 @@ dependencies {
     compile("com.google.protobuf:protobuf-java:3.3.1")
     compile("io.reactivex:rxjava:1.3.0")
     compile("org.jetbrains:annotations:15.0")
+    errorprone("com.google.errorprone:error_prone_core:2.1.2")
+    findbugsPlugins("com.mebigfatguy.fb-contrib:fb-contrib:7.0.5")
     testCompile("junit:junit:4.12")
+    testCompile("nl.jqno.equalsverifier:equalsverifier:2.3.3")
 }
 
 fun linkGitHub(resource: String = "") = "https://github.com/${project.name}/${project.name}$resource"
@@ -34,8 +39,19 @@ project.setProperty(archivesBaseNameProperty, project.name.toLowerCase())
 val archivesBaseName = { "${project.property(archivesBaseNameProperty)}" }
 
 group = project.name.toLowerCase()
-version = "2.0.0-rc1"
+version = "2.0.0-rc2"
 description = "A small distributed event library for the JVM"
+
+val testSourceSet = java.sourceSets["test"]!!
+java.sourceSets.create("pitest") {
+    java {
+        srcDirs(testSourceSet.java.srcDirs)
+        exclude("rxbroadcast/integration/**")
+    }
+
+    compileClasspath += files(testSourceSet.compileClasspath)
+    runtimeClasspath += compileClasspath
+}
 
 tasks.withType<JavaCompile> {
     options.compilerArgs.addAll(arrayOf("-Xlint:all", "-Xdiags:verbose", "-Werror"))
@@ -48,7 +64,7 @@ tasks.withType<Javadoc> {
 }
 
 tasks.withType<Test> {
-    exclude("rx/broadcast/integration/**")
+    exclude("rxbroadcast/integration/**")
     testLogging({
         exceptionFormat = TestExceptionFormat.FULL
         events = setOf(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
@@ -57,6 +73,8 @@ tasks.withType<Test> {
 }
 
 tasks.withType<FindBugs> {
+    excludeFilter = file("${rootProject.projectDir}/config/findbugs/filters/exclude.xml")
+    pluginClasspath = project.configurations["findbugsPlugins"]
     reports {
         xml.isEnabled = false
         html.isEnabled = true
@@ -81,18 +99,28 @@ task<Jar>("testJar") {
             else -> zipTree(file)
         })
 
-        from(sourceSets.findByName("main").output + sourceSets.findByName("test").output)
+        from(sourceSets.findByName("main")!!.output + sourceSets.findByName("test")!!.output)
         from(files, {
             exclude("META-INF/**")
         })
     })
 }
 
+configure<PitestPluginExtension> {
+    excludedMethods = setOf("toString", "newThread", "hashCode")
+    detectInlinedCode = true
+    timestampedReports = false
+    mutationThreshold = 99
+    mutators = setOf("DEFAULTS", "REMOVE_CONDITIONALS")
+    testSourceSets = setOf(java.sourceSets["pitest"])
+    verbose = System.getenv("CI").toBoolean()
+}
+
 task<Jar>("sourcesJar") {
     classifier = "sources"
     afterEvaluate({
         val sourceSets = convention.getPlugin(JavaPluginConvention::class).sourceSets
-        from(sourceSets.findByName("main").allSource)
+        from(sourceSets.findByName("main")!!.allSource)
     })
 }
 
@@ -104,7 +132,7 @@ task<Jar>("javadocJar") {
 }
 
 configure<CheckstyleExtension> {
-    toolVersion = "8.0"
+    toolVersion = "8.2"
 }
 
 configure<JacocoPluginExtension> {
