@@ -78,7 +78,7 @@ jobs:
           cache:
               directories:
                   - "$INFER_DIRECTORY"
-          script: .travis/infer
+          script: .travis/scripts/infer
         - script: gradle findBugs{Main,Test}
         - script: gradle errorProne
         - script: gradle pmd{Main,Test}
@@ -87,7 +87,7 @@ jobs:
           script: gradle pitest
 deploy:
     provider: script
-    script: .travis/deploy
+    script: .travis/scripts/deploy
     on:
         jdk: openjdk8
         tags: true
