@@ -78,7 +78,7 @@ jobs:
           cache:
               directories:
                   - "$INFER_DIRECTORY"
-          script: scripts/infer
+          script: .travis/infer
         - script: gradle findBugs{Main,Test}
         - script: gradle errorProne
         - script: gradle pmd{Main,Test}
