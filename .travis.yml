@@ -16,6 +16,7 @@ jdk:
     - openjdk8
     - ibmjava8
 before_install:
+    - .travis/scripts/pipenv
     - ( cd $HOME && curl -LO "https://services.gradle.org/distributions/gradle-$GRADLE_VERSION-bin.zip" )
     - ( cd $HOME && unzip -q gradle-$GRADLE_VERSION-bin.zip && rm gradle-$GRADLE_VERSION-bin.zip )
     - export PATH=$HOME/gradle-$GRADLE_VERSION/bin:$PATH && hash -r && gradle --version
