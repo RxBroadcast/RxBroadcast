@@ -25,8 +25,8 @@ script:
     - gradle checkstyle{Main,Test}
     - gradle clean testJar
     - docker build -t rxb .
-    - scripts/test rxbroadcast.integration.SingleSourceFifoOrderUdpBroadcastTest 'sudo tc qdisc add dev "${DOCKER_IFACE%%@if+([0-9])}" root netem delay 100ms 75ms'
-    - scripts/test rxbroadcast.integration.NoOrderUdpBroadcastTest
+    - test/two-way rxbroadcast.integration.SingleSourceFifoOrderUdpBroadcastTest 'sudo tc qdisc add dev "${DOCKER_IFACE%%@if+([0-9])}" root netem delay 100ms 75ms'
+    - test/two-way rxbroadcast.integration.NoOrderUdpBroadcastTest ':'
     - test/table-tennis rxbroadcast.integration.pp.PingPongUdpNoOrder
     - test/table-tennis rxbroadcast.integration.pp.PingPongUdpNoOrderKryoSerializer
     - test/table-tennis rxbroadcast.integration.pp.PingPongUdpNoOrderObjectSerializer
