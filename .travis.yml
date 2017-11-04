@@ -16,6 +16,8 @@ jdk:
     - openjdk8
     - ibmjava8
 before_install:
+    - .travis/scripts/pipenv
+    - pipenv --three install
     - ( cd $HOME && curl -LO "https://services.gradle.org/distributions/gradle-$GRADLE_VERSION-bin.zip" )
     - ( cd $HOME && unzip -q gradle-$GRADLE_VERSION-bin.zip && rm gradle-$GRADLE_VERSION-bin.zip )
     - export PATH=$HOME/gradle-$GRADLE_VERSION/bin:$PATH && hash -r && gradle --version
@@ -24,19 +26,19 @@ script:
     - gradle checkstyle{Main,Test}
     - gradle clean testJar
     - docker build -t rxb .
-    - scripts/test rxbroadcast.integration.SingleSourceFifoOrderUdpBroadcastTest 'sudo tc qdisc add dev "${DOCKER_IFACE%%@if+([0-9])}" root netem delay 100ms 75ms'
-    - scripts/test rxbroadcast.integration.NoOrderUdpBroadcastTest
-    - scripts/test-table-tennis rxbroadcast.integration.pp.PingPongUdpNoOrder
-    - scripts/test-table-tennis rxbroadcast.integration.pp.PingPongUdpNoOrderKryoSerializer
-    - scripts/test-table-tennis rxbroadcast.integration.pp.PingPongUdpNoOrderObjectSerializer
-    - scripts/test-table-tennis rxbroadcast.integration.pp.PingPongUdpSingleSourceFifoOrder
-    - scripts/test-table-tennis rxbroadcast.integration.pp.PingPongUdpSingleSourceFifoOrderKryoSerializer
-    - scripts/test-table-tennis rxbroadcast.integration.pp.PingPongUdpSingleSourceFifoOrderObjectSerializer
-    - scripts/test-table-tennis rxbroadcast.integration.pp.PingPongUdpSingleSourceFifoOrderProtobufSerializer
-    - scripts/test-table-tennis rxbroadcast.integration.pp.PingPongUdpCausalOrder
-    - scripts/test-table-tennis rxbroadcast.integration.pp.PingPongUdpCausalOrderKryoSerializer
-    - scripts/test-table-tennis rxbroadcast.integration.pp.PingPongUdpCausalOrderObjectSerializer
-    - scripts/test-table-tennis rxbroadcast.integration.pp.PingPongUdpCausalOrderProtobufSerializer
+    - test/two-way rxbroadcast.integration.SingleSourceFifoOrderUdpBroadcastTest 'sudo tc qdisc add dev "${DOCKER_IFACE%%@if+([0-9])}" root netem delay 100ms 75ms'
+    - test/two-way rxbroadcast.integration.NoOrderUdpBroadcastTest ':'
+    - test/table-tennis rxbroadcast.integration.pp.PingPongUdpNoOrder
+    - test/table-tennis rxbroadcast.integration.pp.PingPongUdpNoOrderKryoSerializer
+    - test/table-tennis rxbroadcast.integration.pp.PingPongUdpNoOrderObjectSerializer
+    - test/table-tennis rxbroadcast.integration.pp.PingPongUdpSingleSourceFifoOrder
+    - test/table-tennis rxbroadcast.integration.pp.PingPongUdpSingleSourceFifoOrderKryoSerializer
+    - test/table-tennis rxbroadcast.integration.pp.PingPongUdpSingleSourceFifoOrderObjectSerializer
+    - test/table-tennis rxbroadcast.integration.pp.PingPongUdpSingleSourceFifoOrderProtobufSerializer
+    - test/table-tennis rxbroadcast.integration.pp.PingPongUdpCausalOrder
+    - test/table-tennis rxbroadcast.integration.pp.PingPongUdpCausalOrderKryoSerializer
+    - test/table-tennis rxbroadcast.integration.pp.PingPongUdpCausalOrderObjectSerializer
+    - test/table-tennis rxbroadcast.integration.pp.PingPongUdpCausalOrderProtobufSerializer
 jobs:
     allow_failures:
         - stage: "Test"
