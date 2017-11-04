@@ -88,7 +88,7 @@ colorama.init()
 if len(client.images.list(name='{0.image}:latest'.format(args))) != 1:
     build_image_if_not_exists(client, args.image)
 
-print('Attempting to create {0} JUnit containers'.format(args.num_junit_containers))
+print('Attempting to create {0} JUnit containers'.format(num_junit_containers))
 for i in range(num_junit_containers):
     c = new_container(args.image, command=junit_args, detach=True)
     print(exec_shell_command(args.network_command, env={'DOCKER_IFACE': docker_interface(c).host}).decode(), end='')
