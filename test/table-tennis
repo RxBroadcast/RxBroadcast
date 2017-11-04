@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-set -e
-set -u
-set -o pipefail
-
-cd "$(pipenv --where)"
-pipenv run python test/table_tennis.py "$@"
