@@ -16,6 +16,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
+@SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:AvoidInlineConditionals"})
 public final class NoOrderUdpBroadcastTest {
     private static final int MESSAGE_COUNT = 100;
 
@@ -25,12 +26,20 @@ public final class NoOrderUdpBroadcastTest {
 
     @Test
     public final void receive() throws SocketException, UnknownHostException {
-        final int port = Integer.parseInt(System.getProperty("port"));
+        final int port = System.getProperty("port") != null
+            ? Integer.parseInt(System.getProperty("port"))
+            : 54321;
+        final int destinationPort = System.getProperty("destinationPort") != null
+            ? Integer.parseInt(System.getProperty("destinationPort"))
+            : 12345;
+        final InetAddress destination = System.getProperty("destination") != null
+            ? InetAddress.getByName(System.getProperty("destination"))
+            : InetAddress.getLoopbackAddress();
+        final InetSocketAddress destinationSocket = new InetSocketAddress(destination, destinationPort);
+        final TestSubscriber<TestValue> subscriber = new TestSubscriber<>();
         try (final DatagramSocket socket = new DatagramSocket(port)) {
-            final TestSubscriber<TestValue> subscriber = new TestSubscriber<>();
-            final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
             final Broadcast broadcast = new UdpBroadcast<>(
-                socket, new InetSocketAddress(destination, port), new NoOrder<>());
+                socket, destinationSocket, new NoOrder<>());
 
             broadcast.valuesOfType(TestValue.class).take(MESSAGE_COUNT).subscribe(subscriber);
 
@@ -41,11 +50,19 @@ public final class NoOrderUdpBroadcastTest {
     }
 
     public static void main(final String[] args) throws SocketException, UnknownHostException {
-        final int port = Integer.parseInt(System.getProperty("port"));
+        final int port = System.getProperty("port") != null
+            ? Integer.parseInt(System.getProperty("port"))
+            : 54321;
+        final int destinationPort = System.getProperty("destinationPort") != null
+            ? Integer.parseInt(System.getProperty("destinationPort"))
+            : 12345;
+        final InetAddress destination = System.getProperty("destination") != null
+            ? InetAddress.getByName(System.getProperty("destination"))
+            : InetAddress.getLoopbackAddress();
+        final InetSocketAddress destinationSocket = new InetSocketAddress(destination, destinationPort);
         try (final DatagramSocket socket = new DatagramSocket(port)) {
-            final InetAddress destination = InetAddress.getByName(System.getProperty("destination"));
             final Broadcast broadcast = new UdpBroadcast<>(
-                socket, new InetSocketAddress(destination, port), new NoOrder<>());
+                socket, destinationSocket, new NoOrder<>());
 
             Observable.range(1, MESSAGE_COUNT).map(TestValue::new).flatMap(broadcast::send)
                 .toBlocking()
