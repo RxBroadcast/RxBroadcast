@@ -5,4 +5,4 @@ set -u
 set -o pipefail
 
 cd "$(pipenv --where)"
-pipenv run python test/two_way.py "$@"
+exec pipenv run python test/two_way.py "$@"

@@ -6,18 +6,30 @@ import shlex
 import subprocess
 import sys
 
+from termcolor import colored
+
 
 DockerInterface = collections.namedtuple('DockerInterface', ['host', 'container'])
+
+
+def build_image_if_not_exists(client, image_name, exit_code=1):
+    print(colored('Attempting to build {0} image from the current working directory'.format(image_name), 'yellow'))
+    try:
+        client.images.build(tag=image_name, path=os.getcwd(), rm=True)
+        print(colored('Built {0} image'.format(image_name), 'green'))
+    except docker.errors.BuildError:
+        print(colored('Cannot find {0} image and building it failed'.format(image_name), 'red'), file=sys.stderr)
+        sys.exit(exit_code)
 
 
 def docker_interface(container):
     # Inside the container we have our eth0 interface with an arbitrary index assigned to it:
     #
-    # >>> 8: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP 
+    # >>> 8: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP
     # >>>     link/ether 02:42:ac:11:00:02 brd ff:ff:ff:ff:ff:ff
     # On the host we end up with something like so:
     #
-    # >>> 9: veth862e67b: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker0 state UP mode DEFAULT group default 
+    # >>> 9: veth862e67b: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker0 state UP mode DEFAULT group default
     # >>>     link/ether 72:be:31:98:2e:6e brd ff:ff:ff:ff:ff:ff
     #
     # Apparently it's just a coincidence that 9 is (8 + 1) but let's depend on that and hate ourselves
