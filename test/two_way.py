@@ -64,7 +64,9 @@ if args.ipv6:
     # have different source and destination ports
     source_port = source_port - 1
     dest_port = dest_port + 1
-    num_junit_containers = 1
+    if num_junit_containers > 1:
+        print(colored('Constraining JUnit container count to 1', 'yellow'))
+        num_junit_containers = 1
 
 junit_args = [
     '-Dport={0}'.format(dest_port),
