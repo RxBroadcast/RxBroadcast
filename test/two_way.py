@@ -47,6 +47,7 @@ parser = argparse.ArgumentParser(description='RxBroadcast table tennis test scri
 parser.add_argument('--help', action='help', help='show this help message and exit')
 parser.add_argument('--image', default=DEFAULT_IMAGE_NAME, help='the Docker image name to use for the containers')
 parser.add_argument('--ipv6', action='store_true', help='use IPv6 for the network addresses')
+parser.add_argument('--no-remove', action='store_true', help="don't remove successful containers")
 parser.add_argument('--num-junit-containers', default=DEFAULT_NUM_TEST_CONTAINERS, type=int, help='the number of JUnit containers to create')
 parser.add_argument('class_name', help='the fully qualified name of the test class to run')
 parser.add_argument('network_command', nargs='?', default=':', help='a network command to apply to the JUnit container network interface')
@@ -105,7 +106,8 @@ try:
             errors += 1
         else:
             print(colored('{} exited successfully'.format(container.short_id), 'green'))
-            container.remove()
+            if not args.no_remove:
+                container.remove()
 except KeyboardInterrupt:
     stop_all_containers()
 

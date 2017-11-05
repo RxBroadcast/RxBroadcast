@@ -17,10 +17,10 @@ final class WhoAmI implements Callable<Sender> {
 
     private final boolean ipv6;
 
-    private final int destinationPort;
+    private final int port;
 
-    WhoAmI(final int destinationPort, final boolean ipv6) {
-        this.destinationPort = destinationPort;
+    WhoAmI(final int port, final boolean ipv6) {
+        this.port = port;
         this.ipv6 = ipv6;
     }
 
@@ -30,7 +30,7 @@ final class WhoAmI implements Callable<Sender> {
         // Listen on all interfaces, random port
         final DatagramSocket ws = new DatagramSocket();
         final DatagramPacket recvPacket = sendRecv(ws);
-        return new Sender(recvPacket.getAddress(), destinationPort);
+        return new Sender(recvPacket.getAddress(), port);
     }
 
     @SuppressWarnings("checkstyle:AvoidInlineConditionals")
