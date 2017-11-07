@@ -1,4 +1,3 @@
-group: edge
 sudo: required
 dist: trusty
 services:
@@ -14,7 +13,6 @@ jdk:
     - oraclejdk8
     - oraclejdk9
     - openjdk8
-    - ibmjava8
 before_install:
     - .travis/scripts/pipenv
     - pipenv --three install
