@@ -87,11 +87,13 @@ jobs:
         - stage: "Mutation testing"
           jdk: oraclejdk8
           script: gradle pitest
-deploy:
-    provider: script
-    script: .travis/scripts/deploy
-    on:
-        jdk: openjdk8
-        tags: true
+        - stage: "Bintray deployment"
+          jdk: oraclejdk8
+          script: skip
+          deploy:
+              provider: script
+              script: .travis/scripts/deploy
+              on:
+                  tags: true
 notifications:
     email: false
