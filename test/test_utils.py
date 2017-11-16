@@ -12,6 +12,12 @@ from termcolor import colored
 DockerInterface = collections.namedtuple('DockerInterface', ['host', 'container'])
 
 
+def merge_dictionaries(x, y):
+    z = x.copy()
+    z.update(y)
+    return z
+
+
 def build_image_if_not_exists(client, image_name, exit_code=1):
     print(colored('Attempting to build {0} image from the current working directory'.format(image_name), 'yellow'))
     try:
@@ -57,10 +63,6 @@ def docker_interface(container):
 
 
 def exec_shell_command(command, env=None):
-    def merge_dictionaries(x, y):
-        z = x.copy()
-        z.update(y)
-        return z
     if env is None:
         env = dict()
     return subprocess.check_output("bash -x -c 'shopt -s extglob; {}'".format(command), env=merge_dictionaries(os.environ, env), shell=True)

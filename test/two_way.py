@@ -7,7 +7,8 @@ import sys
 from termcolor import colored
 from test_utils import build_image_if_not_exists, \
     docker_interface, \
-    exec_shell_command
+    exec_shell_command, \
+    merge_dictionaries
 
 
 CONTAINERS = []
@@ -18,11 +19,6 @@ DEFAULT_NUM_TEST_CONTAINERS = 5
 
 
 def new_container_from_client(client, **default_kwargs):
-    def merge_dictionaries(x, y):
-        z = x.copy()
-        z.update(y)
-        return z
-
     def new_container(image, command=None, **kwargs):
         c = client.containers.run(image, command=command, **merge_dictionaries(default_kwargs, kwargs))
         CONTAINERS.append(c)
