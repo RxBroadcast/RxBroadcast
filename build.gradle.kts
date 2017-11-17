@@ -23,7 +23,7 @@ repositories {
 
 dependencies {
     compile("com.esotericsoftware:kryo:4.0.1")
-    compile("com.google.protobuf:protobuf-java:3.3.1")
+    compile("com.google.protobuf:protobuf-java:3.4.1")
     compile("io.reactivex:rxjava:1.3.3")
     compile("org.jetbrains:annotations:15.0")
     errorprone("com.google.errorprone:error_prone_core:2.1.2")
