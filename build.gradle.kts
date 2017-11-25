@@ -12,7 +12,7 @@ plugins {
     checkstyle
     findbugs
     pmd
-    id("info.solidsoft.pitest") version "1.2.2"
+    id("info.solidsoft.pitest") version "1.2.4"
     id("com.jfrog.bintray") version "1.6"
     id("net.ltgt.errorprone-base") version "0.0.13"
 }
