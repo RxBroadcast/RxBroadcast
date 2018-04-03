@@ -39,7 +39,7 @@ project.setProperty(archivesBaseNameProperty, project.name.toLowerCase())
 val archivesBaseName = { "${project.property(archivesBaseNameProperty)}" }
 
 group = project.name.toLowerCase()
-version = "2.0.0"
+version = "2.1.0"
 description = "A small distributed event library for the JVM"
 
 val testSourceSet = java.sourceSets["test"]!!
