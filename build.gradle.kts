@@ -12,7 +12,7 @@ plugins {
     checkstyle
     findbugs
     pmd
-    id("info.solidsoft.pitest") version "1.2.2"
+    id("info.solidsoft.pitest") version "1.2.4"
     id("com.jfrog.bintray") version "1.6"
     id("net.ltgt.errorprone-base") version "0.0.13"
 }
@@ -23,8 +23,8 @@ repositories {
 
 dependencies {
     compile("com.esotericsoftware:kryo:4.0.1")
-    compile("com.google.protobuf:protobuf-java:3.3.1")
-    compile("io.reactivex:rxjava:1.3.0")
+    compile("com.google.protobuf:protobuf-java:3.5.0")
+    compile("io.reactivex:rxjava:1.3.4")
     compile("org.jetbrains:annotations:15.0")
     errorprone("com.google.errorprone:error_prone_core:2.1.2")
     findbugsPlugins("com.mebigfatguy.fb-contrib:fb-contrib:7.0.5")
