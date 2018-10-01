@@ -1,4 +1,4 @@
-RxBroadcast
+RxBroadcast &middot; [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 ===========
 
 RxBroadcast is a small distributed event library for the JVM.
