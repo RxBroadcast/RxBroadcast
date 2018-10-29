@@ -1,21 +1,15 @@
 [[source]]
-
 verify_ssl = true
 url = "https://pypi.python.org/simple"
 name = "pypi"
 
-
 [packages]
-
-docker = "*"
+docker = "~=2.5"
 colorama = "*"
 termcolor = "*"
-
+requests = ">=2.20"
 
 [dev-packages]
 
-
-
 [requires]
-
 python_version = "3.4"
