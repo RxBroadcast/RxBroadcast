@@ -42,8 +42,8 @@ group = project.name.toLowerCase()
 version = "2.1.0"
 description = "A small distributed event library for the JVM"
 
-val testSourceSet = java.sourceSets["test"]!!
-java.sourceSets.create("pitest") {
+val testSourceSet = sourceSets["test"]!!
+sourceSets.create("pitest") {
     java {
         srcDirs(testSourceSet.java.srcDirs)
         exclude("rxbroadcast/integration/**")
@@ -112,8 +112,8 @@ configure<PitestPluginExtension> {
     timestampedReports = false
     mutationThreshold = 99
     mutators = setOf("DEFAULTS", "REMOVE_CONDITIONALS")
-    testSourceSets = setOf(java.sourceSets["pitest"])
-    verbose = System.getenv("CI").toBoolean()
+    testSourceSets = setOf(sourceSets["pitest"])
+    verbose = (System.getenv("CI") ?: "false").toBoolean()
 }
 
 task<Jar>("sourcesJar") {
