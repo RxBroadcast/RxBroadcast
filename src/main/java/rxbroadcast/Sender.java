@@ -29,7 +29,7 @@ public final class Sender implements Serializable, Comparable<Sender> {
     }
 
     Sender(@NotNull final byte[] bytes) {
-        this.byteBuffer = bytes;
+        this.byteBuffer = Arrays.copyOf(bytes, bytes.length);
     }
 
     Sender(@NotNull final InetAddress address, final int port) {

@@ -73,8 +73,8 @@ tasks.withType<Test> {
 }
 
 tasks.withType<FindBugs> {
-    excludeFilter = file("${rootProject.projectDir}/config/findbugs/filters/exclude.xml")
     pluginClasspath = project.configurations["findbugsPlugins"]
+    setExcludeFilter(file("${rootProject.projectDir}/config/findbugs/filters/exclude.xml"))
     reports {
         xml.isEnabled = false
         html.isEnabled = true
@@ -129,6 +129,12 @@ task<Jar>("javadocJar") {
     afterEvaluate({
         from(tasks.findByName("javadoc"))
     })
+}
+
+configure<PmdExtension> {
+    toolVersion = "6.10.0"
+    ruleSets = emptyList()
+    ruleSetFiles("config/pmd/rules.xml")
 }
 
 configure<CheckstyleExtension> {

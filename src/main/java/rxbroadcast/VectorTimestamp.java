@@ -5,9 +5,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -25,16 +25,16 @@ final class VectorTimestamp implements Serializable {
     @Deprecated
     @SuppressWarnings("unused")
     VectorTimestamp() {
-        this(new Sender[0], new long[0]);
+        this(new Sender[0]);
     }
 
-    VectorTimestamp(@NotNull final Sender[] ids, @NotNull final long[] timestamps) {
+    VectorTimestamp(@NotNull final Sender[] ids, @NotNull final long... timestamps) {
         if (ids.length != timestamps.length) {
             throw new IllegalArgumentException("IDs and timestamps must contain the same number of elements");
         }
 
-        this.ids = ids;
-        this.timestamps = timestamps;
+        this.ids = Arrays.copyOf(ids, ids.length);
+        this.timestamps = Arrays.copyOf(timestamps, timestamps.length);
     }
 
     Stream<VectorTimestampEntry> stream() {
@@ -83,7 +83,7 @@ final class VectorTimestamp implements Serializable {
     }
 
     Map<Sender, Long> asMap() {
-        final Map<Sender, Long> map = new HashMap<>(ids.length);
+        final Map<Sender, Long> map = new ConcurrentHashMap<>(ids.length);
         for (int i = 0; i < ids.length; i++) {
             map.put(ids[i], timestamps[i]);
         }

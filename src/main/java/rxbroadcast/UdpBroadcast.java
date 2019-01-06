@@ -86,7 +86,7 @@ public final class UdpBroadcast<T> implements Broadcast {
                     data, data.length, destination.getAddress(), destination.getPort());
                 socket.send(packet);
                 return null;
-            } catch (final Throwable e) {
+            } catch (final Exception e) {
                 return Observable.error(e);
             }
         });
