@@ -131,6 +131,12 @@ task<Jar>("javadocJar") {
     })
 }
 
+configure<PmdExtension> {
+    toolVersion = "6.10.0"
+    ruleSets = emptyList()
+    ruleSetFiles("config/pmd/rules.xml")
+}
+
 configure<CheckstyleExtension> {
     toolVersion = "8.2"
 }
