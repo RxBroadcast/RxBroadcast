@@ -5,9 +5,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -83,7 +83,7 @@ final class VectorTimestamp implements Serializable {
     }
 
     Map<Sender, Long> asMap() {
-        final Map<Sender, Long> map = new HashMap<>(ids.length);
+        final Map<Sender, Long> map = new ConcurrentHashMap<>(ids.length);
         for (int i = 0; i < ids.length; i++) {
             map.put(ids[i], timestamps[i]);
         }
