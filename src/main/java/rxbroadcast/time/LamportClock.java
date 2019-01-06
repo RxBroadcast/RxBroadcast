@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 public final class LamportClock {
     private final Lock lock;
 
-    private long currentTime = 0L;
+    private long currentTime;
 
     LamportClock(final Lock lock) {
         this.lock = lock;
