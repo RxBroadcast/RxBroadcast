@@ -3,10 +3,10 @@ package rxbroadcast;
 import rxbroadcast.time.LamportClock;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 public final class CausalOrder<T> implements BroadcastOrder<VectorTimestamped<T>, T> {
@@ -23,7 +23,7 @@ public final class CausalOrder<T> implements BroadcastOrder<VectorTimestamped<T>
 
     private final Sender me;
 
-    private final Map<Sender, LamportClock> vt = new HashMap<>();
+    private final Map<Sender, LamportClock> vt = new ConcurrentHashMap<>();
 
     private final List<DelayQueueEntry> delayQueue = new ArrayList<>();
 

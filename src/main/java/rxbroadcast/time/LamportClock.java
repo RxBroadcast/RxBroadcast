@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 public final class LamportClock {
     private final Lock lock;
 
-    private long time = 0L;
+    private long currentTime;
 
     LamportClock(final Lock lock) {
         this.lock = lock;
@@ -33,7 +33,7 @@ public final class LamportClock {
     public long time() {
         lock.lock();
         try {
-            return time;
+            return currentTime;
         } finally {
             lock.unlock();
         }
@@ -50,7 +50,7 @@ public final class LamportClock {
     public void set(final long incoming) {
         lock.lock();
         try {
-            time = incoming;
+            currentTime = incoming;
         } finally {
             lock.unlock();
         }
@@ -59,8 +59,8 @@ public final class LamportClock {
     public <T> T tick(@NotNull final LongFunction<T> ticker) {
         lock.lock();
         try {
-            time = time + 1;
-            return ticker.apply(time);
+            currentTime = currentTime + 1;
+            return ticker.apply(currentTime);
         } finally {
             lock.unlock();
         }
@@ -69,7 +69,7 @@ public final class LamportClock {
     public <T> T tick(@NotNull final Supplier<T> ticker) {
         lock.lock();
         try {
-            time = time + 1;
+            currentTime = currentTime + 1;
             return ticker.get();
         } finally {
             lock.unlock();
@@ -81,7 +81,7 @@ public final class LamportClock {
     public final String toString() {
         lock.lock();
         try {
-            return String.format("LamportClock{time=%d}", time);
+            return String.format("LamportClock{currentTime=%d}", currentTime);
         } finally {
             lock.unlock();
         }
