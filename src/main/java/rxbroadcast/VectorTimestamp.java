@@ -33,8 +33,8 @@ final class VectorTimestamp implements Serializable {
             throw new IllegalArgumentException("IDs and timestamps must contain the same number of elements");
         }
 
-        this.ids = ids;
-        this.timestamps = timestamps;
+        this.ids = Arrays.copyOf(ids, ids.length);
+        this.timestamps = Arrays.copyOf(timestamps, timestamps.length);
     }
 
     Stream<VectorTimestampEntry> stream() {
