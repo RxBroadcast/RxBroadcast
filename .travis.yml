@@ -71,7 +71,7 @@ jobs:
                       - unzip
                       - zlib1g-dev
           env:
-              - INFER_VERSION='0.15.0'
+              - INFER_VERSION='0.17.0'
               - INFER_DIRECTORY='/opt/infer'
           cache:
               directories:
