@@ -77,7 +77,6 @@ jobs:
               directories:
                   - "$INFER_DIRECTORY"
           script: .travis/scripts/infer
-        - script: gradle findBugs{Main,Test}
         - script: gradle errorProne
         - script: gradle pmd{Main,Test}
         - stage: "Mutation testing"
