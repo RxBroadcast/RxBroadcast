@@ -10,7 +10,6 @@ plugins {
     java
     jacoco
     checkstyle
-    findbugs
     pmd
     id("info.solidsoft.pitest") version "1.2.4"
     id("com.jfrog.bintray") version "1.6"
@@ -27,7 +26,6 @@ dependencies {
     compile("io.reactivex:rxjava:1.3.4")
     compile("org.jetbrains:annotations:15.0")
     errorprone("com.google.errorprone:error_prone_core:2.1.2")
-    findbugsPlugins("com.mebigfatguy.fb-contrib:fb-contrib:7.0.5")
     testCompile("junit:junit:4.12")
     testCompile("nl.jqno.equalsverifier:equalsverifier:2.3.3")
 }
@@ -70,15 +68,6 @@ tasks.withType<Test> {
         events = setOf(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
         showStandardStreams = true
     })
-}
-
-tasks.withType<FindBugs> {
-    pluginClasspath = project.configurations["findbugsPlugins"]
-    setExcludeFilter(file("${rootProject.projectDir}/config/findbugs/filters/exclude.xml"))
-    reports {
-        xml.isEnabled = false
-        html.isEnabled = true
-    }
 }
 
 task("errorProne") {
