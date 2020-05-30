@@ -28,9 +28,10 @@ final class WhoAmI implements Callable<Sender> {
     @Override
     public final Sender call() throws IOException {
         // Listen on all interfaces, random port
-        final DatagramSocket ws = new DatagramSocket();
-        final DatagramPacket recvPacket = sendRecv(ws);
-        return new Sender(recvPacket.getAddress(), port);
+        try (final DatagramSocket ws = new DatagramSocket()) {
+            final DatagramPacket recvPacket = sendRecv(ws);
+            return new Sender(recvPacket.getAddress(), port);
+        }
     }
 
     @SuppressWarnings("checkstyle:AvoidInlineConditionals")

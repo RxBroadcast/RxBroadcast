@@ -13,8 +13,7 @@ public final class ObjectSerializer<T> implements Serializer<T> {
     @Override
     @SuppressWarnings("unchecked")
     public final T decode(@NotNull final byte[] data) {
-        try {
-            final ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
+        try (final ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data))) {
             return (T) ois.readObject();
         } catch (final ClassNotFoundException | IOException e) {
             throw new RuntimeException(e);
@@ -24,9 +23,10 @@ public final class ObjectSerializer<T> implements Serializer<T> {
     @NotNull
     @Override
     public final byte[] encode(@NotNull final T data) {
-        try {
+        try (
             final ByteArrayOutputStream stream = new ByteArrayOutputStream();
             final ObjectOutputStream oos = new ObjectOutputStream(stream);
+        ) {
             oos.writeObject(data);
             return stream.toByteArray();
         } catch (final IOException e) {

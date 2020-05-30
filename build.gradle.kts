@@ -121,7 +121,7 @@ task<Jar>("javadocJar") {
 }
 
 configure<PmdExtension> {
-    toolVersion = "6.10.0"
+    toolVersion = "6.21.0"
     ruleSets = emptyList()
     ruleSetFiles("config/pmd/rules.xml")
 }

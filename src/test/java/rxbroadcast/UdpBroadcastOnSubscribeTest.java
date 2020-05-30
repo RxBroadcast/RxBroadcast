@@ -30,6 +30,7 @@ public final class UdpBroadcastOnSubscribeTest {
         }
     }
 
+    @SuppressWarnings("PMD.CloseResource")
     @Test
     public final void closedReadSocketErrorDoesPropagateToSubscriber() throws SocketException {
         final TestSubscriber<Object> subscriber = new TestSubscriber<>();

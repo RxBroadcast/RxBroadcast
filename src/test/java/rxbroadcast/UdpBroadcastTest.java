@@ -76,7 +76,7 @@ public final class UdpBroadcastTest {
         }
     }
 
-    @SuppressWarnings({"checkstyle:MagicNumber"})
+    @SuppressWarnings({"checkstyle:MagicNumber", "PMD.CloseResource"})
     @Test
     public final void errorSendingBroadcastIsReceivedInOnError() throws SocketException {
         final TestSubscriber<Void> subscriber = new TestSubscriber<>();

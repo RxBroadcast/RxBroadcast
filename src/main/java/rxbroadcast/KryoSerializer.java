@@ -10,11 +10,13 @@ import org.jetbrains.annotations.NotNull;
 public final class KryoSerializer<T> implements Serializer<T> {
     private final ThreadLocal<Kryo> threadLocalKryo = ThreadLocal.withInitial(Kryo::new);
 
+    @SuppressWarnings({"checkstyle:MagicNumber"})
     public final byte[] serialize(final Object value) {
         final Kryo kryo = threadLocalKryo.get();
-        final Output output = new FastOutput(16, 1024);
-        kryo.writeClassAndObject(output, value);
-        return output.toBytes();
+        try (final Output output = new FastOutput(16, 1024)) {
+            kryo.writeClassAndObject(output, value);
+            return output.toBytes();
+        }
     }
 
     public final Object deserialize(final byte[] bytes) {
