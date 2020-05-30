@@ -13,6 +13,7 @@ plugins {
     id("info.solidsoft.pitest") version "1.5.1"
     id("com.jfrog.bintray") version "1.6"
     id("net.ltgt.errorprone-base") version "0.0.13"
+    id("com.github.spotbugs") version "4.2.4"
 }
 
 repositories {
@@ -123,6 +124,25 @@ pmd {
     toolVersion = "6.21.0"
     ruleSets = emptyList()
     ruleSetFiles("config/pmd/rules.xml")
+}
+
+spotbugs {
+    toolVersion.set("4.0.3")
+    setEffort("max")
+
+    tasks.spotbugsMain {
+        reports.create("html") {
+            isEnabled = true
+            setStylesheet("fancy-hist.xsl")
+        }
+    }
+
+    tasks.spotbugsTest {
+        reports.create("html") {
+            isEnabled = true
+            setStylesheet("fancy-hist.xsl")
+        }
+    }
 }
 
 checkstyle {
