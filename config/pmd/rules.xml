@@ -5,6 +5,8 @@
     xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd"
     name="RxBroadcast PMD Rules">
 
+    <description>PMD Rules for RxBroadcast</description>
+
     <rule ref="category/java/errorprone.xml">
         <exclude name="AvoidDuplicateLiterals" />
         <exclude name="AvoidFieldNameMatchingMethodName" />
