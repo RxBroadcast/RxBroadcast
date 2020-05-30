@@ -78,7 +78,7 @@ task("errorProne") {
 }
 
 task<Jar>("testJar") {
-    classifier = "tests"
+    archiveClassifier.set("tests")
     group = "verification"
     description = "Assembles a jar archive containing the test classes."
     afterEvaluate {
@@ -106,7 +106,7 @@ configure<PitestPluginExtension> {
 }
 
 task<Jar>("sourcesJar") {
-    classifier = "sources"
+    archiveClassifier.set("sources")
     afterEvaluate {
         val sourceSets = convention.getPlugin(JavaPluginConvention::class).sourceSets
         from(sourceSets.findByName("main")!!.allSource)
@@ -114,7 +114,7 @@ task<Jar>("sourcesJar") {
 }
 
 task<Jar>("javadocJar") {
-    classifier = "javadoc"
+    archiveClassifier.set("javadoc")
     afterEvaluate {
         from(tasks.findByName("javadoc"))
     }
