@@ -63,11 +63,11 @@ tasks.withType<Javadoc> {
 
 tasks.withType<Test> {
     exclude("rxbroadcast/integration/**")
-    testLogging({
+    testLogging {
         exceptionFormat = TestExceptionFormat.FULL
         events = setOf(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
         showStandardStreams = true
-    })
+    }
 }
 
 task("errorProne") {
@@ -81,18 +81,18 @@ task<Jar>("testJar") {
     classifier = "tests"
     group = "verification"
     description = "Assembles a jar archive containing the test classes."
-    afterEvaluate({
+    afterEvaluate {
         val sourceSets = convention.getPlugin(JavaPluginConvention::class).sourceSets
-        val files = configurations.testCompileClasspath.files.map(fun (file: File): Any = when {
+        val files = configurations.testCompileClasspath.get().files.map(fun (file: File): Any = when {
             file.isDirectory -> file
             else -> zipTree(file)
         })
 
         from(sourceSets.findByName("main")!!.output + sourceSets.findByName("test")!!.output)
-        from(files, {
+        from(files) {
             exclude("META-INF/**")
-        })
-    })
+        }
+    }
 }
 
 configure<PitestPluginExtension> {
@@ -107,17 +107,17 @@ configure<PitestPluginExtension> {
 
 task<Jar>("sourcesJar") {
     classifier = "sources"
-    afterEvaluate({
+    afterEvaluate {
         val sourceSets = convention.getPlugin(JavaPluginConvention::class).sourceSets
         from(sourceSets.findByName("main")!!.allSource)
-    })
+    }
 }
 
 task<Jar>("javadocJar") {
     classifier = "javadoc"
-    afterEvaluate({
+    afterEvaluate {
         from(tasks.findByName("javadoc"))
-    })
+    }
 }
 
 configure<PmdExtension> {
@@ -136,7 +136,7 @@ configure<JacocoPluginExtension> {
 
 configure<PublishingExtension> {
     publications {
-        create(project.name.toLowerCase(), MavenPublication::class.java, {
+        create(project.name.toLowerCase(), MavenPublication::class.java) {
             from(components.findByName("java"))
             artifactId = archivesBaseName()
             artifact(tasks.getByName("javadocJar"))
@@ -165,7 +165,7 @@ configure<PublishingExtension> {
                     }
                 }
             }
-        })
+        }
     }
 }
 
