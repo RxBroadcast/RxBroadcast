@@ -1,0 +1,66 @@
+name: Test
+on:
+  push:
+    branches-ignore:
+      - master
+jobs:
+  tests:
+    name: Tests
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: actions/setup-java@v1
+        with:
+          java-version: '8'
+      - name: Run tests
+        run: scripts/run-tests
+  integration_tests:
+    name: Integration tests
+    needs: [tests]
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Build Docker image
+        run: |
+          gradle clean testJar
+          docker build --tag rxb .
+      - name: Publish Docker image to GitHub Packages
+        run: |
+          TAG="docker.pkg.github.com/${GITHUB_REPOSITORY,,}/rxb:latest"
+          docker tag rxb "${TAG}"
+          docker login --username "$( dirname $GITHUB_REPOSITORY )" --password-stdin docker.pkg.github.com <<< "${GITHUB_TOKEN}"
+          docker push "${TAG}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup Python 3.6
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.6'
+          architecture: x64
+      - name: Setup Pipenv
+        run: scripts/install-pipenv
+      - name: Run integration tests
+        run: scripts/run-two-way-tests
+  static_analysis:
+    name: Static analysis
+    needs: [tests]
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: actions/setup-java@v1
+        with:
+          java-version: '8'
+      - name: Run Infer
+        run: scripts/run-infer
+        env:
+          INFER_VERSION: '0.17.0'
+          INFER_DIRECTORY: '.infer'
+      - name: Run Error Prone
+        run: gradle errorProne
+      - name: Run PMD
+        run: gradle pmd{Main,Test}

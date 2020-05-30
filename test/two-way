@@ -4,5 +4,7 @@ set -e
 set -u
 set -o pipefail
 
+export PATH="${PATH}:$(python -c "import site; print(site.USER_BASE)")/bin"
+
 cd "$(pipenv --where)"
 exec pipenv run python test/two_way.py "$@"

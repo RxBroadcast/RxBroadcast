@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -e
+set -u
+set -o pipefail
+set -x
+
+GRADLE='gradle --warning-mode all'
+
+$GRADLE test
+$GRADLE checkstyle{Main,Test}
+$GRADLE clean testJar

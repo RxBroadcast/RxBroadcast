@@ -3,8 +3,13 @@
 set -e
 set -u
 set -o pipefail
+set -x
+
+export PATH="${PATH}:$(python -c "import site; print(site.USER_BASE)")/bin"
 
 if ! command -v pipenv &> /dev/null
 then
     pip install --user pipenv
 fi
+
+pipenv --three install
