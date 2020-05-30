@@ -64,3 +64,5 @@ jobs:
         run: gradle errorProne
       - name: Run PMD
         run: gradle pmd{Main,Test}
+      - name: Run PIT tests
+        run: gradle pitest
