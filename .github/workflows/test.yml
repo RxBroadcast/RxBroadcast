@@ -64,6 +64,8 @@ jobs:
         run: gradle errorProne
       - name: Run PMD
         run: gradle pmd{Main,Test}
+      - name: Run SpotBugs
+        run: gradle spotbugs{Main,Test}
   mutation_tests:
     name: Mutation tests
     needs: [tests]
