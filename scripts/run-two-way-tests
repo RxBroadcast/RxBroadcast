@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+set -e
+set -u
+set -o pipefail
+set -x
+
+# shellcheck disable=SC2016
+test/two-way rxbroadcast.integration.SingleSourceFifoOrderUdpBroadcastTest 'sudo tc qdisc add dev "${DOCKER_IFACE%%@if+([0-9])}" root netem delay 100ms 75ms'
+test/two-way rxbroadcast.integration.NoOrderUdpBroadcastTest
+test/two-way --num-junit-containers=1 rxbroadcast.integration.pp.PingPongUdpNoOrder
+test/two-way --num-junit-containers=1 rxbroadcast.integration.pp.PingPongUdpNoOrderKryoSerializer
+test/two-way --num-junit-containers=1 rxbroadcast.integration.pp.PingPongUdpNoOrderObjectSerializer
+test/two-way --num-junit-containers=1 rxbroadcast.integration.pp.PingPongUdpSingleSourceFifoOrder
+test/two-way --num-junit-containers=1 rxbroadcast.integration.pp.PingPongUdpSingleSourceFifoOrderKryoSerializer
+test/two-way --num-junit-containers=1 rxbroadcast.integration.pp.PingPongUdpSingleSourceFifoOrderObjectSerializer
+test/two-way --num-junit-containers=1 rxbroadcast.integration.pp.PingPongUdpSingleSourceFifoOrderProtobufSerializer
+test/two-way --num-junit-containers=1 rxbroadcast.integration.pp.PingPongUdpCausalOrder
+test/two-way --num-junit-containers=1 rxbroadcast.integration.pp.PingPongUdpCausalOrderKryoSerializer
+test/two-way --num-junit-containers=1 rxbroadcast.integration.pp.PingPongUdpCausalOrderObjectSerializer
+test/two-way --num-junit-containers=1 rxbroadcast.integration.pp.PingPongUdpCausalOrderProtobufSerializer
