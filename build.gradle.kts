@@ -1,5 +1,4 @@
 import com.jfrog.bintray.gradle.BintrayExtension
-import info.solidsoft.gradle.pitest.PitestPluginExtension
 import net.ltgt.gradle.errorprone.ErrorProneToolChain
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
@@ -63,11 +62,11 @@ tasks.withType<Javadoc> {
 
 tasks.withType<Test> {
     exclude("rxbroadcast/integration/**")
-    testLogging({
+    testLogging {
         exceptionFormat = TestExceptionFormat.FULL
         events = setOf(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
         showStandardStreams = true
-    })
+    }
 }
 
 task("errorProne") {
@@ -78,24 +77,24 @@ task("errorProne") {
 }
 
 task<Jar>("testJar") {
-    classifier = "tests"
+    archiveClassifier.set("tests")
     group = "verification"
     description = "Assembles a jar archive containing the test classes."
-    afterEvaluate({
+    afterEvaluate {
         val sourceSets = convention.getPlugin(JavaPluginConvention::class).sourceSets
-        val files = configurations.testCompileClasspath.files.map(fun (file: File): Any = when {
+        val files = configurations.testCompileClasspath.get().files.map(fun (file: File): Any = when {
             file.isDirectory -> file
             else -> zipTree(file)
         })
 
         from(sourceSets.findByName("main")!!.output + sourceSets.findByName("test")!!.output)
-        from(files, {
+        from(files) {
             exclude("META-INF/**")
-        })
-    })
+        }
+    }
 }
 
-configure<PitestPluginExtension> {
+pitest {
     excludedMethods.set(setOf("toString", "newThread", "hashCode"))
     detectInlinedCode.set(true)
     timestampedReports.set(false)
@@ -106,37 +105,37 @@ configure<PitestPluginExtension> {
 }
 
 task<Jar>("sourcesJar") {
-    classifier = "sources"
-    afterEvaluate({
+    archiveClassifier.set("sources")
+    afterEvaluate {
         val sourceSets = convention.getPlugin(JavaPluginConvention::class).sourceSets
         from(sourceSets.findByName("main")!!.allSource)
-    })
+    }
 }
 
 task<Jar>("javadocJar") {
-    classifier = "javadoc"
-    afterEvaluate({
+    archiveClassifier.set("javadoc")
+    afterEvaluate {
         from(tasks.findByName("javadoc"))
-    })
+    }
 }
 
-configure<PmdExtension> {
+pmd {
     toolVersion = "6.21.0"
     ruleSets = emptyList()
     ruleSetFiles("config/pmd/rules.xml")
 }
 
-configure<CheckstyleExtension> {
+checkstyle {
     toolVersion = "8.2"
 }
 
-configure<JacocoPluginExtension> {
+jacoco {
     toolVersion = "0.7.9"
 }
 
-configure<PublishingExtension> {
+publishing {
     publications {
-        create(project.name.toLowerCase(), MavenPublication::class.java, {
+        create(project.name.toLowerCase(), MavenPublication::class.java) {
             from(components.findByName("java"))
             artifactId = archivesBaseName()
             artifact(tasks.getByName("javadocJar"))
@@ -165,7 +164,7 @@ configure<PublishingExtension> {
                     }
                 }
             }
-        })
+        }
     }
 }
 
