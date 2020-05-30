@@ -11,7 +11,7 @@ plugins {
     jacoco
     checkstyle
     pmd
-    id("info.solidsoft.pitest") version "1.2.4"
+    id("info.solidsoft.pitest") version "1.5.1"
     id("com.jfrog.bintray") version "1.6"
     id("net.ltgt.errorprone-base") version "0.0.13"
 }
@@ -96,13 +96,13 @@ task<Jar>("testJar") {
 }
 
 configure<PitestPluginExtension> {
-    excludedMethods = setOf("toString", "newThread", "hashCode")
-    detectInlinedCode = true
-    timestampedReports = false
-    mutationThreshold = 99
-    mutators = setOf("DEFAULTS", "REMOVE_CONDITIONALS")
-    testSourceSets = setOf(sourceSets["pitest"])
-    verbose = (System.getenv("CI") ?: "false").toBoolean()
+    excludedMethods.set(setOf("toString", "newThread", "hashCode"))
+    detectInlinedCode.set(true)
+    timestampedReports.set(false)
+    mutationThreshold.set(80)
+    mutators.set(setOf("ALL"))
+    testSourceSets.set(setOf(sourceSets["pitest"]))
+    verbose.set((System.getenv("CI") ?: "false").toBoolean())
 }
 
 task<Jar>("sourcesJar") {
