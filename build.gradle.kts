@@ -21,13 +21,13 @@ repositories {
 }
 
 dependencies {
-    compile("com.esotericsoftware:kryo:4.0.1")
-    compile("com.google.protobuf:protobuf-java:3.5.0")
-    compile("io.reactivex:rxjava:1.3.4")
-    compile("org.jetbrains:annotations:15.0")
+    implementation("com.esotericsoftware:kryo:4.0.1")
+    implementation("com.google.protobuf:protobuf-java:3.5.0")
+    implementation("io.reactivex:rxjava:1.3.4")
+    implementation("org.jetbrains:annotations:15.0")
     errorprone("com.google.errorprone:error_prone_core:2.1.2")
-    testCompile("junit:junit:4.12")
-    testCompile("nl.jqno.equalsverifier:equalsverifier:2.3.3")
+    testImplementation("junit:junit:4.12")
+    testImplementation("nl.jqno.equalsverifier:equalsverifier:2.3.3")
 }
 
 fun linkGitHub(resource: String = "") = "https://github.com/${project.name}/${project.name}$resource"
@@ -83,7 +83,7 @@ task<Jar>("testJar") {
     description = "Assembles a jar archive containing the test classes."
     afterEvaluate({
         val sourceSets = convention.getPlugin(JavaPluginConvention::class).sourceSets
-        val files = configurations.testCompile.files.map(fun (file: File): Any = when {
+        val files = configurations.testCompileClasspath.files.map(fun (file: File): Any = when {
             file.isDirectory -> file
             else -> zipTree(file)
         })
