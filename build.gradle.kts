@@ -1,5 +1,4 @@
 import com.jfrog.bintray.gradle.BintrayExtension
-import info.solidsoft.gradle.pitest.PitestPluginExtension
 import net.ltgt.gradle.errorprone.ErrorProneToolChain
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
@@ -95,7 +94,7 @@ task<Jar>("testJar") {
     }
 }
 
-configure<PitestPluginExtension> {
+pitest {
     excludedMethods.set(setOf("toString", "newThread", "hashCode"))
     detectInlinedCode.set(true)
     timestampedReports.set(false)
@@ -120,21 +119,21 @@ task<Jar>("javadocJar") {
     }
 }
 
-configure<PmdExtension> {
+pmd {
     toolVersion = "6.21.0"
     ruleSets = emptyList()
     ruleSetFiles("config/pmd/rules.xml")
 }
 
-configure<CheckstyleExtension> {
+checkstyle {
     toolVersion = "8.2"
 }
 
-configure<JacocoPluginExtension> {
+jacoco {
     toolVersion = "0.7.9"
 }
 
-configure<PublishingExtension> {
+publishing {
     publications {
         create(project.name.toLowerCase(), MavenPublication::class.java) {
             from(components.findByName("java"))
