@@ -13,7 +13,7 @@ public final class CausalOrderTest {
         final VectorTimestamped<TestValue> value = causalOrder.prepare(new TestValue('a'));
 
         Assert.assertEquals(
-            new VectorTimestamped<>(new TestValue('a'), new VectorTimestamp(new Sender[]{s}, new long[]{1})),
+            new VectorTimestamped<>(new TestValue('a'), new VectorTimestamp(new Sender[]{s}, 1)),
             value);
     }
 
@@ -30,7 +30,7 @@ public final class CausalOrderTest {
         final VectorTimestamped<TestValue> value = causalOrder2.prepare(new TestValue('c'));
 
         Assert.assertEquals(
-            new VectorTimestamped<>(new TestValue('c'), new VectorTimestamp(new Sender[]{s1, s2}, new long[]{1, 2})),
+            new VectorTimestamped<>(new TestValue('c'), new VectorTimestamp(new Sender[]{s1, s2}, 1, 2)),
             value);
     }
 
@@ -241,7 +241,7 @@ public final class CausalOrderTest {
         final VectorTimestamped<TestValue> valueW = causalOrder3.prepare(new TestValue('w'));
         Assert.assertEquals(
             new VectorTimestamped<>(new TestValue('w'), new VectorTimestamp(
-                new Sender[]{sender1, sender2, sender3}, new long[]{1, 2, 2})),
+                new Sender[]{sender1, sender2, sender3}, 1, 2, 2)),
             valueW);
     }
 
