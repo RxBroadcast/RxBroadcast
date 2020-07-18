@@ -32,4 +32,4 @@ Feature requests and bug reports
 
 Note that RxBroadcast is a library with an intentionally small feature set and API—it serves to describe a distributed event system. It is possible that you may want to wrap `Broadcast` objects or generally use them as building blocks.
 
-To request a change to the way that RxBroadcast works, or report an issue with the library, [open an issue](https://github.com/RxBroadcast/RxBroadcast/issues). Whether or not something is a bug can be tricky to tell, please feel free to always open an issue even if you're unsure.
+To request a change to the way that RxBroadcast works, or report an issue with the library, [open an issue](https://github.com/RxBroadcast/RxBroadcast/issues). Whether something is a bug can be tricky to tell, please feel free to always open an issue even if you're unsure.
