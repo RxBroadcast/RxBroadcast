@@ -72,7 +72,7 @@ public final class PingPongUdpSingleSourceFifoOrderProtobufSerializer {
      * @throws SocketException if the socket could not be opened, or the socket could not bind to the given port.
      * @throws UnknownHostException if no IP address for the host machine could be found.
      */
-    public static void main(final String[] args) throws InterruptedException, SocketException, UnknownHostException {
+    public static void main(final String[] args) throws SocketException, UnknownHostException {
         final int port = System.getProperty("port") != null
             ? Integer.parseInt(System.getProperty("port"))
             : 54321;
