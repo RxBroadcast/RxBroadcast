@@ -3,5 +3,6 @@
 .vagrant
 
 build
+/infer-out
 
 *.iml
