@@ -11,13 +11,12 @@ public final class VectorTimestampTest {
     public final void equalsContract() {
         EqualsVerifier.forClass(VectorTimestamp.class)
             .withCachedHashCode("hashCode", "computeHashCode", new VectorTimestamp(
-                new Sender[]{new Sender(new byte[] {42}), new Sender(new byte[]{43})}, new long[]{1, 2}
-            ))
+                new Sender[]{new Sender(new byte[] {42}), new Sender(new byte[]{43})}, 1, 2))
             .verify();
     }
 
     @Test(expected = IllegalArgumentException.class)
     public final void timestampMustHaveEqualLengthFields() {
-        Assert.assertThat(new VectorTimestamp(new Sender[0], new long[]{3, 4}), CoreMatchers.anything());
+        Assert.assertThat(new VectorTimestamp(new Sender[0], 3, 4), CoreMatchers.anything());
     }
 }
