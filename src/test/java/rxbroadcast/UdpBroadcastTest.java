@@ -28,7 +28,7 @@ public final class UdpBroadcastTest {
         final TestSubscriber<Object> subscriber = new TestSubscriber<>();
         try (
             final DatagramSocket s1 = new DatagramSocket();
-            final DatagramSocket s2 = new DatagramSocket();
+            final DatagramSocket s2 = new DatagramSocket()
         ) {
             final Broadcast broadcast1 = new UdpBroadcast<>(
                 s1, new InetSocketAddress(InetAddress.getLoopbackAddress(), s2.getLocalPort()), new NoOrder<>());
@@ -52,7 +52,7 @@ public final class UdpBroadcastTest {
         final TestSubscriber<Object> subscriber = new TestSubscriber<>();
         try (
             final DatagramSocket s1 = new DatagramSocket();
-            final DatagramSocket s2 = new DatagramSocket();
+            final DatagramSocket s2 = new DatagramSocket()
         ) {
             final Broadcast broadcast1 = new UdpBroadcast<>(
                 s1, new InetSocketAddress(InetAddress.getLoopbackAddress(), s2.getLocalPort()), new NoOrder<>());
@@ -99,7 +99,7 @@ public final class UdpBroadcastTest {
         final TestSubscriber<Object> subscriber = new TestSubscriber<>();
         try (
             final DatagramSocket s1 = new DatagramSocket();
-            final DatagramSocket s2 = new DatagramSocket();
+            final DatagramSocket s2 = new DatagramSocket()
         ) {
             final Broadcast broadcast1 = new UdpBroadcast<>(
                 s1, new InetSocketAddress(InetAddress.getLoopbackAddress(), s2.getLocalPort()), new NoOrder<>());
@@ -127,7 +127,7 @@ public final class UdpBroadcastTest {
         final TestSubscriber<Object> subscriber = new TestSubscriber<>();
         try (
             final DatagramSocket s1 = new DatagramSocket();
-            final DatagramSocket s2 = new DatagramSocket();
+            final DatagramSocket s2 = new DatagramSocket()
         ) {
             final Broadcast broadcast1 = new UdpBroadcast<>(
                 s1, new InetSocketAddress(InetAddress.getLoopbackAddress(), s2.getLocalPort()), new NoOrder<>());
@@ -159,7 +159,7 @@ public final class UdpBroadcastTest {
     public final void broadcastOrderDoesGetNonNullHostMachineAddress() throws SocketException {
         try (
             final DatagramSocket s1 = new DatagramSocket();
-            final DatagramSocket s2 = new DatagramSocket();
+            final DatagramSocket s2 = new DatagramSocket()
         ) {
             final InetSocketAddress destination = new InetSocketAddress(
                 InetAddress.getLoopbackAddress(), s2.getLocalPort());
@@ -184,7 +184,7 @@ public final class UdpBroadcastTest {
         final TestSubscriber<Void> subscriber = new TestSubscriber<>();
         try (
             final DatagramSocket s1 = new DatagramSocket();
-            final DatagramSocket s2 = new DatagramSocket();
+            final DatagramSocket s2 = new DatagramSocket()
         ) {
             final Broadcast broadcast1 = new UdpBroadcast<>(
                 s1, new InetSocketAddress(InetAddress.getLoopbackAddress(), s2.getLocalPort()), new NoOrder<>());
