@@ -1,4 +1,4 @@
-RxBroadcast &middot; [![Test status](https://github.com/RxBroadcast/RxBroadcast/workflows/Test/badge.svg)](https://github.com/RxBroadcast/RxBroadcast/actions)
+RxBroadcast
 ===========
 
 RxBroadcast is a small distributed event library for the JVM.
